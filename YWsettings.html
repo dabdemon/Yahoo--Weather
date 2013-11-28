@@ -46,17 +46,12 @@
         </div>
 
         <div data-role="fieldcontain">
-          <fieldset data-role="controlgroup" data-type="horizontal">
-            <legend>Language:</legend>
-
-            <label for="english">English</label>
-            <input type="radio" id="english" name="language" value="english" data-theme="c">
-
-            <label for="spanish">Spanish</label>
-            <input type="radio" id="spanish" name="language" value="spanish" data-theme="c">
-          </fieldset>
+          <label for="language">Translate to Spanish</label>
+          <select name="language" id="language" data-theme="c" data-role="slider" data-track-theme="d">
+            <option value="false">No</option>
+            <option value="true">Yes</option>
+          </select>
         </div>
-
 
         <div class='ui-body ui-body-b'>
           <fieldset class='ui-grid-a'>
@@ -84,7 +79,7 @@
           'use_gps': $('#gps_switch').val(),
           'location': $('#location').val(),
           'units': $('input:radio[name=units]:checked').val(),
-          'language': $('input:radio[name=language]:checked').val()
+          'language': $('#language').val()
         }
         return options;
       }
@@ -104,11 +99,8 @@
         } else {
           $('input:radio[name=units][value=fahrenheit]').prop('checked', true).trigger("click");
         }
-        if (getQueryVariable('language') == "english") {
-          $('input:radio[name=language][value=english]').prop('checked', true).trigger("click");
-        } else {
-          $('input:radio[name=language][value=spanish]').prop('checked', true).trigger("click");
-        }
+        $('#language').val(getQueryVariable('language')).change();
+
         // Disable location field based on GPS toggle
         $('#location').prop('disabled', $('#gps_switch').val() == "true");
         $('#gps_switch').change(function() {
