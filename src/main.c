@@ -124,6 +124,7 @@ enum WeatherKey {
 	static char time_text[] = "00:00"; 
 	
 	bool translate_sp = true;
+	static char language[] = "E";
 
 //*****************//
 // AppSync options //
@@ -254,6 +255,8 @@ static void handle_bluetooth(bool connected)
 
 
 void TranslateDate(){
+	
+	if (language[0] == 'E'){ //SPANISH
 			
 			if (month_text[0] == 'J' && month_text[1] == 'a')
 			{
@@ -277,7 +280,7 @@ void TranslateDate(){
 			
 			if (month_text[0] == 'M' && month_text[2] == 'y')
 			{
-				memcpy(&month_text, "   de mayo", strlen("   de mayo")+1); // May
+				memcpy(&month_text, "   mayo", strlen("   mayo")+1); // May
 			}
 			
 			if (month_text[0] == 'J' && month_text[2] == 'n')
@@ -353,8 +356,108 @@ void TranslateDate(){
 			{
 				memcpy(&weekday_text, "Domingo", strlen("Domingo")+1); // Sunday
 			}
-			
 
+	}//END OF SPANISH 
+	else if (language[0] == 'I'){ //ITALIAN
+				if (month_text[0] == 'J' && month_text[1] == 'a')
+			{
+				memcpy(&month_text, "   gennaio", strlen("   gennaio")+1); // January
+			}
+			
+			if (month_text[0] == 'F' && month_text[1] == 'e')
+			{
+				memcpy(&month_text, "   febbraio", strlen("   febbraio")+1); // Febrary
+			}
+			
+			if (month_text[0] == 'M' && month_text[2] == 'r')
+			{
+				memcpy(&month_text, "   marzo", strlen("   marzo")+1); // March
+			}
+			
+			if (month_text[0] == 'A' && month_text[1] == 'p')
+			{
+				memcpy(&month_text, "   aprile", strlen("   aprile")+1); // April
+			}
+			
+			if (month_text[0] == 'M' && month_text[2] == 'y')
+			{
+				memcpy(&month_text, "   maggio", strlen("   maggio")+1); // May
+			}
+			
+			if (month_text[0] == 'J' && month_text[2] == 'n')
+			{
+				memcpy(&month_text, "   giugno", strlen("   giugno")+1); // June
+			}
+			
+			if (month_text[0] == 'J' && month_text[2] == 'l')
+			{
+				memcpy(&month_text, "   luglio", strlen("   luglio")+1); // July
+			}
+			
+			if (month_text[0] == 'A' && month_text[1] == 'u')
+			{
+				memcpy(&month_text, "   agosto ", strlen("   agosto ")+1); // August
+			}
+			
+			if (month_text[0] == 'S' && month_text[1] == 'e')
+			{
+				memcpy(&month_text, "   settembre", strlen("   settembre")+1); // September
+			}
+			
+			if (month_text[0] == 'O' && month_text[1] == 'c')
+			{
+				memcpy(&month_text, "   ottobre", strlen("   ottobre")+1); // October
+			}
+			
+			if (month_text[0] == 'N' && month_text[1] == 'o')
+			{
+				memcpy(&month_text, "   novembre", strlen("   novembre")+1); // November
+			}
+			
+			if (month_text[0] == 'D' && month_text[1] == 'e')
+			{
+				memcpy(&month_text, "   dicembre", strlen("   dicembre")+1); // December
+			}
+			
+			// Primitive hack to translate the day of week to another language
+			// Needs to be exactly 3 characters, e.g. "Mon" or "Mo "
+			// Supported characters: A-Z, a-z, 0-9
+			if (weekday_text[0] == 'M')
+			{
+				memcpy(&weekday_text, "Lunedi", strlen("Lunedi")+1); // Monday
+			}
+			
+			if (weekday_text[0] == 'T' && weekday_text[1] == 'u')
+			{
+				memcpy(&weekday_text, "Martedi", strlen("Martedi")+1); // Tuesday
+			}
+			
+			if (weekday_text[0] == 'W')
+			{
+				memcpy(&weekday_text, "Miercoledi", strlen("Miercoledi")+1); // Wednesday
+			}
+			
+			if (weekday_text[0] == 'T' && weekday_text[1] == 'h')
+			{
+				memcpy(&weekday_text, "Giovedi", strlen("Giovedi")+1); // Thursday
+			}
+			
+			if (weekday_text[0] == 'F')
+			{
+				memcpy(&weekday_text, "Venerdi", strlen("Venerdi")+1); // Friday
+			}
+			
+			if (weekday_text[0] == 'S' && weekday_text[1] == 'a')
+			{
+				memcpy(&weekday_text, "Sabato", strlen("Sabato")+1); // Saturday
+			}
+			
+			if (weekday_text[0] == 'S' && weekday_text[1] == 'u')
+			{
+				memcpy(&weekday_text, "Domenica", strlen("Domenica")+1); // Sunday
+			}
+			
+	} //END OF ITALIAN			
 }
 
 
