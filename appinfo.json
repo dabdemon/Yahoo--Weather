@@ -1,0 +1,171 @@
+{
+    "versionLabel": "1.0",
+    "uuid": "35a28a4d-0c9f-408f-9c6d-551e65f03186",
+    "appKeys": {
+        "city": 2,
+        "temperature": 1,
+        "icon": 0
+    },
+    "longName": "Yahoo! Weather 2.0",
+    "versionCode": 1,
+    "capabilities": [
+        "configurable"
+    ],
+    "shortName": "Yahoo! Weather 2.0",
+    "companyName": "dabdemon",
+    "watchapp": {
+        "watchface": true
+    },
+    "resources": {
+        "media": [
+            {
+                "type": "png",
+                "name": "ICON_NOT_AVAILABLE",
+                "file": "images/not-available.png"
+            },
+            {
+                "type": "png",
+                "name": "ICON_WIND",
+                "file": "images/wind.png"
+            },
+            {
+                "type": "png",
+                "name": "ICON_THUNDER",
+                "file": "images/thunder.png"
+            },
+            {
+                "type": "png",
+                "name": "ICON_SNOW_SLEET",
+                "file": "images/snow-sleet.png"
+            },
+            {
+                "type": "png",
+                "name": "ICON_SNOW",
+                "file": "images/snow.png"
+            },
+            {
+                "type": "png",
+                "name": "ICON_SLEET",
+                "file": "images/sleet.png"
+            },
+            {
+                "type": "png",
+                "name": "ICON_RAIN_SNOW",
+                "file": "images/rain-snow.png"
+            },
+            {
+                "type": "png",
+                "name": "ICON_RAIN_SLEET",
+                "file": "images/rain-sleet.png"
+            },
+            {
+                "type": "png",
+                "name": "ICON_RAIN",
+                "file": "images/rain.png"
+            },
+            {
+                "type": "png",
+                "name": "ICON_PARTLY_CLOUDY_NIGHT",
+                "file": "images/partly-cloudy-night.png"
+            },
+            {
+                "type": "png",
+                "name": "ICON_PARTLY_CLOUDY_DAY",
+                "file": "images/partly-cloudy-day.png"
+            },
+            {
+                "type": "png",
+                "name": "ICON_FOG",
+                "file": "images/fog.png"
+            },
+            {
+                "type": "png",
+                "name": "ICON_DRIZZLE",
+                "file": "images/drizzle.png"
+            },
+            {
+                "type": "png",
+                "name": "ICON_HOT",
+                "file": "images/hot.png"
+            },
+            {
+                "type": "png",
+                "name": "ICON_COLD",
+                "file": "images/cold.png"
+            },
+            {
+                "type": "png",
+                "name": "ICON_CLOUDY",
+                "file": "images/cloudy.png"
+            },
+            {
+                "type": "png",
+                "name": "ICON_CLEAR_NIGHT",
+                "file": "images/clear-night.png"
+            },
+            {
+                "type": "png",
+                "name": "ICON_CLEAR_DAY",
+                "file": "images/clear-day.png"
+            },
+            {
+                "type": "png",
+                "name": "BATT_60",
+                "file": "images/batt_60.png"
+            },
+            {
+                "type": "png",
+                "name": "BATT_40",
+                "file": "images/batt_40.png"
+            },
+            {
+                "type": "png",
+                "name": "BATT_20",
+                "file": "images/batt_20.png"
+            },
+            {
+                "type": "png",
+                "name": "BATT_FULL",
+                "file": "images/batt_full.png"
+            },
+            {
+                "type": "png",
+                "name": "BATT_EMPTY",
+                "file": "images/batt_empty.png"
+            },
+            {
+                "type": "png",
+                "name": "BATT_CHAR",
+                "file": "images/batt_char.png"
+            },
+            {
+                "type": "png",
+                "name": "BT_DISCONNECTED",
+                "file": "images/bluetooth_Off_white_small.png"
+            },
+            {
+                "type": "png",
+                "name": "BT_CONNECTED",
+                "file": "images/bluetooth_white_small.png"
+            },
+            {
+                "characterRegex": "[0-9:]",
+                "type": "font",
+                "name": "FUTURA_CONDENSED_53",
+                "file": "fonts/futura_condensed_bold-webfont.ttf"
+            },
+            {
+                "characterRegex": "[0-9A-Za-z ]",
+                "type": "font",
+                "name": "FUTURA_18",
+                "file": "fonts/futura.ttf"
+            },
+            {
+                "characterRegex": "[0-9A-Za-z :]",
+                "type": "font",
+                "name": "FUTURA_10",
+                "file": "fonts/futura.ttf"
+            }
+        ]
+    }
+}
