@@ -15,9 +15,9 @@ PBL_APP_INFO(MY_UUID,
              APP_INFO_WATCH_FACE);
 */		 
 
-#define WEEKDAY_FRAME	  (GRect(1,  2, 90, 168-145)) 
-#define BATT_FRAME 	      (GRect(95,  4, 35, 168-146)) 
-#define BT_FRAME 	      (GRect(120,  4, 20, 168-146)) 
+#define WEEKDAY_FRAME	  (GRect(5,  2, 95, 168-145)) 
+#define BATT_FRAME 	      (GRect(100,  4, 40, 168-146)) 
+#define BT_FRAME 	      (GRect(125,  4, 25, 168-146)) 
 #define TIME_FRAME        (GRect(0, 15, 144, 168-16)) 
 #define DATE_FRAME        (GRect(1, 69, 139, 168-62)) 
 /*
@@ -321,37 +321,37 @@ void TranslateDate(){
 			
 			if (weekday_text[0] == 'M')
 			{
-				memcpy(&weekday_text, " Lunes", strlen(" Lunes")+1); // Monday
+				memcpy(&weekday_text, "Lunes", strlen("Lunes")+1); // Monday
 			}
 			
 			if (weekday_text[0] == 'T' && weekday_text[1] == 'u')
 			{
-				memcpy(&weekday_text, " Martes", strlen(" Martes")+1); // Tuesday
+				memcpy(&weekday_text, "Martes", strlen("Martes")+1); // Tuesday
 			}
 			
 			if (weekday_text[0] == 'W')
 			{
-				memcpy(&weekday_text, " Miercoles", strlen(" Miercoles")+1); // Wednesday
+				memcpy(&weekday_text, "Miercoles", strlen("Miercoles")+1); // Wednesday
 			}
 			
 			if (weekday_text[0] == 'T' && weekday_text[1] == 'h')
 			{
-				memcpy(&weekday_text, " Jueves", strlen(" Jueves")+1); // Thursday
+				memcpy(&weekday_text, "Jueves", strlen("Jueves")+1); // Thursday
 			}
 			
 			if (weekday_text[0] == 'F')
 			{
-				memcpy(&weekday_text, " Viernes", strlen(" Viernes")+1); // Friday
+				memcpy(&weekday_text, "Viernes", strlen("Viernes")+1); // Friday
 			}
 			
 			if (weekday_text[0] == 'S' && weekday_text[1] == 'a')
 			{
-				memcpy(&weekday_text, " Sabado", strlen(" Sabado")+1); // Saturday
+				memcpy(&weekday_text, "Sabado", strlen("Sabado")+1); // Saturday
 			}
 			
 			if (weekday_text[0] == 'S' && weekday_text[1] == 'u')
 			{
-				memcpy(&weekday_text, " Domingo", strlen(" Domingo")+1); // Sunday
+				memcpy(&weekday_text, "Domingo", strlen("Domingo")+1); // Sunday
 			}
 			
 
@@ -464,7 +464,7 @@ void handle_init(void)
 	
 	//Load the custom fonts
 	res_t = resource_get_handle(RESOURCE_ID_FUTURA_CONDENSED_53); // Time font
-	res_d = resource_get_handle(RESOURCE_ID_FUTURA_18); // Date font
+	res_d = resource_get_handle(RESOURCE_ID_FUTURA_17); // Date font
 	res_u = resource_get_handle(RESOURCE_ID_FUTURA_10); // Last Update font
 	//res_temp =  resource_get_handle(RESOURCE_ID_FUTURA_36); //Temperature
 	
