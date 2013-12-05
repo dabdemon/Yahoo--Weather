@@ -434,7 +434,7 @@ void TranslateDate(){
 			
 			if (weekday_text[0] == 'W')
 			{
-				memcpy(&weekday_text, "Miercoledi", strlen("Miercoledi")+1); // Wednesday
+				memcpy(&weekday_text, "Mercoledi", strlen("Mercoledi")+1); // Wednesday
 			}
 			
 			if (weekday_text[0] == 'T' && weekday_text[1] == 'h')
