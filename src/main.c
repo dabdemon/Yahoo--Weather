@@ -16,8 +16,8 @@ PBL_APP_INFO(MY_UUID,
 */		 
 
 #define WEEKDAY_FRAME	  (GRect(5,  2, 95, 168-145)) 
-#define BATT_FRAME 	      (GRect(100,  4, 40, 168-146)) 
-#define BT_FRAME 	      (GRect(125,  4, 25, 168-146)) 
+#define BATT_FRAME 	      (GRect(98,  4, 40, 168-146)) 
+#define BT_FRAME 	      (GRect(127,  4, 23, 168-146)) 
 #define TIME_FRAME        (GRect(0, 15, 144, 168-16)) 
 #define DATE_FRAME        (GRect(1, 69, 139, 168-62)) 
 /*
@@ -185,13 +185,14 @@ static void handle_battery(BatteryChargeState charge_state) {
 
   if (charge_state.is_charging) {
     //snprintf(battery_text, sizeof(battery_text), "charging");
-	  	//kill previous batt_image to avoid invalid ones.
-		if (Batt_image){gbitmap_destroy(Batt_image);}
-	  	//set the new batt_image
 	  	Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_CHAR);
 	  	bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
   } else {
-    snprintf(battery_text, sizeof(battery_text), "%d%%", charge_state.charge_percent);
+    //snprintf(battery_text, sizeof(battery_text), "%d%%", charge_state.charge_percent);
+	  	 //kill previous batt_image to avoid invalid ones.
+	  if (Batt_image){if(BT_image){bitmap_layer_set_bitmap(Batt_icon_layer, NULL);}}
+	  
+	  	//set the new batt_image
 	  //if ((battery_text[0] == "1" || battery_text[0] == "2")  && strlen(battery_text)<4) //If the charge is between 0% and 20%
 	  /*
 	  if (charge_state.charge_percent<20) //If the charge is between 0% and 20%
@@ -222,9 +223,6 @@ static void handle_battery(BatteryChargeState charge_state) {
 	  */ //DO NOT display the batt_icon all the time. it is annoying.
 	   if (charge_state.charge_percent<10) //If the charge is between 0% and 10%
 	   {
-		   	//kill previous batt_image to avoid invalid ones.
-			if (Batt_image){gbitmap_destroy(Batt_image);}
-	  		//set the new batt_image
 		  	Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_EMPTY);
 	  		bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
 	   }
@@ -239,13 +237,9 @@ static void handle_bluetooth(bool connected)
 {
   	//text_layer_set_text(BT_Layer, connected ? "C" : "D");
 	
-	//draw the BT icon if connected
-	
+	//draw the BT icon if connected	
 	if(connected ==true)
 	{
-		//Kill the previous image to ensure we are not displaying the wrong one
-		if (BT_image){gbitmap_destroy(BT_image);}
-		//Set the correct image
 		BT_image = gbitmap_create_with_resource(RESOURCE_ID_BT_CONNECTED);
   		bitmap_layer_set_bitmap(BT_icon_layer, BT_image);
 		//Vibes on connection
@@ -257,8 +251,8 @@ static void handle_bluetooth(bool connected)
 	}
 	else
 	{
-		//Kill the previous image to ensure we are not displaying the wrong one
-		if (BT_image){gbitmap_destroy(BT_image);}
+		//Kill the previous image 
+		if(BT_image){bitmap_layer_set_bitmap(BT_icon_layer, NULL);}
 		//Vibes on disconnect 
 		if (BTConnected == true){
 			//Vibes to alert disconnection
