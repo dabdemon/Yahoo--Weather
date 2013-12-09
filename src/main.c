@@ -35,10 +35,10 @@ PBL_APP_INFO(MY_UUID,
 //******************//
 // DEFINE THE ICONS //
 //******************//	
-static int LAYER_ICONS[] = {
-	RESOURCE_ID_BT_CONNECTED,
-	RESOURCE_ID_BT_DISCONNECTED,
-};
+//static int LAYER_ICONS[] = {
+	//RESOURCE_ID_BT_CONNECTED,
+	//RESOURCE_ID_BT_DISCONNECTED,
+//};
 
 static const uint32_t WEATHER_ICONS[] = {
   RESOURCE_ID_ICON_CLEAR_DAY,
@@ -185,11 +185,15 @@ static void handle_battery(BatteryChargeState charge_state) {
 
   if (charge_state.is_charging) {
     //snprintf(battery_text, sizeof(battery_text), "charging");
-	  Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_CHAR);
-	  bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
+	  	//kill previous batt_image to avoid invalid ones.
+		if (Batt_image){gbitmap_destroy(Batt_image);}
+	  	//set the new batt_image
+	  	Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_CHAR);
+	  	bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
   } else {
     snprintf(battery_text, sizeof(battery_text), "%d%%", charge_state.charge_percent);
 	  //if ((battery_text[0] == "1" || battery_text[0] == "2")  && strlen(battery_text)<4) //If the charge is between 0% and 20%
+	  /*
 	  if (charge_state.charge_percent<20) //If the charge is between 0% and 20%
 	  {
 		Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_EMPTY);
@@ -215,6 +219,15 @@ static void handle_battery(BatteryChargeState charge_state) {
 		Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_FULL);
 	  	bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
 	  }
+	  */ //DO NOT display the batt_icon all the time. it is annoying.
+	   if (charge_state.charge_percent<10) //If the charge is between 0% and 10%
+	   {
+		   	//kill previous batt_image to avoid invalid ones.
+			if (Batt_image){gbitmap_destroy(Batt_image);}
+	  		//set the new batt_image
+		  	Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_EMPTY);
+	  		bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
+	   }
   }
   //text_layer_set_text(Batt_Layer, battery_text);
 }
@@ -230,8 +243,12 @@ static void handle_bluetooth(bool connected)
 	
 	if(connected ==true)
 	{
+		//Kill the previous image to ensure we are not displaying the wrong one
+		if (BT_image){gbitmap_destroy(BT_image);}
+		//Set the correct image
 		BT_image = gbitmap_create_with_resource(RESOURCE_ID_BT_CONNECTED);
   		bitmap_layer_set_bitmap(BT_icon_layer, BT_image);
+		//Vibes on connection
 		if (BTConnected == false){
 			//Vibes to alert connection
 			vibes_double_pulse();
@@ -240,8 +257,9 @@ static void handle_bluetooth(bool connected)
 	}
 	else
 	{
-		BT_image = gbitmap_create_with_resource(RESOURCE_ID_BT_DISCONNECTED);
-  		bitmap_layer_set_bitmap(BT_icon_layer, BT_image);
+		//Kill the previous image to ensure we are not displaying the wrong one
+		if (BT_image){gbitmap_destroy(BT_image);}
+		//Vibes on disconnect 
 		if (BTConnected == true){
 			//Vibes to alert disconnection
 			vibes_long_pulse();
