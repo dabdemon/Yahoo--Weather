@@ -70,7 +70,7 @@ var imageId = {
 };
 
 var options = JSON.parse(localStorage.getItem('options'));
-console.log('read options: ' + JSON.stringify(options));
+//console.log('read options: ' + JSON.stringify(options));
 if (options === null) options = { "use_gps" : "true",
                                   "location" : "",
 								 "units" : "celsius"};
@@ -95,7 +95,7 @@ function getWeatherFromLatLong(latitude, longitude) {
 			getWeatherFromWoeid(woeid, city);
         }
       } else {
-        console.log("Error");
+        //console.log("Error");
       }
     }
   }
@@ -123,7 +123,7 @@ function getWeatherFromLocation(location_name) {
           getWeatherFromWoeid(woeid, city);
         }
       } else {
-        console.log("Error");
+        //console.log("Error");
       }
     }
   }
@@ -172,7 +172,7 @@ function getWeatherFromWoeid(woeid, city) {
           });
         }
       } else {
-        console.log("Error");
+        //console.log("Error");
       }
     }
   }
@@ -197,7 +197,7 @@ function locationSuccess(pos) {
 }
 
 function locationError(err) {
-  console.warn('location error (' + err.code + '): ' + err.message);
+  //console.warn('location error (' + err.code + '): ' + err.message);
   Pebble.sendAppMessage({
     "icon":16,
     "temperature":""
@@ -210,7 +210,7 @@ Pebble.addEventListener('showConfiguration', function(e) {
     'use_gps=' + encodeURIComponent(options['use_gps']) +
     '&location=' + encodeURIComponent(options['location']) +
     '&units=' + encodeURIComponent(options['units']);
-  console.log('showing configuration at uri: ' + uri);
+  //console.log('showing configuration at uri: ' + uri);
 
   Pebble.openURL(uri);
 });
@@ -219,19 +219,29 @@ Pebble.addEventListener('webviewclosed', function(e) {
   if (e.response) {
     options = JSON.parse(decodeURIComponent(e.response));
     localStorage.setItem('options', JSON.stringify(options));
-    console.log('storing options: ' + JSON.stringify(options));
+    //console.log('storing options: ' + JSON.stringify(options));
     updateWeather();
   } else {
-    console.log('no options received');
+    //console.log('no options received');
   }
 });
 
+//Receive the Pebble's call to refresh the weather info
+Pebble.addEventListener("appmessage",
+                        function(e) {
+                          updateWeather();
+                        });
+
+//Initiate the Appsync (This event is called just once)
 Pebble.addEventListener("ready", function(e) {
-  console.log("connect!" + e.ready);
+  //console.log("connect!" + e.ready);
   updateWeather();
+
+	/* Following the Pebble best practices - Set the timer in Pebble instead JS
   setInterval(function() {
-    console.log("timer fired");
+    //console.log("timer fired");
     updateWeather();
   }, 1800000); //Refresh the weather every 30min
-  console.log(e.type);
+  //console.log(e.type);
+  */
 });

@@ -112,6 +112,9 @@ enum WeatherKey {
 	//Vibe Control
 	bool BTConnected = true;
 
+	//Time control for weather refresh
+	static AppTimer *timer;
+
 	//Date & Time	
 	static char last_update[]="00:00 ";
 	static int initial_minute;
@@ -131,9 +134,9 @@ enum WeatherKey {
 //*****************//
 
 	static AppSync sync;
-	static uint8_t sync_buffer[64];
+	static uint8_t sync_buffer[128];
 
-static void sync_tuple_changed_callback(const uint32_t key,
+	static void sync_tuple_changed_callback(const uint32_t key,
                                         const Tuple* new_tuple,
                                         const Tuple* old_tuple,
                                         void* context) {
@@ -558,6 +561,33 @@ void handle_tick(struct tm *tick_time, TimeUnits units_changed)
 } //HANDLE_TICK 
 
 
+//************************************************//
+// TIMER to refresh the weather data every 30 min //
+//************************************************//
+static void send_cmd(void) {
+	  Tuplet value = TupletInteger(1, 1);
+	
+	  DictionaryIterator *iter;
+	  app_message_outbox_begin(&iter);
+	
+	  if (iter == NULL) {
+		return;
+	  }
+	
+	  dict_write_tuplet(iter, &value);
+	  dict_write_end(iter);
+	
+	  app_message_outbox_send();
+}
+
+static void timer_callback(void *context) {
+	
+	send_cmd();
+		
+	const uint32_t timeout_ms = 1800000;
+	timer = app_timer_register(timeout_ms, timer_callback, NULL);
+}
+
 
 //****************************//
 // Initialize the application //
@@ -705,7 +735,11 @@ void handle_init(void)
 		battery_state_service_subscribe(&handle_battery);
 		//Enable the Bluetooth check event
 	 	bluetooth_connection_service_subscribe(&handle_bluetooth);
-
+	
+		//setup the timer to refresh the weather info every 30min
+	 	const uint32_t timeout_ms = 1800000; 
+  		timer = app_timer_register(timeout_ms, timer_callback, NULL);
+	
 } //HANDLE_INIT
 
 
