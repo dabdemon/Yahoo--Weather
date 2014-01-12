@@ -114,6 +114,7 @@ enum WeatherKey {
 
 	//Time control for weather refresh
 	static AppTimer *timer;
+	const uint32_t timeout_ms = 1800000; //30min (1min = 60000)
 
 	//Date & Time	
 	static char last_update[]="00:00 ";
@@ -349,7 +350,7 @@ void TranslateDate(){
 			
 			if (weekday_text[0] == 'W')
 			{
-				memcpy(&weekday_text, "Miercoles", strlen("Miercoles")+1); // Wednesday
+				memcpy(&weekday_text, "Miércoles", strlen("Miércoles")+1); // Wednesday
 			}
 			
 			if (weekday_text[0] == 'T' && weekday_text[1] == 'h')
@@ -364,7 +365,7 @@ void TranslateDate(){
 			
 			if (weekday_text[0] == 'S' && weekday_text[1] == 'a')
 			{
-				memcpy(&weekday_text, "Sabado", strlen("Sabado")+1); // Saturday
+				memcpy(&weekday_text, "Sábado", strlen("Sábado")+1); // Saturday
 			}
 			
 			if (weekday_text[0] == 'S' && weekday_text[1] == 'u')
@@ -581,11 +582,17 @@ static void send_cmd(void) {
 }
 
 static void timer_callback(void *context) {
-	
-	send_cmd();
-		
-	const uint32_t timeout_ms = 1800000;
+
+	//Reset the timer to 30min
+	//const uint32_t timeout_ms = 1800000;
+	app_timer_cancel(timer);
 	timer = app_timer_register(timeout_ms, timer_callback, NULL);
+	//app_timer_reschedule(timer, timeout_ms);
+	
+	//Rrefresh the weather
+	send_cmd();
+	
+
 }
 
 
@@ -599,7 +606,7 @@ void handle_init(void)
     ResHandle res_d;
 	ResHandle res_u;
 	ResHandle res_t;
-	ResHandle res_temp;
+	//ResHandle res_temp;
 	
 	//Create the main window
 	my_window = window_create(); 
@@ -611,7 +618,7 @@ void handle_init(void)
 	res_t = resource_get_handle(RESOURCE_ID_FUTURA_CONDENSED_53); // Time font
 	res_d = resource_get_handle(RESOURCE_ID_FUTURA_17); // Date font
 	res_u = resource_get_handle(RESOURCE_ID_FUTURA_10); // Last Update font
-	//res_temp =  resource_get_handle(RESOURCE_ID_FUTURA_36); //Temperature
+	//res_temp =  resource_get_handle(FUTURA_CONDENSED_43); //Temperature
 	
 		
     font_date = fonts_load_custom_font(res_d);
@@ -737,7 +744,7 @@ void handle_init(void)
 	 	bluetooth_connection_service_subscribe(&handle_bluetooth);
 	
 		//setup the timer to refresh the weather info every 30min
-	 	const uint32_t timeout_ms = 1800000; 
+	 	//const uint32_t timeout_ms = 1800000; 
   		timer = app_timer_register(timeout_ms, timer_callback, NULL);
 	
 } //HANDLE_INIT
@@ -772,6 +779,7 @@ void handle_deinit(void)
 	fonts_unload_custom_font(font_date);
 	fonts_unload_custom_font(font_update);
 	fonts_unload_custom_font(font_time);
+	//fonts_unload_custom_font(font_temperature);
 	
 	//Deallocate the main window
   	window_destroy(my_window);
