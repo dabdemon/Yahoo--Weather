@@ -128,7 +128,7 @@ enum WeatherKey {
 	static char time_text[] = "00:00"; 
 	
 	bool translate_sp = true;
-	static char language[] = "E";
+	static char language[] = "G";
 
 //*****************//
 // AppSync options //
@@ -474,6 +474,106 @@ void TranslateDate(){
 			}
 			
 	} //END OF ITALIAN			
+	else if (language[0] == 'G'){ //GERMAN
+				if (month_text[0] == 'J' && month_text[1] == 'a')
+			{
+				memcpy(&month_text, "  .Januar", strlen("  .Januar")+1); // January
+			}
+			
+			if (month_text[0] == 'F' && month_text[1] == 'e')
+			{
+				memcpy(&month_text, "  .Februar", strlen("  .Februar")+1); // Febrary
+			}
+			
+			if (month_text[0] == 'M' && month_text[2] == 'r')
+			{
+				memcpy(&month_text, "  .März", strlen("  .März")+1); // March
+			}
+			
+			if (month_text[0] == 'A' && month_text[1] == 'p')
+			{
+				memcpy(&month_text, "  .April", strlen("  .April")+1); // April
+			}
+			
+			if (month_text[0] == 'M' && month_text[2] == 'y')
+			{
+				memcpy(&month_text, "  .Mai", strlen("  .Mai")+1); // May
+			}
+			
+			if (month_text[0] == 'J' && month_text[2] == 'n')
+			{
+				memcpy(&month_text, "  .Juni", strlen("  .Juni")+1); // June
+			}
+			
+			if (month_text[0] == 'J' && month_text[2] == 'l')
+			{
+				memcpy(&month_text, "  .Juli", strlen("  .Juli")+1); // July
+			}
+			
+			if (month_text[0] == 'A' && month_text[1] == 'u')
+			{
+				memcpy(&month_text, "  .August ", strlen("  .August ")+1); // August
+			}
+			
+			if (month_text[0] == 'S' && month_text[1] == 'e')
+			{
+				memcpy(&month_text, "  .September", strlen("  .September")+1); // September
+			}
+			
+			if (month_text[0] == 'O' && month_text[1] == 'c')
+			{
+				memcpy(&month_text, "  .Oktober", strlen("  .Oktober")+1); // October
+			}
+			
+			if (month_text[0] == 'N' && month_text[1] == 'o')
+			{
+				memcpy(&month_text, "  .November", strlen("  .November")+1); // November
+			}
+			
+			if (month_text[0] == 'D' && month_text[1] == 'e')
+			{
+				memcpy(&month_text, "  .Dezember", strlen("  .Dezember")+1); // December
+			}
+			
+			// Primitive hack to translate the day of week to another language
+			// Needs to be exactly 3 characters, e.g. "Mon" or "Mo "
+			// Supported characters: A-Z, a-z, 0-9
+			if (weekday_text[0] == 'M')
+			{
+				memcpy(&weekday_text, "Montag", strlen("Montag")+1); // Monday
+			}
+			
+			if (weekday_text[0] == 'T' && weekday_text[1] == 'u')
+			{
+				memcpy(&weekday_text, "Dienstag", strlen("Dienstag")+1); // Tuesday
+			}
+			
+			if (weekday_text[0] == 'W')
+			{
+				memcpy(&weekday_text, "Mittwoch", strlen("Mittwoch")+1); // Wednesday
+			}
+			
+			if (weekday_text[0] == 'T' && weekday_text[1] == 'h')
+			{
+				memcpy(&weekday_text, "Donnerstag", strlen("Donnerstag")+1); // Thursday
+			}
+			
+			if (weekday_text[0] == 'F')
+			{
+				memcpy(&weekday_text, "Freitag", strlen("Freitag")+1); // Friday
+			}
+			
+			if (weekday_text[0] == 'S' && weekday_text[1] == 'a')
+			{
+				memcpy(&weekday_text, "Samstag", strlen("Samstag")+1); // Saturday
+			}
+			
+			if (weekday_text[0] == 'S' && weekday_text[1] == 'u')
+			{
+				memcpy(&weekday_text, "Sonntag", strlen("Sonntag")+1); // Sunday
+			}
+			
+	} //END OF GERMAN			
 }
 
 
