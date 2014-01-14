@@ -225,7 +225,7 @@ static void handle_battery(BatteryChargeState charge_state) {
 	  	bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
 	  }
 	  */ //DO NOT display the batt_icon all the time. it is annoying.
-	   if (charge_state.charge_percent<10) //If the charge is between 0% and 10%
+	   if (charge_state.charge_percent <=10) //If the charge is between 0% and 10%
 	   {
 		  	Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_EMPTY);
 	  		bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
@@ -768,7 +768,8 @@ void handle_tick(struct tm *tick_time, TimeUnits units_changed)
 // TIMER to refresh the weather data every 30 min //
 //************************************************//
 static void send_cmd(void) {
-	  Tuplet value = TupletInteger(1, 1);
+	  //Tuplet value = TupletInteger(1, 1);
+		Tuplet value = TupletCString(2,"loading...");
 	
 	  DictionaryIterator *iter;
 	  app_message_outbox_begin(&iter);
