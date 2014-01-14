@@ -144,25 +144,26 @@
                 "file": "images/bluetooth_white_small.png"
             },
             {
-                "trackingAdjust": -3,
-                "type": "font",
-                "name": "FUTURA_CONDENSED_43",
-                "file": "fonts/futura_condensed_bold-webfont.ttf"
-            },
-            {
                 "characterRegex": "[0-9:]",
                 "type": "font",
                 "name": "FUTURA_CONDENSED_53",
                 "file": "fonts/futura_condensed_bold-webfont.ttf"
             },
             {
+                "trackingAdjust": -4,
+                "characterRegex": "[0-9\u00b0 -]",
                 "type": "font",
-                "name": "FUTURA_17",
+                "name": "FUTURA_43",
                 "file": "fonts/futura.ttf"
             },
             {
                 "type": "font",
                 "name": "FUTURA_10",
+                "file": "fonts/futura.ttf"
+            },
+            {
+                "type": "font",
+                "name": "FUTURA_17",
                 "file": "fonts/futura.ttf"
             }
         ]

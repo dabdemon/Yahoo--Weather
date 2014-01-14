@@ -808,7 +808,7 @@ void handle_init(void)
     ResHandle res_d;
 	ResHandle res_u;
 	ResHandle res_t;
-	//ResHandle res_temp;
+	ResHandle res_temp;
 	
 	//Create the main window
 	my_window = window_create(); 
@@ -820,14 +820,14 @@ void handle_init(void)
 	res_t = resource_get_handle(RESOURCE_ID_FUTURA_CONDENSED_53); // Time font
 	res_d = resource_get_handle(RESOURCE_ID_FUTURA_17); // Date font
 	res_u = resource_get_handle(RESOURCE_ID_FUTURA_10); // Last Update font
-	//res_temp =  resource_get_handle(FUTURA_CONDENSED_43); //Temperature
+	res_temp =  resource_get_handle(RESOURCE_ID_FUTURA_43); //Temperature
 	
 		
     font_date = fonts_load_custom_font(res_d);
 	font_update = fonts_load_custom_font(res_u);
 	font_time = fonts_load_custom_font(res_t);
-	//font_temperature = fonts_load_custom_font(res_temp);
-	font_temperature = fonts_get_system_font(FONT_KEY_BITHAM_42_LIGHT);
+	font_temperature = fonts_load_custom_font(res_temp);
+	//font_temperature = fonts_get_system_font(FONT_KEY_BITHAM_42_LIGHT);
 	
 	
 	//LOAD THE LAYERS
@@ -981,7 +981,7 @@ void handle_deinit(void)
 	fonts_unload_custom_font(font_date);
 	fonts_unload_custom_font(font_update);
 	fonts_unload_custom_font(font_time);
-	//fonts_unload_custom_font(font_temperature);
+	fonts_unload_custom_font(font_temperature);
 	
 	//Deallocate the main window
   	window_destroy(my_window);
