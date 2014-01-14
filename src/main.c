@@ -128,7 +128,7 @@ enum WeatherKey {
 	static char time_text[] = "00:00"; 
 	
 	bool translate_sp = true;
-	static char language[] = "G";
+	static char language[] = "E"; //"E" = Spanish // "I" = Italian // "G" = German // "C" = Czech
 
 //*****************//
 // AppSync options //
@@ -574,6 +574,106 @@ void TranslateDate(){
 			}
 			
 	} //END OF GERMAN			
+		else if (language[0] == 'C'){ //CZECH
+				if (month_text[0] == 'J' && month_text[1] == 'a')
+			{
+				memcpy(&month_text, "Leden ", strlen("Leden ")+1); // January
+			}
+			
+			if (month_text[0] == 'F' && month_text[1] == 'e')
+			{
+				memcpy(&month_text, "Únor ", strlen("Únor ")+1); // Febrary
+			}
+			
+			if (month_text[0] == 'M' && month_text[2] == 'r')
+			{
+				memcpy(&month_text, "Brezen ", strlen("Brezen ")+1); // March
+			}
+			
+			if (month_text[0] == 'A' && month_text[1] == 'p')
+			{
+				memcpy(&month_text, "Duben ", strlen("Duben ")+1); // April
+			}
+			
+			if (month_text[0] == 'M' && month_text[2] == 'y')
+			{
+				memcpy(&month_text, "Květen ", strlen("Květen ")+1); // May
+			}
+			
+			if (month_text[0] == 'J' && month_text[2] == 'n')
+			{
+				memcpy(&month_text, "Červen ", strlen("Červen ")+1); // June
+			}
+			
+			if (month_text[0] == 'J' && month_text[2] == 'l')
+			{
+				memcpy(&month_text, "Červenec ", strlen("Červenec ")+1); // July
+			}
+			
+			if (month_text[0] == 'A' && month_text[1] == 'u')
+			{
+				memcpy(&month_text, "Srpen   ", strlen("Srpen   ")+1); // August
+			}
+			
+			if (month_text[0] == 'S' && month_text[1] == 'e')
+			{
+				memcpy(&month_text, "Zárí ", strlen("Zárí ")+1); // September
+			}
+			
+			if (month_text[0] == 'O' && month_text[1] == 'c')
+			{
+				memcpy(&month_text, "Ríjen ", strlen("Ríjen ")+1); // October
+			}
+			
+			if (month_text[0] == 'N' && month_text[1] == 'o')
+			{
+				memcpy(&month_text, "Listopad ", strlen("Listopad ")+1); // November
+			}
+			
+			if (month_text[0] == 'D' && month_text[1] == 'e')
+			{
+				memcpy(&month_text, "Prosinec ", strlen("Prosinec ")+1); // December
+			}
+			
+			// Primitive hack to translate the day of week to another language
+			// Needs to be exactly 3 characters, e.g. "Mon" or "Mo "
+			// Supported characters: A-Z, a-z, 0-9
+			if (weekday_text[0] == 'M')
+			{
+				memcpy(&weekday_text, "Pondělí", strlen("Pondělí")+1); // Monday
+			}
+			
+			if (weekday_text[0] == 'T' && weekday_text[1] == 'u')
+			{
+				memcpy(&weekday_text, "Úterý", strlen("Úterý")+1); // Tuesday
+			}
+			
+			if (weekday_text[0] == 'W')
+			{
+				memcpy(&weekday_text, "Streda", strlen("Streda")+1); // Wednesday
+			}
+			
+			if (weekday_text[0] == 'T' && weekday_text[1] == 'h')
+			{
+				memcpy(&weekday_text, "Čtvrtek", strlen("Čtvrtek")+1); // Thursday
+			}
+			
+			if (weekday_text[0] == 'F')
+			{
+				memcpy(&weekday_text, "Pátek", strlen("Pátek")+1); // Friday
+			}
+			
+			if (weekday_text[0] == 'S' && weekday_text[1] == 'a')
+			{
+				memcpy(&weekday_text, "Sobota", strlen("Sobota")+1); // Saturday
+			}
+			
+			if (weekday_text[0] == 'S' && weekday_text[1] == 'u')
+			{
+				memcpy(&weekday_text, "Neděle", strlen("Neděle")+1); // Sunday
+			}
+			
+	} //END OF CZECH			
 }
 
 
@@ -603,7 +703,9 @@ void handle_tick(struct tm *tick_time, TimeUnits units_changed)
 					TranslateDate();
 					
 					//Concatenate the day to the month
-					memcpy(&month_text, day_text, strlen(day_text));
+						//If Czech the month is before day
+					if (language[0] == 'C'){strncat(month_text,day_text,strlen(day_text));}
+					else {memcpy(&month_text, day_text, strlen(day_text));}					
 				}
 
 						
