@@ -20,6 +20,131 @@
         "media": [
             {
                 "type": "png",
+                "name": "ICON_WINDw",
+                "file": "images/windw.png"
+            },
+            {
+                "type": "png",
+                "name": "ICON_THUNDERw",
+                "file": "images/thunderw.png"
+            },
+            {
+                "type": "png",
+                "name": "ICON_SNOWw",
+                "file": "images/snoww.png"
+            },
+            {
+                "type": "png",
+                "name": "ICON_SNOW_SLEETw",
+                "file": "images/snow-sleetw.png"
+            },
+            {
+                "type": "png",
+                "name": "ICON_SLEETw",
+                "file": "images/sleetw.png"
+            },
+            {
+                "type": "png",
+                "name": "ICON_RAINw",
+                "file": "images/rainw.png"
+            },
+            {
+                "type": "png",
+                "name": "ICON_RAIN_SNOWw",
+                "file": "images/rain-snoww.png"
+            },
+            {
+                "type": "png",
+                "name": "ICON_RAIN_SLEETw",
+                "file": "images/rain-sleetw.png"
+            },
+            {
+                "type": "png",
+                "name": "ICON_PARTLY_CLOUDY_NIGHTw",
+                "file": "images/partly-cloudy-nightw.png"
+            },
+            {
+                "type": "png",
+                "name": "ICON_PARTLY_CLOUDY_DAYw",
+                "file": "images/partly-cloudy-dayw.png"
+            },
+            {
+                "type": "png",
+                "name": "ICON_NOT_AVAILABLEw",
+                "file": "images/not-availablew.png"
+            },
+            {
+                "type": "png",
+                "name": "ICON_HOTw",
+                "file": "images/hotw.png"
+            },
+            {
+                "type": "png",
+                "name": "ICON_FOGw",
+                "file": "images/fogw.png"
+            },
+            {
+                "type": "png",
+                "name": "ICON_DRIZZLEw",
+                "file": "images/drizzlew.png"
+            },
+            {
+                "type": "png",
+                "name": "ICON_COLDw",
+                "file": "images/coldw.png"
+            },
+            {
+                "type": "png",
+                "name": "ICON_CLOUDYw",
+                "file": "images/cloudyw.png"
+            },
+            {
+                "type": "png",
+                "name": "ICON_CLEAR_NIGHTw",
+                "file": "images/clear-nightw.png"
+            },
+            {
+                "type": "png",
+                "name": "ICON_CLEAR_DAYw",
+                "file": "images/clear-dayw.png"
+            },
+            {
+                "type": "png",
+                "name": "BT_CONNECTEDw",
+                "file": "images/bluetooth_white_smallw.png"
+            },
+            {
+                "type": "png",
+                "name": "BATT_FULLw",
+                "file": "images/batt_fullw.png"
+            },
+            {
+                "type": "png",
+                "name": "BATT_EMPTYw",
+                "file": "images/batt_emptyw.png"
+            },
+            {
+                "type": "png",
+                "name": "BATT_CHARw",
+                "file": "images/batt_charw.png"
+            },
+            {
+                "type": "png",
+                "name": "BATT_60w",
+                "file": "images/batt_60w.png"
+            },
+            {
+                "type": "png",
+                "name": "BATT_40w",
+                "file": "images/batt_40w.png"
+            },
+            {
+                "type": "png",
+                "name": "BATT_20w",
+                "file": "images/batt_20w.png"
+            },
+            {
+                "type": "png",
                 "name": "BATT_FULL",
                 "file": "images/batt_full.png"
             },

@@ -2,18 +2,7 @@
 #include "pebble.h"
 #include "pebble_fonts.h"
 
-
-/*
-//Watchface header section
-#define MY_UUID { 0x6B, 0xE8, 0x63, 0x5E, 0x6D, 0x8D, 0x49, 0xA0, 0xA1, 0xA3, 0x38, 0x22, 0x77, 0x9D, 0x2C, 0x68 }
-
-
-PBL_APP_INFO(MY_UUID,
-"Yahoo! Weather", "dabdemon",
-1, 0, // App version
-RESOURCE_ID_IMAGE_MENU_ICON,
-APP_INFO_WATCH_FACE);
-*/                
+               
 
 #define WEEKDAY_FRAME    (GRect(5, 2, 95, 168-145))
 #define BATT_FRAME       (GRect(98, 4, 40, 168-146))
@@ -35,10 +24,6 @@ APP_INFO_WATCH_FACE);
 //******************//
 // DEFINE THE ICONS //
 //******************//        
-//static int LAYER_ICONS[] = {
-        //RESOURCE_ID_BT_CONNECTED,
-        //RESOURCE_ID_BT_DISCONNECTED,
-//};
 
 static const uint32_t WEATHER_ICONS[] = {
   RESOURCE_ID_ICON_CLEAR_DAY,
@@ -61,6 +46,27 @@ static const uint32_t WEATHER_ICONS[] = {
   RESOURCE_ID_ICON_DRIZZLE,
 };
 
+static const uint32_t WEATHER_ICONSw[] = {
+  RESOURCE_ID_ICON_CLEAR_DAYw,
+  RESOURCE_ID_ICON_CLEAR_NIGHTw,
+  RESOURCE_ID_ICON_WINDw,
+  RESOURCE_ID_ICON_COLDw,
+  RESOURCE_ID_ICON_HOTw,
+  RESOURCE_ID_ICON_PARTLY_CLOUDY_DAYw,
+  RESOURCE_ID_ICON_PARTLY_CLOUDY_NIGHTw,
+  RESOURCE_ID_ICON_FOGw,
+  RESOURCE_ID_ICON_RAINw,
+  RESOURCE_ID_ICON_SNOWw,
+  RESOURCE_ID_ICON_SLEETw,
+  RESOURCE_ID_ICON_SNOW_SLEETw,
+  RESOURCE_ID_ICON_RAIN_SLEETw,
+  RESOURCE_ID_ICON_RAIN_SNOWw,
+  RESOURCE_ID_ICON_CLOUDYw,
+  RESOURCE_ID_ICON_THUNDERw,
+  RESOURCE_ID_ICON_NOT_AVAILABLEw,
+  RESOURCE_ID_ICON_DRIZZLEw,
+};
+
 //*************//
 // Define KEYS //
 //*************//
@@ -71,7 +77,7 @@ enum WeatherKey {
   WEATHER_CITY_KEY = 0x2,                        //TUPLE_CSTRING
         /*
 WEATHER_MAX_KEY = 0x3,                        //TUPLE_CSTRING
-WEATHER_MIN_KEY = 0x4,                        //TUPLE_CSTRINGç
+WEATHER_MIN_KEY = 0x4,                        //TUPLE_CSTRING
 */
 };
 
@@ -129,6 +135,7 @@ WEATHER_MIN_KEY = 0x4,                        //TUPLE_CSTRINGç
         
         bool translate_sp = true;
         static char language[] = "E"; //"E" = Spanish // "I" = Italian // "G" = German // "C" = Czech // "F" = French
+		bool color_inverted = true;
 
 //*****************//
 // AppSync options //
@@ -149,34 +156,23 @@ WEATHER_MIN_KEY = 0x4,                        //TUPLE_CSTRINGç
       if (weather_image) {
         gbitmap_destroy(weather_image);
       }
-
-      weather_image = gbitmap_create_with_resource(
-          WEATHER_ICONS[new_tuple->value->uint8]);
-      bitmap_layer_set_bitmap(weather_icon_layer, weather_image);
-      break;
+			if (color_inverted){weather_image = gbitmap_create_with_resource(WEATHER_ICONSw[new_tuple->value->uint8]);}
+			else{weather_image = gbitmap_create_with_resource(WEATHER_ICONS[new_tuple->value->uint8]);}
+      		bitmap_layer_set_bitmap(weather_icon_layer, weather_image);
+      		break;
 
     case WEATHER_TEMPERATURE_KEY:
          //Update the temperature
-      text_layer_set_text(Temperature_Layer, new_tuple->value->cstring);
+      		text_layer_set_text(Temperature_Layer, new_tuple->value->cstring);
          //Set the time on which weather was retrived
-         memcpy(&last_update, time_text, strlen(time_text));
-         text_layer_set_text(Last_Update, last_update);
-      break;
+         	memcpy(&last_update, time_text, strlen(time_text));
+         	text_layer_set_text(Last_Update, last_update);
+      		break;
 
          //try to get city
-         case WEATHER_CITY_KEY:
-         text_layer_set_text(Location_Layer, new_tuple->value->cstring);
-         break;
-         /*
-                  //try to get max
-        case WEATHER_MAX_KEY:
-         text_layer_set_text(Max_Layer, new_tuple->value->cstring);
-         break;
-        
-        case WEATHER_MIN_KEY:
-         text_layer_set_text(Min_Layer, new_tuple->value->cstring);
-         break;
-*/
+     case WEATHER_CITY_KEY:
+         	text_layer_set_text(Location_Layer, new_tuple->value->cstring);
+         	break;
   }
 }
 
@@ -189,8 +185,9 @@ static void handle_battery(BatteryChargeState charge_state) {
 
   if (charge_state.is_charging) {
     //snprintf(battery_text, sizeof(battery_text), "charging");
-                 Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_CHAR);
-                 bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
+			  if (color_inverted){Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_CHARw);}
+			  else {Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_CHAR);} 
+              bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
   } else {
     //snprintf(battery_text, sizeof(battery_text), "%d%%", charge_state.charge_percent);
                   //kill previous batt_image to avoid invalid ones.
@@ -227,8 +224,9 @@ static void handle_battery(BatteryChargeState charge_state) {
          */ //DO NOT display the batt_icon all the time. it is annoying.
          if (charge_state.charge_percent <=10) //If the charge is between 0% and 10%
          {
-                         Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_EMPTY);
-                         bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
+			 if (color_inverted){Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_EMPTYw);}
+			 else{Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_EMPTY);}
+             bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
          }
   }
   //text_layer_set_text(Batt_Layer, battery_text);
@@ -244,8 +242,9 @@ static void handle_bluetooth(bool connected)
         //draw the BT icon if connected        
         if(connected ==true)
         {
-                BT_image = gbitmap_create_with_resource(RESOURCE_ID_BT_CONNECTED);
-                  bitmap_layer_set_bitmap(BT_icon_layer, BT_image);
+			if (color_inverted){BT_image = gbitmap_create_with_resource(RESOURCE_ID_BT_CONNECTEDw);}
+			else{BT_image = gbitmap_create_with_resource(RESOURCE_ID_BT_CONNECTED);}
+            bitmap_layer_set_bitmap(BT_icon_layer, BT_image);
                 //Vibes on connection
                 if (BTConnected == false){
                         //Vibes to alert connection
@@ -819,25 +818,6 @@ void handle_tick(struct tm *tick_time, TimeUnits units_changed)
                         /*
                         if (units_changed & DAY_UNIT)
                         {        
-                                //Get the Weekday
-                                strftime(weekday_text,sizeof(weekday_text),"%A",tick_time);
-                                //Get the Month + Day (English format)
-                                 strftime(month_text,sizeof(month_text),"%B %d",tick_time);
-                                //Get the Day + Month (Spanish format)
-                                strftime(day_month,sizeof(day_month),"%d %B",tick_time);
-                                //Get the Month
-                                 strftime(month_text,sizeof(month_text),"%B",tick_time);
-                                //Get the day
-                                 strftime(day_text,sizeof(day_text),"%d",tick_time);
-
-                                //Translate to Spanish
-                                TranslateDate();
-                        
-                                //Concatenate the day to the month
-                                memcpy(&month_text, day_text, strlen(day_text));
-                                
-                                text_layer_set_text(date_layer, month_text);
-                                text_layer_set_text(Weekday_Layer, weekday_text); //Update the weekday layer
                         } // DAY CHANGES
                         */
 
@@ -909,7 +889,7 @@ static void timer_callback(void *context) {
 void handle_init(void)
 {
         //Define Resources
-    ResHandle res_d;
+    	ResHandle res_d;
         ResHandle res_u;
         ResHandle res_t;
         ResHandle res_temp;
@@ -917,7 +897,10 @@ void handle_init(void)
         //Create the main window
         my_window = window_create();
         window_stack_push(my_window, true /* Animated */);
-        window_set_background_color(my_window, GColorBlack);
+		//Define the Black vs. White layout
+		if (color_inverted){window_set_background_color(my_window, GColorWhite);}
+		else {window_set_background_color(my_window, GColorBlack);}	
+        
         
         
         //Load the custom fonts
@@ -927,7 +910,7 @@ void handle_init(void)
         res_temp = resource_get_handle(RESOURCE_ID_FUTURA_43); //Temperature
         
                 
-    font_date = fonts_load_custom_font(res_d);
+    	font_date = fonts_load_custom_font(res_d);
         font_update = fonts_load_custom_font(res_u);
         font_time = fonts_load_custom_font(res_t);
         font_temperature = fonts_load_custom_font(res_temp);
@@ -937,85 +920,111 @@ void handle_init(void)
         //LOAD THE LAYERS
                 //Display the Weekday layer
                 Weekday_Layer = text_layer_create(WEEKDAY_FRAME);
-                text_layer_set_text_color(Weekday_Layer, GColorWhite);
-                text_layer_set_background_color(Weekday_Layer, GColorClear);
+				if (color_inverted)
+				{
+					text_layer_set_text_color(Weekday_Layer, GColorBlack);
+				}
+				else
+				{
+					text_layer_set_text_color(Weekday_Layer, GColorWhite);
+				}
+	            text_layer_set_background_color(Weekday_Layer, GColorClear);
                 text_layer_set_font(Weekday_Layer, font_date);
                 text_layer_set_text_alignment(Weekday_Layer, GTextAlignmentLeft);
                 layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Weekday_Layer));
         
                 //Display the Batt layer
                 Batt_icon_layer = bitmap_layer_create(BATT_FRAME);
-                  bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
-                  layer_add_child(window_get_root_layer(my_window), bitmap_layer_get_layer(Batt_icon_layer));
+                bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
+                layer_add_child(window_get_root_layer(my_window), bitmap_layer_get_layer(Batt_icon_layer));
         
                 //Display the BT layer
-                 BT_icon_layer = bitmap_layer_create(BT_FRAME);
-                  bitmap_layer_set_bitmap(BT_icon_layer, BT_image);
-                  layer_add_child(window_get_root_layer(my_window), bitmap_layer_get_layer(BT_icon_layer));
+                BT_icon_layer = bitmap_layer_create(BT_FRAME);
+                bitmap_layer_set_bitmap(BT_icon_layer, BT_image);
+                layer_add_child(window_get_root_layer(my_window), bitmap_layer_get_layer(BT_icon_layer));
         
                 //Display the Time layer
                 Time_Layer = text_layer_create(TIME_FRAME);
-                text_layer_set_text_color(Time_Layer, GColorWhite);
-                text_layer_set_background_color(Time_Layer, GColorClear);
+				if (color_inverted)
+				{                
+					text_layer_set_text_color(Time_Layer, GColorBlack);
+				}
+				else
+				{
+					text_layer_set_text_color(Time_Layer, GColorWhite);
+				}
+	            text_layer_set_background_color(Time_Layer, GColorClear);
                 text_layer_set_font(Time_Layer, font_time);
                 text_layer_set_text_alignment(Time_Layer, GTextAlignmentCenter);
                 layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Time_Layer));
         
                 //Display the Date layer
                 date_layer = text_layer_create(DATE_FRAME);
-                text_layer_set_text_color(date_layer, GColorWhite);
-                text_layer_set_background_color(date_layer, GColorClear);
+				if (color_inverted)
+				{ 
+                	text_layer_set_text_color(date_layer, GColorBlack);
+				}
+				else
+				{
+               	 	text_layer_set_text_color(date_layer, GColorWhite);
+	
+				}
+	            text_layer_set_background_color(date_layer, GColorClear);
                 text_layer_set_font(date_layer, font_date);
                 text_layer_set_text_alignment(date_layer, GTextAlignmentRight);
                 layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(date_layer));
         
                 //Display the Weather layer
                 weather_icon_layer = bitmap_layer_create(WEATHER_FRAME);
-                  bitmap_layer_set_bitmap(weather_icon_layer, weather_image);
-                  layer_add_child(window_get_root_layer(my_window), bitmap_layer_get_layer(weather_icon_layer));
+                bitmap_layer_set_bitmap(weather_icon_layer, weather_image);
+                layer_add_child(window_get_root_layer(my_window), bitmap_layer_get_layer(weather_icon_layer));
         
                 //Display the Temperature layer
                 Temperature_Layer = text_layer_create(TEMPERATURE_FRAME);
-                text_layer_set_text_color(Temperature_Layer, GColorWhite);
-                text_layer_set_background_color(Temperature_Layer, GColorClear);
+				if (color_inverted)
+				{ 
+                	text_layer_set_text_color(Temperature_Layer, GColorBlack);
+				}
+				else
+				{
+                	text_layer_set_text_color(Temperature_Layer, GColorWhite);		
+				}
+	            text_layer_set_background_color(Temperature_Layer, GColorClear);	
                 text_layer_set_font(Temperature_Layer, font_temperature);
                 text_layer_set_text_alignment(Temperature_Layer, GTextAlignmentCenter);
                 layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Temperature_Layer));
         
                 //Display the Location layer
                 Location_Layer = text_layer_create(LOCATION_FRAME);
-                text_layer_set_text_color(Location_Layer, GColorWhite);
-                text_layer_set_background_color(Location_Layer, GColorClear);
+				if (color_inverted)
+				{
+                	text_layer_set_text_color(Location_Layer, GColorBlack);
+				}
+				else
+				{
+                	text_layer_set_text_color(Location_Layer, GColorWhite);					
+				}
+	            text_layer_set_background_color(Location_Layer, GColorClear);
                 text_layer_set_font(Location_Layer, font_update);
                 text_layer_set_text_alignment(Location_Layer, GTextAlignmentRight);
                 layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Location_Layer));
         
                 //Display the Last Update layer
                 Last_Update = text_layer_create(LAST_UPDATE_FRAME);
-                text_layer_set_text_color(Last_Update, GColorWhite);
-                text_layer_set_background_color(Last_Update, GColorClear);
+				if (color_inverted)
+				{
+                	text_layer_set_text_color(Last_Update, GColorBlack);
+				}
+				else
+				{
+                	text_layer_set_text_color(Last_Update, GColorWhite);			
+				}
+	            text_layer_set_background_color(Last_Update, GColorClear);	
                 text_layer_set_font(Last_Update, font_update);
                 text_layer_set_text_alignment(Last_Update, GTextAlignmentRight);
                 layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Last_Update));
         
-        /*
-                        //Display the Max layer
-                Max_Layer = text_layer_create(MAX_FRAME);
-                text_layer_set_text_color(Max_Layer, GColorWhite);
-                text_layer_set_background_color(Max_Layer, GColorClear);
-                text_layer_set_font(Max_Layer, font_update);
-                text_layer_set_text_alignment(Max_Layer, GTextAlignmentRight);
-                layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Max_Layer));
 
-                        //Display the Min layer
-                Min_Layer = text_layer_create(MIN_FRAME);
-                text_layer_set_text_color(Min_Layer, GColorWhite);
-                text_layer_set_background_color(Min_Layer, GColorClear);
-                text_layer_set_font(Min_Layer, font_update);
-                text_layer_set_text_alignment(Min_Layer, GTextAlignmentRight);
-                layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Min_Layer));
-
-*/
         
          // Setup messaging
                 const int inbound_size = 64;
