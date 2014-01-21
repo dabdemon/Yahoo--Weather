@@ -46,8 +46,8 @@
         </div>
         
         <div data-role="fieldcontain">
-          <label for="color_inverted">Invert Color (dev only. may not work)</label>
-          <select name="color_inverted" id="color_inverted" data-theme="c" data-role="slider" data-track-theme="d">
+          <label for="invert_color">Invert Colors</label>
+          <select name="invert_color" id="invert_color" data-theme="c" data-role="slider" data-track-theme="d">
             <option value="false">No</option>
             <option value="true">Yes</option>
           </select>
@@ -75,11 +75,11 @@
       }
 
       function saveOptions() {
-        var options = {
+       var options = {
           'use_gps': $('#gps_switch').val(),
           'location': $('#location').val(),
           'units': $('input:radio[name=units]:checked').val(),
-          'color_inverted': $('#color_inverted').val()
+          'invert_color': $('#invert_color').val()
         }
         return options;
       }
@@ -99,7 +99,7 @@
         } else {
           $('input:radio[name=units][value=fahrenheit]').prop('checked', true).trigger("click");
         }
-        $('#color_inverted').val(getQueryVariable('color_inverted')).change();
+        $('#invert_color').val(getQueryVariable('invert_color')).change();
 
         // Disable location field based on GPS toggle
         $('#location').prop('disabled', $('#gps_switch').val() == "true");
