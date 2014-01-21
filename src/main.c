@@ -72,13 +72,10 @@ static const uint32_t WEATHER_ICONSw[] = {
 //*************//
 
 enum WeatherKey {
-  WEATHER_ICON_KEY = 0x0,         // TUPLE_INT
-  WEATHER_TEMPERATURE_KEY = 0x1,         // TUPLE_CSTRING
-  WEATHER_CITY_KEY = 0x2,                        //TUPLE_CSTRING
-        /*
-WEATHER_MAX_KEY = 0x3,                        //TUPLE_CSTRING
-WEATHER_MIN_KEY = 0x4,                        //TUPLE_CSTRING
-*/
+  WEATHER_ICON_KEY = 0x0,        // TUPLE_INT
+  WEATHER_TEMPERATURE_KEY = 0x1, // TUPLE_CSTRING
+  WEATHER_CITY_KEY = 0x2,        //	TUPLE_CSTRING
+  INVERT_COLOR_KEY = 0x3,  		 // TUPLE_CSTRING
 };
 
 //Declare initial window        
@@ -94,10 +91,6 @@ WEATHER_MIN_KEY = 0x4,                        //TUPLE_CSTRING
         TextLayer *BT_Layer;                        //Layer for the BT connection
         TextLayer *Temperature_Layer;        //Layer for the Temperature
 
-/*
-        TextLayer *Max_Layer;                        //Layer for the Max Temperature
-        TextLayer *Min_Layer;                        //Layer for the Min Temperature
-        */
         static GBitmap *BT_image;
         static BitmapLayer *BT_icon_layer; //Layer for the BT connection
         
@@ -132,49 +125,14 @@ WEATHER_MIN_KEY = 0x4,                        //TUPLE_CSTRING
         static char day_text[] = "31";
         static char day_month[]= "31 SEPTEMBER";
         static char time_text[] = "00:00";
+	  	static char inverted[]="B";
         
         bool translate_sp = true;
         static char language[] = "E"; //"E" = Spanish // "I" = Italian // "G" = German // "C" = Czech // "F" = French
-		bool color_inverted = true;
+		bool color_inverted;
+		//bool color_inverted;
 
-//*****************//
-// AppSync options //
-//*****************//
 
-        static AppSync sync;
-        static uint8_t sync_buffer[128];
-
-        static void sync_tuple_changed_callback(const uint32_t key,
-                                        const Tuple* new_tuple,
-                                        const Tuple* old_tuple,
-                                        void* context) {
-
-        
-  // App Sync keeps new_tuple in sync_buffer, so we may use it directly
-  switch (key) {
-    case WEATHER_ICON_KEY:
-      if (weather_image) {
-        gbitmap_destroy(weather_image);
-      }
-			if (color_inverted){weather_image = gbitmap_create_with_resource(WEATHER_ICONSw[new_tuple->value->uint8]);}
-			else{weather_image = gbitmap_create_with_resource(WEATHER_ICONS[new_tuple->value->uint8]);}
-      		bitmap_layer_set_bitmap(weather_icon_layer, weather_image);
-      		break;
-
-    case WEATHER_TEMPERATURE_KEY:
-         //Update the temperature
-      		text_layer_set_text(Temperature_Layer, new_tuple->value->cstring);
-         //Set the time on which weather was retrived
-         	memcpy(&last_update, time_text, strlen(time_text));
-         	text_layer_set_text(Last_Update, last_update);
-      		break;
-
-         //try to get city
-     case WEATHER_CITY_KEY:
-         	text_layer_set_text(Location_Layer, new_tuple->value->cstring);
-         	break;
-  }
-}
 
 //**************************//
 // Check the Battery Status //
@@ -190,38 +148,11 @@ static void handle_battery(BatteryChargeState charge_state) {
               bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
   } else {
     //snprintf(battery_text, sizeof(battery_text), "%d%%", charge_state.charge_percent);
-                  //kill previous batt_image to avoid invalid ones.
-         if (Batt_image){if(BT_image){bitmap_layer_set_bitmap(Batt_icon_layer, NULL);}}
+         //kill previous batt_image to avoid invalid ones.
+         if (Batt_image){bitmap_layer_set_bitmap(Batt_icon_layer, NULL);}
         
-                 //set the new batt_image
-         //if ((battery_text[0] == "1" || battery_text[0] == "2") && strlen(battery_text)<4) //If the charge is between 0% and 20%
-         /*
-         if (charge_state.charge_percent<20) //If the charge is between 0% and 20%
-         {
-                Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_EMPTY);
-                 bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
-         }
-         else if (charge_state.charge_percent<40)//If the charge is between 20% and 40%
-         {
-                Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_20);
-                 bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
-         }
-         else if (charge_state.charge_percent<60) //If the charge is between 40% and 60%
-         {
-                Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_40);
-                 bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
-         }
-         else if (charge_state.charge_percent<80) //If the charge is between 60% and 80%
-         {
-                Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_60);
-                 bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
-         }
-         else //IF the charge is between 80% and 100%
-         {
-                Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_FULL);
-                 bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
-         }
-         */ //DO NOT display the batt_icon all the time. it is annoying.
+         //set the new batt_image
+         //DO NOT display the batt_icon all the time. it is annoying.
          if (charge_state.charge_percent <=10) //If the charge is between 0% and 10%
          {
 			 if (color_inverted){Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_EMPTYw);}
@@ -268,6 +199,116 @@ static void handle_bluetooth(bool connected)
         
 } //handle_bluetooth
 
+
+//Invert colors
+void InvertColors(bool inverted)
+{
+	
+	if(inverted)
+	{
+		window_set_background_color(my_window, GColorWhite);
+		
+		text_layer_set_text_color(Weekday_Layer, GColorBlack);
+		text_layer_set_text_color(Time_Layer, GColorBlack);
+		text_layer_set_text_color(date_layer, GColorBlack);
+		text_layer_set_text_color(Temperature_Layer, GColorBlack);
+		text_layer_set_text_color(Location_Layer, GColorBlack);
+		text_layer_set_text_color(Last_Update, GColorBlack);
+		
+		//Refresh Images
+		weather_image = gbitmap_create_with_resource(WEATHER_ICONSw[persist_read_int(WEATHER_ICON_KEY)]);
+		bitmap_layer_set_bitmap(weather_icon_layer, weather_image);
+		
+		//Enable the Battery check event
+		battery_state_service_subscribe(&handle_battery);
+		//Enable the Bluetooth check event
+		//bluetooth_connection_service_subscribe(&handle_bluetooth);
+		if (BT_image)
+		{
+			BT_image = gbitmap_create_with_resource(RESOURCE_ID_BT_CONNECTEDw);
+			bitmap_layer_set_bitmap(BT_icon_layer, BT_image);
+		}
+
+		
+		
+
+	}
+	else
+	{
+		window_set_background_color(my_window, GColorBlack);
+		
+		text_layer_set_text_color(Weekday_Layer, GColorWhite);
+		text_layer_set_text_color(Time_Layer, GColorWhite);
+		text_layer_set_text_color(date_layer, GColorWhite);
+		text_layer_set_text_color(Temperature_Layer, GColorWhite);
+		text_layer_set_text_color(Location_Layer, GColorWhite);
+		text_layer_set_text_color(Last_Update, GColorWhite);
+		
+		//Refresh Images
+		weather_image = gbitmap_create_with_resource(WEATHER_ICONS[persist_read_int(WEATHER_ICON_KEY)]);
+		bitmap_layer_set_bitmap(weather_icon_layer, weather_image);
+		
+		//Enable the Battery check event
+		battery_state_service_subscribe(&handle_battery);
+		//Enable the Bluetooth check event
+		//bluetooth_connection_service_subscribe(&handle_bluetooth);
+		if (BT_image)
+		{
+			BT_image = gbitmap_create_with_resource(RESOURCE_ID_BT_CONNECTED);
+			bitmap_layer_set_bitmap(BT_icon_layer, BT_image);
+		}
+		
+	}
+
+	
+}// END - Inver colors
+
+//*****************//
+// AppSync options //
+//*****************//
+
+        static AppSync sync;
+        static uint8_t sync_buffer[128];
+
+        static void sync_tuple_changed_callback(const uint32_t key,
+                                        const Tuple* new_tuple,
+                                        const Tuple* old_tuple,
+                                        void* context) {
+
+        
+  // App Sync keeps new_tuple in sync_buffer, so we may use it directly
+  switch (key) {
+    case WEATHER_ICON_KEY:
+      if (weather_image) {
+        gbitmap_destroy(weather_image);
+      }
+			if (color_inverted){weather_image = gbitmap_create_with_resource(WEATHER_ICONSw[new_tuple->value->uint8]);}
+			else{weather_image = gbitmap_create_with_resource(WEATHER_ICONS[new_tuple->value->uint8]);}
+      		bitmap_layer_set_bitmap(weather_icon_layer, weather_image);
+	  		persist_write_int(WEATHER_ICON_KEY, new_tuple->value->uint8);
+      		break;
+
+    case WEATHER_TEMPERATURE_KEY:
+         //Update the temperature
+      		text_layer_set_text(Temperature_Layer, new_tuple->value->cstring);
+         //Set the time on which weather was retrived
+         	memcpy(&last_update, time_text, strlen(time_text));
+         	text_layer_set_text(Last_Update, last_update);
+      		break;
+
+     case WEATHER_CITY_KEY:
+         	text_layer_set_text(Location_Layer, new_tuple->value->cstring);
+         	break;
+
+	 case INVERT_COLOR_KEY:
+		  color_inverted = new_tuple->value->uint8 != 0;
+		  persist_write_bool(INVERT_COLOR_KEY, color_inverted);
+
+	  	  //refresh the layout
+	  	  InvertColors(color_inverted);
+		  break;
+  }
+}
 
 void TranslateDate(){
         
@@ -893,7 +934,26 @@ void handle_init(void)
         ResHandle res_u;
         ResHandle res_t;
         ResHandle res_temp;
+	
+	         // Setup messaging
+                const int inbound_size = 128;
+                const int outbound_size = 128;
+                app_message_open(inbound_size, outbound_size);
         
+                Tuplet initial_values[] = {
+                TupletInteger(WEATHER_ICON_KEY, (uint8_t) 16), //INITIALIZE TO "N/A"
+                TupletCString(WEATHER_TEMPERATURE_KEY, ""),
+                TupletCString(WEATHER_CITY_KEY, ""),
+				TupletInteger(INVERT_COLOR_KEY, persist_read_bool(INVERT_COLOR_KEY)),
+                }; //TUPLET INITIAL VALUES
+        
+                 app_sync_init(&sync, sync_buffer, sizeof(sync_buffer), initial_values,
+                ARRAY_LENGTH(initial_values), sync_tuple_changed_callback,
+                NULL, NULL);
+        
+		//load persistent storage options
+		color_inverted = persist_read_bool(INVERT_COLOR_KEY);
+
         //Create the main window
         my_window = window_create();
         window_stack_push(my_window, true /* Animated */);
@@ -920,6 +980,7 @@ void handle_init(void)
         //LOAD THE LAYERS
                 //Display the Weekday layer
                 Weekday_Layer = text_layer_create(WEEKDAY_FRAME);
+	
 				if (color_inverted)
 				{
 					text_layer_set_text_color(Weekday_Layer, GColorBlack);
@@ -928,6 +989,7 @@ void handle_init(void)
 				{
 					text_layer_set_text_color(Weekday_Layer, GColorWhite);
 				}
+	
 	            text_layer_set_background_color(Weekday_Layer, GColorClear);
                 text_layer_set_font(Weekday_Layer, font_date);
                 text_layer_set_text_alignment(Weekday_Layer, GTextAlignmentLeft);
@@ -945,6 +1007,7 @@ void handle_init(void)
         
                 //Display the Time layer
                 Time_Layer = text_layer_create(TIME_FRAME);
+	
 				if (color_inverted)
 				{                
 					text_layer_set_text_color(Time_Layer, GColorBlack);
@@ -953,6 +1016,7 @@ void handle_init(void)
 				{
 					text_layer_set_text_color(Time_Layer, GColorWhite);
 				}
+	
 	            text_layer_set_background_color(Time_Layer, GColorClear);
                 text_layer_set_font(Time_Layer, font_time);
                 text_layer_set_text_alignment(Time_Layer, GTextAlignmentCenter);
@@ -960,6 +1024,7 @@ void handle_init(void)
         
                 //Display the Date layer
                 date_layer = text_layer_create(DATE_FRAME);
+	
 				if (color_inverted)
 				{ 
                 	text_layer_set_text_color(date_layer, GColorBlack);
@@ -969,6 +1034,7 @@ void handle_init(void)
                	 	text_layer_set_text_color(date_layer, GColorWhite);
 	
 				}
+	
 	            text_layer_set_background_color(date_layer, GColorClear);
                 text_layer_set_font(date_layer, font_date);
                 text_layer_set_text_alignment(date_layer, GTextAlignmentRight);
@@ -981,6 +1047,7 @@ void handle_init(void)
         
                 //Display the Temperature layer
                 Temperature_Layer = text_layer_create(TEMPERATURE_FRAME);
+	
 				if (color_inverted)
 				{ 
                 	text_layer_set_text_color(Temperature_Layer, GColorBlack);
@@ -989,6 +1056,7 @@ void handle_init(void)
 				{
                 	text_layer_set_text_color(Temperature_Layer, GColorWhite);		
 				}
+		
 	            text_layer_set_background_color(Temperature_Layer, GColorClear);	
                 text_layer_set_font(Temperature_Layer, font_temperature);
                 text_layer_set_text_alignment(Temperature_Layer, GTextAlignmentCenter);
@@ -996,6 +1064,7 @@ void handle_init(void)
         
                 //Display the Location layer
                 Location_Layer = text_layer_create(LOCATION_FRAME);
+	
 				if (color_inverted)
 				{
                 	text_layer_set_text_color(Location_Layer, GColorBlack);
@@ -1004,6 +1073,7 @@ void handle_init(void)
 				{
                 	text_layer_set_text_color(Location_Layer, GColorWhite);					
 				}
+		
 	            text_layer_set_background_color(Location_Layer, GColorClear);
                 text_layer_set_font(Location_Layer, font_update);
                 text_layer_set_text_alignment(Location_Layer, GTextAlignmentRight);
@@ -1011,6 +1081,7 @@ void handle_init(void)
         
                 //Display the Last Update layer
                 Last_Update = text_layer_create(LAST_UPDATE_FRAME);
+	
 				if (color_inverted)
 				{
                 	text_layer_set_text_color(Last_Update, GColorBlack);
@@ -1019,12 +1090,13 @@ void handle_init(void)
 				{
                 	text_layer_set_text_color(Last_Update, GColorWhite);			
 				}
+		
 	            text_layer_set_background_color(Last_Update, GColorClear);	
                 text_layer_set_font(Last_Update, font_update);
                 text_layer_set_text_alignment(Last_Update, GTextAlignmentRight);
                 layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Last_Update));
         
-
+/*
         
          // Setup messaging
                 const int inbound_size = 64;
@@ -1035,16 +1107,15 @@ void handle_init(void)
                 TupletInteger(WEATHER_ICON_KEY, (uint8_t) 16), //INITIALIZE TO "N/A"
                 TupletCString(WEATHER_TEMPERATURE_KEY, ""),
                 TupletCString(WEATHER_CITY_KEY, ""),
-                        /*
-                        TupletCString(WEATHER_MAX_KEY, ""),
-                        TupletCString(WEATHER_MIN_KEY, ""),
-                        */
+				TupleCstring (COLOR_INVERTED_KEY,""),
+
                 }; //TUPLET INITIAL VALUES
         
                  app_sync_init(&sync, sync_buffer, sizeof(sync_buffer), initial_values,
                 ARRAY_LENGTH(initial_values), sync_tuple_changed_callback,
                 NULL, NULL);
-        
+    */    
+	
         // Ensures time is displayed immediately (will break if NULL tick event accessed).
          // (This is why it's a good idea to have a separate routine to do the update itself.)
                  

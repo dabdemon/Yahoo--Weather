@@ -73,7 +73,10 @@ var options = JSON.parse(localStorage.getItem('options'));
 //console.log('read options: ' + JSON.stringify(options));
 if (options === null) options = { "use_gps" : "true",
                                   "location" : "",
-								 "units" : "celsius"};
+//								  "units" : "celsius"};
+								  "units" : "celsius",
+								  "invert_color" : "false"};
+//								  "color_inverted" : "false"};
 
 function getWeatherFromLatLong(latitude, longitude) {
   var response;
@@ -156,17 +159,15 @@ function getWeatherFromWoeid(woeid, city) {
           //temperature = condition.temp + (celsius ? "\u00B0C" : "\u00B0F"); //Use this format if you want to display the unit
 			temperature = condition.temp + "\u00B0";
           icon = imageId[condition.code];
-			//var forecast = response.query.results.channel.item.forecast;
-			//max = "max: " + forecast.high + "\u00B0";
-			//min = "min: " + forecast.low + "\u00B0";
-          // console.log("temp " + temperature);
-          // console.log("icon " + icon);
-          // console.log("condition " + condition.text);
+			//var inverted == 'B';
+			//if (options['color_inverted']=true) {inverted == 'W';}
           Pebble.sendAppMessage({
             "icon":icon,
             "temperature":temperature,
 			  //Put here the output parameters to "Main.C"
 			  "city":city,
+			 "invert_color" : (options["invert_color"] == "true" ? 1 : 0),
+			// "color_inverted":inverted,
 			  //"max":max,
 			  //"min":min,
           });
@@ -209,7 +210,10 @@ Pebble.addEventListener('showConfiguration', function(e) {
   var uri = 'http://dabdemon.github.io/Yahoo--Weather/YWsettings.html?' + //Here you need to enter your configuration webservice
     'use_gps=' + encodeURIComponent(options['use_gps']) +
     '&location=' + encodeURIComponent(options['location']) +
-    '&units=' + encodeURIComponent(options['units']);
+    '&units=' + encodeURIComponent(options['units']) +
+    '&invert_color=' + encodeURIComponent(options['invert_color']);
+	//'&units=' + encodeURIComponent(options['units']) +
+	  //'&color_inverted=' + encodeURIComponent(options['color_inverted']);
   //console.log('showing configuration at uri: ' + uri);
 
   Pebble.openURL(uri);
