@@ -88,7 +88,7 @@ function getWeatherFromLatLong(latitude, longitude) {
   req.onload = function(e) {
     if (req.readyState == 4) {
       if (req.status == 200) {
-        // console.log(req.responseText);
+         console.log(req.responseText);
         response = JSON.parse(req.responseText);
         if (response) {
           woeid = response.places.place[0].woeid;
@@ -98,7 +98,7 @@ function getWeatherFromLatLong(latitude, longitude) {
 			getWeatherFromWoeid(woeid, city);
         }
       } else {
-        //console.log("Error");
+        console.log("Error WFLL");
       }
     }
   }
@@ -117,7 +117,7 @@ function getWeatherFromLocation(location_name) {
   req.onload = function(e) {
     if (req.readyState == 4) {
       if (req.status == 200) {
-        // console.log(req.responseText);
+         console.log(req.responseText);
         response = JSON.parse(req.responseText);
         if (response) {
           woeid = response.query.results.place.woeid;
@@ -126,7 +126,7 @@ function getWeatherFromLocation(location_name) {
           getWeatherFromWoeid(woeid, city);
         }
       } else {
-        //console.log("Error");
+        console.log("Error WFL");
       }
     }
   }
@@ -148,7 +148,7 @@ function getWeatherFromWoeid(woeid, city) {
 
   var response;
   var req = new XMLHttpRequest();
-  // console.log(url);
+   console.log(url);
   req.open('GET', url, true);
   req.onload = function(e) {
     if (req.readyState == 4) {
@@ -161,6 +161,7 @@ function getWeatherFromWoeid(woeid, city) {
           icon = imageId[condition.code];
 			//var inverted == 'B';
 			//if (options['color_inverted']=true) {inverted == 'W';}
+			console.log("icon: " + icon + " temp: " + temperature + " city: " + city);
           Pebble.sendAppMessage({
             "icon":icon,
             "temperature":temperature,
@@ -173,7 +174,7 @@ function getWeatherFromWoeid(woeid, city) {
           });
         }
       } else {
-        //console.log("Error");
+        console.log("Error WFW");
       }
     }
   }
@@ -198,7 +199,7 @@ function locationSuccess(pos) {
 }
 
 function locationError(err) {
-  //console.warn('location error (' + err.code + '): ' + err.message);
+  console.warn('location error (' + err.code + '): ' + err.message);
   Pebble.sendAppMessage({
     "icon":16,
     "temperature":""
@@ -214,7 +215,7 @@ Pebble.addEventListener('showConfiguration', function(e) {
     '&invert_color=' + encodeURIComponent(options['invert_color']);
 	//'&units=' + encodeURIComponent(options['units']) +
 	  //'&color_inverted=' + encodeURIComponent(options['color_inverted']);
-  //console.log('showing configuration at uri: ' + uri);
+  console.log('showing configuration at uri: ' + uri);
 
   Pebble.openURL(uri);
 });
@@ -223,10 +224,10 @@ Pebble.addEventListener('webviewclosed', function(e) {
   if (e.response) {
     options = JSON.parse(decodeURIComponent(e.response));
     localStorage.setItem('options', JSON.stringify(options));
-    //console.log('storing options: ' + JSON.stringify(options));
+    console.log('storing options: ' + JSON.stringify(options));
     updateWeather();
   } else {
-    //console.log('no options received');
+    console.log('no options received');
   }
 });
 
@@ -238,7 +239,7 @@ Pebble.addEventListener("appmessage",
 
 //Initiate the Appsync (This event is called just once)
 Pebble.addEventListener("ready", function(e) {
-  //console.log("connect!" + e.ready);
+  console.log("connect!" + e.ready);
   updateWeather();
 
 	/* Following the Pebble best practices - Set the timer in Pebble instead JS

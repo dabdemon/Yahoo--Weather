@@ -2,7 +2,11 @@
 #include "pebble.h"
 #include "pebble_fonts.h"
 
-               
+ 
+//UIDs:
+	//English: 35a28a4d-0c9f-408f-9c6d-551e65f03186
+	//Spanish: 3ab59c04-142f-4ff1-b90d-aab93ce54a32
+	//Italian: 6279f406-1114-4b2f-852d-65b0e8ff2a73
 
 #define WEEKDAY_FRAME    (GRect(5, 2, 95, 168-145))
 #define BATT_FRAME       (GRect(98, 4, 40, 168-146))
@@ -71,6 +75,7 @@ static const uint32_t WEATHER_ICONSw[] = {
 // Define KEYS //
 //*************//
 
+
 enum WeatherKey {
   WEATHER_ICON_KEY = 0x0,        // TUPLE_INT
   WEATHER_TEMPERATURE_KEY = 0x1, // TUPLE_CSTRING
@@ -130,7 +135,7 @@ enum WeatherKey {
         bool translate_sp = true;
         static char language[] = "E"; //"E" = Spanish // "I" = Italian // "G" = German // "C" = Czech // "F" = French
 		bool color_inverted;
-		//bool color_inverted;
+		int ICON_CODE;
 
 
 
@@ -216,13 +221,11 @@ void InvertColors(bool inverted)
 		text_layer_set_text_color(Last_Update, GColorBlack);
 		
 		//Refresh Images
-		weather_image = gbitmap_create_with_resource(WEATHER_ICONSw[persist_read_int(WEATHER_ICON_KEY)]);
+		  if (weather_image) {gbitmap_destroy(weather_image);}
+		//weather_image = gbitmap_create_with_resource(WEATHER_ICONSw[persist_read_int(WEATHER_ICON_KEY)]);
+		weather_image = gbitmap_create_with_resource(WEATHER_ICONSw[ICON_CODE]);
 		bitmap_layer_set_bitmap(weather_icon_layer, weather_image);
 		
-		//Enable the Battery check event
-		battery_state_service_subscribe(&handle_battery);
-		//Enable the Bluetooth check event
-		//bluetooth_connection_service_subscribe(&handle_bluetooth);
 		if (BT_image)
 		{
 			BT_image = gbitmap_create_with_resource(RESOURCE_ID_BT_CONNECTEDw);
@@ -245,15 +248,14 @@ void InvertColors(bool inverted)
 		text_layer_set_text_color(Last_Update, GColorWhite);
 		
 		//Refresh Images
-		weather_image = gbitmap_create_with_resource(WEATHER_ICONS[persist_read_int(WEATHER_ICON_KEY)]);
+		if (weather_image) {gbitmap_destroy(weather_image);}
+		//weather_image = gbitmap_create_with_resource(WEATHER_ICONS[persist_read_int(WEATHER_ICON_KEY)]);
+		weather_image = gbitmap_create_with_resource(WEATHER_ICONS[ICON_CODE]);
 		bitmap_layer_set_bitmap(weather_icon_layer, weather_image);
 		
-		//Enable the Battery check event
-		battery_state_service_subscribe(&handle_battery);
-		//Enable the Bluetooth check event
-		//bluetooth_connection_service_subscribe(&handle_bluetooth);
 		if (BT_image)
 		{
+			if (BT_image) {gbitmap_destroy(BT_image);}
 			BT_image = gbitmap_create_with_resource(RESOURCE_ID_BT_CONNECTED);
 			bitmap_layer_set_bitmap(BT_icon_layer, BT_image);
 		}
@@ -268,7 +270,9 @@ void InvertColors(bool inverted)
 //*****************//
 
         static AppSync sync;
-        static uint8_t sync_buffer[128];
+        static uint8_t sync_buffer[256];
+
+
 
         static void sync_tuple_changed_callback(const uint32_t key,
                                         const Tuple* new_tuple,
@@ -279,13 +283,13 @@ void InvertColors(bool inverted)
   // App Sync keeps new_tuple in sync_buffer, so we may use it directly
   switch (key) {
     case WEATHER_ICON_KEY:
-      if (weather_image) {
-        gbitmap_destroy(weather_image);
-      }
-			if (color_inverted){weather_image = gbitmap_create_with_resource(WEATHER_ICONSw[new_tuple->value->uint8]);}
+	    if (weather_image) {gbitmap_destroy(weather_image);}
+
+	  		if (color_inverted){weather_image = gbitmap_create_with_resource(WEATHER_ICONSw[new_tuple->value->uint8]);}
 			else{weather_image = gbitmap_create_with_resource(WEATHER_ICONS[new_tuple->value->uint8]);}
       		bitmap_layer_set_bitmap(weather_icon_layer, weather_image);
-	  		persist_write_int(WEATHER_ICON_KEY, new_tuple->value->uint8);
+	  		//persist_write_int(WEATHER_ICON_KEY, new_tuple->value->uint8);
+	  		ICON_CODE = new_tuple->value->uint8;
       		break;
 
     case WEATHER_TEMPERATURE_KEY:
@@ -890,7 +894,7 @@ void handle_tick(struct tm *tick_time, TimeUnits units_changed)
 //************************************************//
 static void send_cmd(void) {
          //Tuplet value = TupletInteger(1, 1);
-                Tuplet value = TupletCString(2,"loading...");
+         Tuplet value = TupletCString(2,"loading...");
         
          DictionaryIterator *iter;
          app_message_outbox_begin(&iter);
@@ -913,7 +917,6 @@ static void timer_callback(void *context) {
 		//Developer vibe: confirm that timer is not killed
 		//vibes_double_pulse();
 	
-        app_timer_cancel(timer);
         timer = app_timer_register(timeout_ms, timer_callback, NULL);
         
         //Refresh the weather
@@ -936,8 +939,9 @@ void handle_init(void)
         ResHandle res_temp;
 	
 	         // Setup messaging
-                const int inbound_size = 128;
-                const int outbound_size = 128;
+                const int inbound_size = 256;
+                const int outbound_size = 256;
+	
                 app_message_open(inbound_size, outbound_size);
         
                 Tuplet initial_values[] = {
@@ -1146,12 +1150,12 @@ void handle_deinit(void)
 
         //Unsuscribe services
         tick_timer_service_unsubscribe();
-         battery_state_service_unsubscribe();
-          bluetooth_connection_service_unsubscribe();
+        battery_state_service_unsubscribe();
+        bluetooth_connection_service_unsubscribe();
         
-        if (BT_image){gbitmap_destroy(BT_image);}
-        if (Batt_image){gbitmap_destroy(Batt_image);}
-        if (weather_image){gbitmap_destroy(weather_image);}
+        //if (BT_image){gbitmap_destroy(BT_image);}
+        //if (Batt_image){gbitmap_destroy(Batt_image);}
+        //if (weather_image){gbitmap_destroy(weather_image);}
         
         //Deallocate layers
         text_layer_destroy(Time_Layer);
@@ -1168,7 +1172,7 @@ void handle_deinit(void)
         fonts_unload_custom_font(font_temperature);
         
         //Deallocate the main window
-          window_destroy(my_window);
+         window_destroy(my_window);
 
 } //HANDLE_DEINIT
 

@@ -116,11 +116,6 @@
             },
             {
                 "type": "png",
-                "name": "BATT_FULLw",
-                "file": "images/batt_fullw.png"
-            },
-            {
-                "type": "png",
                 "name": "BATT_EMPTYw",
                 "file": "images/batt_emptyw.png"
             },
@@ -128,36 +123,6 @@
                 "type": "png",
                 "name": "BATT_CHARw",
                 "file": "images/batt_charw.png"
-            },
-            {
-                "type": "png",
-                "name": "BATT_60w",
-                "file": "images/batt_60w.png"
-            },
-            {
-                "type": "png",
-                "name": "BATT_40w",
-                "file": "images/batt_40w.png"
-            },
-            {
-                "type": "png",
-                "name": "BATT_20w",
-                "file": "images/batt_20w.png"
-            },
-            {
-                "type": "png",
-                "name": "BATT_FULL",
-                "file": "images/batt_full.png"
-            },
-            {
-                "type": "png",
-                "name": "BATT_60",
-                "file": "images/batt_60.png"
-            },
-            {
-                "type": "png",
-                "name": "BATT_40",
-                "file": "images/batt_40.png"
             },
             {
                 "type": "png",
@@ -248,11 +213,6 @@
                 "type": "png",
                 "name": "ICON_CLEAR_DAY",
                 "file": "images/clear-day.png"
-            },
-            {
-                "type": "png",
-                "name": "BATT_20",
-                "file": "images/batt_20.png"
             },
             {
                 "type": "png",
