@@ -135,6 +135,9 @@ function getWeatherFromLocation(location_name) {
 
 //function getWeatherFromWoeid(woeid) {
 function getWeatherFromWoeid(woeid, city) {
+	
+	/*if Hong Kong then override the woeid with a valid one*/
+	if (woeid ==24865698){woeid=12467924};
   var celsius = options['units'] == 'celsius';
 	/*Works fine
   var query = encodeURI("select item.condition from weather.forecast where woeid = " + woeid +
