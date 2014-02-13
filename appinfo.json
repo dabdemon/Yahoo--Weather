@@ -21,6 +21,56 @@
         "media": [
             {
                 "type": "png",
+                "name": "BATT_FULLw",
+                "file": "images/batt_fullw_2.png"
+            },
+            {
+                "type": "png",
+                "name": "BATT_80w",
+                "file": "images/batt_80w_2.png"
+            },
+            {
+                "type": "png",
+                "name": "BATT_60w",
+                "file": "images/batt_60w_2.png"
+            },
+            {
+                "type": "png",
+                "name": "BATT_40w",
+                "file": "images/batt_40w_2.png"
+            },
+            {
+                "type": "png",
+                "name": "BATT_20w",
+                "file": "images/batt_20w_2.png"
+            },
+            {
+                "type": "png",
+                "name": "BATT_FULL",
+                "file": "images/batt_full_2.png"
+            },
+            {
+                "type": "png",
+                "name": "BATT_80",
+                "file": "images/batt_80_2.png"
+            },
+            {
+                "type": "png",
+                "name": "BATT_60",
+                "file": "images/batt_60_2.png"
+            },
+            {
+                "type": "png",
+                "name": "BATT_40",
+                "file": "images/batt_40_2.png"
+            },
+            {
+                "type": "png",
+                "name": "BATT_20",
+                "file": "images/batt_20_2.png"
+            },
+            {
+                "type": "png",
                 "name": "ICON_WINDw",
                 "file": "images/windw.png"
             },

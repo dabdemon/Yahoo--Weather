@@ -136,6 +136,7 @@ enum WeatherKey {
         static char language[] = "E"; //"E" = Spanish // "I" = Italian // "G" = German // "C" = Czech // "F" = French
 		bool color_inverted;
 		int ICON_CODE;
+		bool batt_status = true; //If true, display the battery status all the time; if false, just when running low (<10%)
 
 
 
@@ -152,10 +153,11 @@ static void handle_battery(BatteryChargeState charge_state) {
 			  else {Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_CHAR);} 
               bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
   } else {
-    //snprintf(battery_text, sizeof(battery_text), "%d%%", charge_state.charge_percent);
-         //kill previous batt_image to avoid invalid ones.
-         if (Batt_image){bitmap_layer_set_bitmap(Batt_icon_layer, NULL);}
-        
+	  //snprintf(battery_text, sizeof(battery_text), "%d%%", charge_state.charge_percent);
+      //kill previous batt_image to avoid invalid ones.
+      if (Batt_image){bitmap_layer_set_bitmap(Batt_icon_layer, NULL);}
+	  
+	  //WHILE RUNNING LOW, BATT STATUS WILL ALWAYS DISPLAY  
          //set the new batt_image
          //DO NOT display the batt_icon all the time. it is annoying.
          if (charge_state.charge_percent <=10) //If the charge is between 0% and 10%
@@ -164,6 +166,45 @@ static void handle_battery(BatteryChargeState charge_state) {
 			 else{Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_EMPTY);}
              bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
          }
+	  //CHECK IF BATTERY STATUS SHOULD DISPLAY ALL THE TIME OR JUST WHILE RUNNING LOW
+	  else if (batt_status){
+		 if (charge_state.charge_percent <=20) //If the charge is between 10% and 20%
+         {
+			 if (color_inverted){Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_20w);}
+			 else{Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_20);}
+             bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
+         }
+															
+		 else if (charge_state.charge_percent <=40) //If the charge is between 20% and 40%
+         {
+			 if (color_inverted){Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_40w);}
+			 else{Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_40);}
+             bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
+         }
+
+		 else if (charge_state.charge_percent <=60) //If the charge is between 40% and 60%
+         {
+			 if (color_inverted){Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_60w);}
+			 else{Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_60);}
+             bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
+         }
+															
+		 else if (charge_state.charge_percent <=80) //If the charge is between 60% and 80%
+         {
+			 if (color_inverted){Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_80w);}
+			 else{Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_80);}
+             bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
+         }
+															
+		 else if (charge_state.charge_percent >80) //If the charge is between 80% and 100%
+         {
+			 if (color_inverted){Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_FULLw);}
+			 else{Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_FULL);}
+             bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
+         }
+		  
+	  }
+
   }
   //text_layer_set_text(Batt_Layer, battery_text);
 }
@@ -178,6 +219,7 @@ static void handle_bluetooth(bool connected)
         //draw the BT icon if connected        
         if(connected ==true)
         {
+			if (BT_image) {gbitmap_destroy(BT_image);}
 			if (color_inverted){BT_image = gbitmap_create_with_resource(RESOURCE_ID_BT_CONNECTEDw);}
 			else{BT_image = gbitmap_create_with_resource(RESOURCE_ID_BT_CONNECTED);}
             bitmap_layer_set_bitmap(BT_icon_layer, BT_image);
@@ -191,7 +233,8 @@ static void handle_bluetooth(bool connected)
         else
         {
                 //Kill the previous image
-                if(BT_image){bitmap_layer_set_bitmap(BT_icon_layer, NULL);}
+				if (BT_image) {gbitmap_destroy(BT_image);}
+                bitmap_layer_set_bitmap(BT_icon_layer, NULL);
                 //Vibes on disconnect
                 if (BTConnected == true){
                         //Vibes to alert disconnection
