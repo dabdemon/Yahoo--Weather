@@ -81,6 +81,7 @@ enum WeatherKey {
   WEATHER_TEMPERATURE_KEY = 0x1, // TUPLE_CSTRING
   WEATHER_CITY_KEY = 0x2,        //	TUPLE_CSTRING
   INVERT_COLOR_KEY = 0x3,  		 // TUPLE_CSTRING
+  language_key = 0x4, 			// TUPLE_CSTRING
 };
 
 //Declare initial window        
@@ -132,7 +133,7 @@ enum WeatherKey {
         static char time_text[] = "00:00";
 	  	static char inverted[]="B";
         
-        bool translate_sp = true;
+        //bool translate_sp = true;
         static char language[] = "E"; //"E" = Spanish // "I" = Italian // "G" = German // "C" = Czech // "F" = French
 		bool color_inverted;
 		int ICON_CODE;
@@ -146,6 +147,10 @@ enum WeatherKey {
 
 static void handle_battery(BatteryChargeState charge_state) {
           static char battery_text[] = "100%";
+	
+	//kill previous batt_image to avoid invalid ones.
+	if (Batt_image) {gbitmap_destroy(Batt_image);}
+    bitmap_layer_set_bitmap(Batt_icon_layer, NULL);
 
   if (charge_state.is_charging) {
     //snprintf(battery_text, sizeof(battery_text), "charging");
@@ -154,8 +159,7 @@ static void handle_battery(BatteryChargeState charge_state) {
               bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
   } else {
 	  //snprintf(battery_text, sizeof(battery_text), "%d%%", charge_state.charge_percent);
-      //kill previous batt_image to avoid invalid ones.
-      if (Batt_image){bitmap_layer_set_bitmap(Batt_icon_layer, NULL);}
+
 	  
 	  //WHILE RUNNING LOW, BATT STATUS WILL ALWAYS DISPLAY  
          //set the new batt_image
@@ -209,6 +213,32 @@ static void handle_battery(BatteryChargeState charge_state) {
   //text_layer_set_text(Batt_Layer, battery_text);
 }
 
+static void vibes()
+{
+//************************//
+// Vibes on disconnection //
+//************************//
+
+	//Vibes on connection
+    if (BTConnected == false){
+		if (bluetooth_connection_service_peek() == true){
+    	//Vibes to alert connection
+        vibes_double_pulse();
+        BTConnected = true;
+		}
+	}
+                
+	//Vibes on disconnect
+    if (BTConnected == true){
+    	//Vibes to alert disconnection
+		if (bluetooth_connection_service_peek()== false){
+		vibes_long_pulse();
+        BTConnected = false;
+	}
+     }
+
+}	
+
 //******************************//
 // Handle Bluetooth Connection //
 //*****************************//
@@ -223,26 +253,25 @@ static void handle_bluetooth(bool connected)
 			if (color_inverted){BT_image = gbitmap_create_with_resource(RESOURCE_ID_BT_CONNECTEDw);}
 			else{BT_image = gbitmap_create_with_resource(RESOURCE_ID_BT_CONNECTED);}
             bitmap_layer_set_bitmap(BT_icon_layer, BT_image);
-                //Vibes on connection
-                if (BTConnected == false){
-                        //Vibes to alert connection
-                        vibes_double_pulse();
-                        BTConnected = true;
-                }
+			if (BTConnected == false){
+			//setup the timer to catch false disconnections (5 secs)
+         	timer = app_timer_register(5000, vibes, NULL);
+			}
+
         }
         else
         {
-                //Kill the previous image
-				if (BT_image) {gbitmap_destroy(BT_image);}
-                bitmap_layer_set_bitmap(BT_icon_layer, NULL);
-                //Vibes on disconnect
-                if (BTConnected == true){
-                        //Vibes to alert disconnection
-                        vibes_long_pulse();
-                        BTConnected = false;
-                }
-        
+            //Kill the previous image
+		    if (BT_image) {gbitmap_destroy(BT_image);}
+            bitmap_layer_set_bitmap(BT_icon_layer, NULL);
+			if (BTConnected == true){
+			//setup the timer to catch false disconnections (5 secs)
+         	timer = app_timer_register(5000, vibes, NULL);
+			}
+       
         }
+	
+
         
         
 } //handle_bluetooth
@@ -353,6 +382,11 @@ void InvertColors(bool inverted)
 
 	  	  //refresh the layout
 	  	  InvertColors(color_inverted);
+		  break;
+	  
+	  case language_key:
+	  	  memcpy(&language, new_tuple->value->cstring, strlen(new_tuple->value->cstring));
+		  persist_write_bool(language_key, new_tuple->value->cstring);
 		  break;
   }
 }
@@ -881,7 +915,7 @@ void handle_tick(struct tm *tick_time, TimeUnits units_changed)
                                 strftime(day_month,sizeof(day_month),"%e %B",tick_time);
 
 
-                                if(translate_sp){
+                                if(language[0] != '0'){
                                         //Get the Month
                                         strftime(month_text,sizeof(month_text),"%B",tick_time);
                                         //Get the day
@@ -981,6 +1015,10 @@ void handle_init(void)
         ResHandle res_t;
         ResHandle res_temp;
 	
+		//load persistent storage options
+		color_inverted = persist_read_bool(INVERT_COLOR_KEY);
+		persist_read_string(language_key, language, sizeof(language));
+	
 	         // Setup messaging
                 const int inbound_size = 256;
                 const int outbound_size = 256;
@@ -992,14 +1030,14 @@ void handle_init(void)
                 TupletCString(WEATHER_TEMPERATURE_KEY, ""),
                 TupletCString(WEATHER_CITY_KEY, ""),
 				TupletInteger(INVERT_COLOR_KEY, persist_read_bool(INVERT_COLOR_KEY)),
+				TupletCString(language_key, ""),
                 }; //TUPLET INITIAL VALUES
         
                  app_sync_init(&sync, sync_buffer, sizeof(sync_buffer), initial_values,
                 ARRAY_LENGTH(initial_values), sync_tuple_changed_callback,
                 NULL, NULL);
         
-		//load persistent storage options
-		color_inverted = persist_read_bool(INVERT_COLOR_KEY);
+
 
         //Create the main window
         my_window = window_create();

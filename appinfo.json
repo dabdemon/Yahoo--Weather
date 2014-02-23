@@ -1,10 +1,11 @@
 {
-    "versionLabel": "1.1",
+    "versionLabel": "1.3",
     "uuid": "3ab59c04-142f-4ff1-b90d-aab93ce54a32",
     "appKeys": {
         "invert_color": 3,
         "city": 2,
         "temperature": 1,
+        "language": 4,
         "icon": 0
     },
     "longName": "YWeather",

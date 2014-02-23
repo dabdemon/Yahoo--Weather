@@ -71,12 +71,11 @@ var imageId = {
 
 var options = JSON.parse(localStorage.getItem('options'));
 //console.log('read options: ' + JSON.stringify(options));
-if (options === null) options = { "use_gps" : "true",
+if (options === null) options = { "language" : "0",
+								  "use_gps" : "true",
                                   "location" : "",
-//								  "units" : "celsius"};
 								  "units" : "celsius",
 								  "invert_color" : "false"};
-//								  "color_inverted" : "false"};
 
 function getWeatherFromLatLong(latitude, longitude) {
   var response;
@@ -169,11 +168,9 @@ function getWeatherFromWoeid(woeid, city) {
             "icon":icon,
             "temperature":temperature,
 			  //Put here the output parameters to "Main.C"
-			  "city":city,
+			 "city":city,
 			 "invert_color" : (options["invert_color"] == "true" ? 1 : 0),
-			// "color_inverted":inverted,
-			  //"max":max,
-			  //"min":min,
+			 "language" : options['language'],
           });
         }
       } else {
@@ -212,13 +209,13 @@ function locationError(err) {
 
 Pebble.addEventListener('showConfiguration', function(e) {
   var uri = 'http://dabdemon.github.io/Yahoo--Weather/YWsettings.html?' + //Here you need to enter your configuration webservice
-    'use_gps=' + encodeURIComponent(options['use_gps']) +
+    'language=' + encodeURIComponent(options['language']) +
+	'use_gps=' + encodeURIComponent(options['use_gps']) +
     '&location=' + encodeURIComponent(options['location']) +
     '&units=' + encodeURIComponent(options['units']) +
     '&invert_color=' + encodeURIComponent(options['invert_color']);
-	//'&units=' + encodeURIComponent(options['units']) +
-	  //'&color_inverted=' + encodeURIComponent(options['color_inverted']);
-  console.log('showing configuration at uri: ' + uri);
+
+	//console.log('showing configuration at uri: ' + uri);
 
   Pebble.openURL(uri);
 });
@@ -245,11 +242,4 @@ Pebble.addEventListener("ready", function(e) {
   console.log("connect!" + e.ready);
   updateWeather();
 
-	/* Following the Pebble best practices - Set the timer in Pebble instead JS
-  setInterval(function() {
-    //console.log("timer fired");
-    updateWeather();
-  }, 1800000); //Refresh the weather every 30min
-  //console.log(e.type);
-  */
 });
