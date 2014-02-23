@@ -28,8 +28,8 @@
 
           
         <div data-role="fieldcontain">
-          <label for="idioma">Language</label>
-          <select name="idioma"  id="idioma" data-theme="c" data-track-theme="d">
+          <label for="language">Language</label>
+          <select name="language"  id="language" data-theme="c" data-track-theme="d">
             <option value="0">English</option>
             <option value="E">Spanish</option>
           </select>
@@ -92,7 +92,7 @@
 
       function saveOptions() {
        var options = {
-          'idioma': $('#idioma').val(),
+          'language': $('#language').val(),
           'use_gps': $('#gps_switch').val(),
           'location': $('#location').val(),
           'units': $('input:radio[name=units]:checked').val(),
@@ -109,7 +109,7 @@
           document.location = 'pebblejs://close#' + encodeURIComponent(JSON.stringify(saveOptions()));
         });
 
-        $('#idioma').val(getQueryVariable('idioma')).change();
+        $('#language').val(getQueryVariable('language')).change();
         $('#gps_switch').val(getQueryVariable('use_gps')).change();
         $('#location').val(getQueryVariable('location'));
         if (getQueryVariable('units') == "celsius") {
