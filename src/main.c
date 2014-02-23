@@ -337,60 +337,6 @@ void InvertColors(bool inverted)
 	
 }// END - Inver colors
 
-//*****************//
-// AppSync options //
-//*****************//
-
-        static AppSync sync;
-        static uint8_t sync_buffer[256];
-
-
-
-        static void sync_tuple_changed_callback(const uint32_t key,
-                                        const Tuple* new_tuple,
-                                        const Tuple* old_tuple,
-                                        void* context) {
-
-        
-  // App Sync keeps new_tuple in sync_buffer, so we may use it directly
-  switch (key) {
-    case WEATHER_ICON_KEY:
-	    if (weather_image) {gbitmap_destroy(weather_image);}
-
-	  		if (color_inverted){weather_image = gbitmap_create_with_resource(WEATHER_ICONSw[new_tuple->value->uint8]);}
-			else{weather_image = gbitmap_create_with_resource(WEATHER_ICONS[new_tuple->value->uint8]);}
-      		bitmap_layer_set_bitmap(weather_icon_layer, weather_image);
-	  		//persist_write_int(WEATHER_ICON_KEY, new_tuple->value->uint8);
-	  		ICON_CODE = new_tuple->value->uint8;
-      		break;
-
-    case WEATHER_TEMPERATURE_KEY:
-         //Update the temperature
-      		text_layer_set_text(Temperature_Layer, new_tuple->value->cstring);
-         //Set the time on which weather was retrived
-         	memcpy(&last_update, time_text, strlen(time_text));
-         	text_layer_set_text(Last_Update, last_update);
-      		break;
-
-     case WEATHER_CITY_KEY:
-         	text_layer_set_text(Location_Layer, new_tuple->value->cstring);
-         	break;
-
-	 case INVERT_COLOR_KEY:
-		  color_inverted = new_tuple->value->uint8 != 0;
-		  persist_write_bool(INVERT_COLOR_KEY, color_inverted);
-
-	  	  //refresh the layout
-	  	  InvertColors(color_inverted);
-		  break;
-	  
-	  case language_key:
-	  	  memcpy(&language, new_tuple->value->cstring, strlen(new_tuple->value->cstring));
-		  persist_write_bool(language_key, new_tuple->value->cstring);
-		  break;
-  }
-}
-
 void TranslateDate(){
         
         if (language[0] == 'E'){ //SPANISH
@@ -895,8 +841,103 @@ void TranslateDate(){
                         }
                         
         } //END OF FRENCH                        
+} //END OF Translate_Date
+
+//**************************//
+//** Get the current date **//
+//**************************//
+void getDate()
+{
+	
+	//Get the date
+	time_t actualPtr = time(NULL);
+	struct tm *tz1Ptr = gmtime(&actualPtr);
+	
+	//Get the Weekday
+	strftime(weekday_text,sizeof(weekday_text),"%A",tz1Ptr);
+	//Get the Month + Day (English format)
+	strftime(month_text,sizeof(month_text),"%B %e",tz1Ptr);
+	//Get the Day + Month (Spanish format)
+	strftime(day_month,sizeof(day_month),"%e %B",tz1Ptr);
+	
+	
+	if(language[0] != '0'){
+		//Get the Month
+		strftime(month_text,sizeof(month_text),"%B",tz1Ptr);
+		//Get the day
+		strftime(day_text,sizeof(day_text),"%e",tz1Ptr);
+		//Translate to Spanish
+		TranslateDate();
+		
+		//Concatenate the day to the month
+		//If Czech the month is before day
+		if (language[0] == 'C'){strncat(month_text,day_text,strlen(day_text));}
+		else {memcpy(&month_text, day_text, strlen(day_text));}                                        
+	}
+	
+	
+	text_layer_set_text(date_layer, month_text);
+	text_layer_set_text(Weekday_Layer, weekday_text); //Update the weekday layer    
+	
 }
 
+
+
+//*****************//
+// AppSync options //
+//*****************//
+
+        static AppSync sync;
+        static uint8_t sync_buffer[256];
+
+
+
+        static void sync_tuple_changed_callback(const uint32_t key,
+                                        const Tuple* new_tuple,
+                                        const Tuple* old_tuple,
+                                        void* context) {
+
+        
+  // App Sync keeps new_tuple in sync_buffer, so we may use it directly
+  switch (key) {
+    case WEATHER_ICON_KEY:
+	    if (weather_image) {gbitmap_destroy(weather_image);}
+
+	  		if (color_inverted){weather_image = gbitmap_create_with_resource(WEATHER_ICONSw[new_tuple->value->uint8]);}
+			else{weather_image = gbitmap_create_with_resource(WEATHER_ICONS[new_tuple->value->uint8]);}
+      		bitmap_layer_set_bitmap(weather_icon_layer, weather_image);
+	  		//persist_write_int(WEATHER_ICON_KEY, new_tuple->value->uint8);
+	  		ICON_CODE = new_tuple->value->uint8;
+      		break;
+
+    case WEATHER_TEMPERATURE_KEY:
+         //Update the temperature
+      		text_layer_set_text(Temperature_Layer, new_tuple->value->cstring);
+         //Set the time on which weather was retrived
+         	memcpy(&last_update, time_text, strlen(time_text));
+         	text_layer_set_text(Last_Update, last_update);
+      		break;
+
+     case WEATHER_CITY_KEY:
+         	text_layer_set_text(Location_Layer, new_tuple->value->cstring);
+         	break;
+
+	 case INVERT_COLOR_KEY:
+		  color_inverted = new_tuple->value->uint8 != 0;
+		  persist_write_bool(INVERT_COLOR_KEY, color_inverted);
+
+	  	  //refresh the layout
+	  	  InvertColors(color_inverted);
+		  break;
+	  
+	  case language_key:
+	  	  memcpy(&language, new_tuple->value->cstring, strlen(new_tuple->value->cstring));
+		  persist_write_bool(language_key, new_tuple->value->cstring);
+	  		//Init the date
+			getDate();
+		  break;
+  }
+}
 
 
 //************************//
@@ -905,33 +946,7 @@ void TranslateDate(){
 void handle_tick(struct tm *tick_time, TimeUnits units_changed)
 {
 
-//Init the date
-        
-                                //Get the Weekday
-                                strftime(weekday_text,sizeof(weekday_text),"%A",tick_time);
-                                //Get the Month + Day (English format)
-                                 strftime(month_text,sizeof(month_text),"%B %e",tick_time);
-                                //Get the Day + Month (Spanish format)
-                                strftime(day_month,sizeof(day_month),"%e %B",tick_time);
-
-
-                                if(language[0] != '0'){
-                                        //Get the Month
-                                        strftime(month_text,sizeof(month_text),"%B",tick_time);
-                                        //Get the day
-                                        strftime(day_text,sizeof(day_text),"%e",tick_time);
-                                        //Translate to Spanish
-                                        TranslateDate();
-                                        
-                                        //Concatenate the day to the month
-                                                //If Czech the month is before day
-                                        if (language[0] == 'C'){strncat(month_text,day_text,strlen(day_text));}
-                                        else {memcpy(&month_text, day_text, strlen(day_text));}                                        
-                                }
-
-                                                
-                                text_layer_set_text(date_layer, month_text);
-                                text_layer_set_text(Weekday_Layer, weekday_text); //Update the weekday layer        
+ 
                                 
 
         if (units_changed & MINUTE_UNIT)
@@ -954,7 +969,7 @@ void handle_tick(struct tm *tick_time, TimeUnits units_changed)
                         }
                 
                                  
-                          text_layer_set_text(Time_Layer, time_text);
+                        text_layer_set_text(Time_Layer, time_text);
                 
                         //Check Battery Status
                         handle_battery(battery_state_service_peek());
@@ -963,6 +978,11 @@ void handle_tick(struct tm *tick_time, TimeUnits units_changed)
                         handle_bluetooth(bluetooth_connection_service_peek());
 
         } //MINUTE CHANGES
+	     if (units_changed & DAY_UNIT){
+			 	//Update the date
+			 	getDate();}
+
+	
 } //HANDLE_TICK
 
 
@@ -1015,9 +1035,6 @@ void handle_init(void)
         ResHandle res_t;
         ResHandle res_temp;
 	
-		//load persistent storage options
-		color_inverted = persist_read_bool(INVERT_COLOR_KEY);
-		persist_read_string(language_key, language, sizeof(language));
 	
 	         // Setup messaging
                 const int inbound_size = 256;
@@ -1030,14 +1047,19 @@ void handle_init(void)
                 TupletCString(WEATHER_TEMPERATURE_KEY, ""),
                 TupletCString(WEATHER_CITY_KEY, ""),
 				TupletInteger(INVERT_COLOR_KEY, persist_read_bool(INVERT_COLOR_KEY)),
-				TupletCString(language_key, ""),
+				TupletCString(language_key, "0"),
                 }; //TUPLET INITIAL VALUES
         
                  app_sync_init(&sync, sync_buffer, sizeof(sync_buffer), initial_values,
                 ARRAY_LENGTH(initial_values), sync_tuple_changed_callback,
                 NULL, NULL);
-        
-
+  
+		//load persistent storage options
+		color_inverted = persist_read_bool(INVERT_COLOR_KEY);
+		persist_read_string(language_key, language, sizeof(language));
+	
+		//Init the date
+		//getDate();
 
         //Create the main window
         my_window = window_create();
@@ -1212,11 +1234,11 @@ void handle_init(void)
                 //Enable the Battery check event
                 battery_state_service_subscribe(&handle_battery);
                 //Enable the Bluetooth check event
-                 bluetooth_connection_service_subscribe(&handle_bluetooth);
+                bluetooth_connection_service_subscribe(&handle_bluetooth);
         
                 //setup the timer to refresh the weather info every 30min
-                 //const uint32_t timeout_ms = 1800000;
-                  timer = app_timer_register(timeout_ms, timer_callback, NULL);
+                //const uint32_t timeout_ms = 1800000;
+                timer = app_timer_register(timeout_ms, timer_callback, NULL);
         
 } //HANDLE_INIT
 

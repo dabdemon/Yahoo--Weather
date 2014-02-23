@@ -71,7 +71,7 @@ var imageId = {
 
 var options = JSON.parse(localStorage.getItem('options'));
 //console.log('read options: ' + JSON.stringify(options));
-if (options === null) options = { "language" : "0",
+if (options === null) options = { "language" : "E",
 								  "use_gps" : "true",
                                   "location" : "",
 								  "units" : "celsius",
@@ -210,7 +210,7 @@ function locationError(err) {
 Pebble.addEventListener('showConfiguration', function(e) {
   var uri = 'http://dabdemon.github.io/Yahoo--Weather/YWsettings.html?' + //Here you need to enter your configuration webservice
     'language=' + encodeURIComponent(options['language']) +
-	'use_gps=' + encodeURIComponent(options['use_gps']) +
+	'&use_gps=' + encodeURIComponent(options['use_gps']) +
     '&location=' + encodeURIComponent(options['location']) +
     '&units=' + encodeURIComponent(options['units']) +
     '&invert_color=' + encodeURIComponent(options['invert_color']);
