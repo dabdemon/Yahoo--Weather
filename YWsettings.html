@@ -14,31 +14,13 @@
   <body>
     <div data-role='page' id='main'>
       <div data-role='header' class='jqm-header' data-theme='b'>
-              <IMG SRC="http://imagizer.imageshack.us/v2/320x240q90/546/5tp4.png">
+        <h1>YWeather</h1>
       </div>
       
 
       <div data-role='content'>
 
-
-<div>
-<br> 
-<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=pebbleweather%40gmail%2ecom&lc=US&item_name=YWeather&currency_code=EUR&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted"><img src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif"></a>
-</div>
-
-          
-        <div data-role="fieldcontain">
-          <label for="language">Language</label>
-          <select name="language"  id="language" data-theme="c" data-track-theme="d">
-            <option value="C">Czech</option>
-            <option value="0">English</option>
-            <option value="F">French</option>
-            <option value="G">German</option>
-            <option value="I">Italian</option>
-            <option value="E">Spanish</option>
-          </select>
-        </div>
-
+      <IMG SRC="http://imagizer.imageshack.us/v2/320x240q90/546/5tp4.png">
 
         <div data-role="fieldcontain">
           <label for="gps_switch">Use GPS</label>
@@ -96,7 +78,6 @@
 
       function saveOptions() {
        var options = {
-          'language': $('#language').val(),
           'use_gps': $('#gps_switch').val(),
           'location': $('#location').val(),
           'units': $('input:radio[name=units]:checked').val(),
@@ -113,7 +94,6 @@
           document.location = 'pebblejs://close#' + encodeURIComponent(JSON.stringify(saveOptions()));
         });
 
-        $('#language').val(getQueryVariable('language')).change();
         $('#gps_switch').val(getQueryVariable('use_gps')).change();
         $('#location').val(getQueryVariable('location'));
         if (getQueryVariable('units') == "celsius") {
