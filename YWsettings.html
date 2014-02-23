@@ -28,21 +28,24 @@
 
 <p></p>
 
- 
-          <label for="language">Language</label>
-          <SELECT NAME="language" Size=1> 
-          <OPTION VALUE="C">Czechi</OPTION> 
+
+          
+        <div data-role="fieldcontain">
+          <label for="language">Use GPS</label>
+          <select name="language" id="language" data-theme="c" data-track-theme="d">
+          <OPTION VALUE="C">Czech</OPTION> 
           <OPTION VALUE="0">English</OPTION>
           <OPTION VALUE="F">French</OPTION> 
           <OPTION VALUE="G">German</OPTION> 
           <OPTION VALUE="I">Italian</OPTION>
           <OPTION VALUE="E">Spanish</OPTION>
-          </SELECT> 
+          </select>
+        </div>
 
 
         <div data-role="fieldcontain">
           <label for="gps_switch">Use GPS</label>
-          <select name="gps_switch" id="gps_switch" data-theme="c"  data-track-theme="d">
+          <select name="gps_switch" id="gps_switch" data-theme="c" data-role="slider" data-track-theme="d">
             <option value="false">No</option>
             <option value="true">Yes</option>
           </select>
