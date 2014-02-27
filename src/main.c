@@ -8,8 +8,8 @@
 	//Spanish: 3ab59c04-142f-4ff1-b90d-aab93ce54a32
 	//Italian: 6279f406-1114-4b2f-852d-65b0e8ff2a73
 
-#define WEEKDAY_FRAME    (GRect(5, 2, 95, 168-145))
-#define BATT_FRAME       (GRect(98, 4, 40, 168-146))
+#define WEEKDAY_FRAME    (GRect(5, 2, 102, 168-145)) //,,95,
+#define BATT_FRAME       (GRect(103, 4, 40, 168-146)) //98,,
 #define BT_FRAME         (GRect(127, 4, 23, 168-146))
 #define TIME_FRAME       (GRect(0, 15, 144, 168-16))
 #define DATE_FRAME       (GRect(1, 69, 139, 168-62))
@@ -125,7 +125,7 @@ enum WeatherKey {
         static char last_update[]="00:00 ";
         static int initial_minute;
 
-        static char weekday_text[] = "XXXXXXXXXX";
+        static char weekday_text[] = "XXXXXXXXXXXX";
         static char date_text[] = "XXX 00";
         static char month_text[] = "XXXXXXXXXXXXX";
         static char day_text[] = "31";
@@ -134,7 +134,9 @@ enum WeatherKey {
 	  	static char inverted[]="B";
         
         //bool translate_sp = true;
-        static char language[] = "E"; //"E" = Spanish // "I" = Italian // "G" = German // "C" = Czech // "F" = French
+        static char language[] = "R"; 	//"0" = English //"E" = Spanish // "I" = Italian // "G" = German 
+										// "C" = Czech // "F" = French // "P" = Portuguese // "X" = Finnish // "D" = Dutch
+										//"1" = Polish // "S" = Swedish
 		bool color_inverted;
 		int ICON_CODE;
 		bool batt_status = true; //If true, display the battery status all the time; if false, just when running low (<10%)
@@ -840,7 +842,508 @@ void TranslateDate(){
                                 memcpy(&weekday_text, "Dimanche", strlen("Dimanche")+1); // Sunday
                         }
                         
-        } //END OF FRENCH                        
+        } //END OF FRENCH        
+		 	else if (language[0] == 'P'){ //PORTUGUESE
+                                if (month_text[0] == 'J' && month_text[1] == 'a')
+                        {
+                                memcpy(&month_text, "   Janeiro", strlen("   Janeiro")+1); // January
+                        }
+                        
+                        if (month_text[0] == 'F' && month_text[1] == 'e')
+                        {
+                                memcpy(&month_text, "   Fevereiro", strlen("   Fevereiro")+1); // Febrary
+                        }
+                        
+                        if (month_text[0] == 'M' && month_text[2] == 'r')
+                        {
+                                memcpy(&month_text, "   Março", strlen("   Março")+1); // March
+                        }
+                        
+                        if (month_text[0] == 'A' && month_text[1] == 'p')
+                        {
+                                memcpy(&month_text, "   Abril", strlen("   Abril")+1); // April
+                        }
+                        
+                        if (month_text[0] == 'M' && month_text[2] == 'y')
+                        {
+                                memcpy(&month_text, "   Maio", strlen("   Maio")+1); // May
+                        }
+                        
+                        if (month_text[0] == 'J' && month_text[2] == 'n')
+                        {
+                                memcpy(&month_text, "   Junho", strlen("   Junho")+1); // June
+                        }
+                        
+                        if (month_text[0] == 'J' && month_text[2] == 'l')
+                        {
+                                memcpy(&month_text, "   Julho", strlen("   Julho")+1); // July
+                        }
+                        
+                        if (month_text[0] == 'A' && month_text[1] == 'u')
+                        {
+                                memcpy(&month_text, "   Agosto", strlen("   Agosto")+1); // August
+                        }
+                        
+                        if (month_text[0] == 'S' && month_text[1] == 'e')
+                        {
+                                memcpy(&month_text, "   Setembro", strlen("   Setembro")+1); // September
+                        }
+                        
+                        if (month_text[0] == 'O' && month_text[1] == 'c')
+                        {
+                                memcpy(&month_text, "   Outubro", strlen("   Outubro")+1); // October
+                        }
+                        
+                        if (month_text[0] == 'N' && month_text[1] == 'o')
+                        {
+                                memcpy(&month_text, "   Novembro", strlen("   Novembro")+1); // November
+                        }
+                        
+                        if (month_text[0] == 'D' && month_text[1] == 'e')
+                        {
+                                memcpy(&month_text, "   Dezembro", strlen("   Dezembro")+1); // December
+                        }
+                        
+                        // Primitive hack to translate the day of week to another language
+                        // Needs to be exactly 3 characters, e.g. "Mon" or "Mo "
+                        // Supported characters: A-Z, a-z, 0-9
+                        if (weekday_text[0] == 'M')
+                        {
+                                memcpy(&weekday_text, "Segunda", strlen("Segunda")+1); // Monday
+                        }
+                        
+                        if (weekday_text[0] == 'T' && weekday_text[1] == 'u')
+                        {
+                                memcpy(&weekday_text, "Terça", strlen("Terça")+1); // Tuesday
+                        }
+                        
+                        if (weekday_text[0] == 'W')
+                        {
+                                memcpy(&weekday_text, "Quarta", strlen("Quarta")+1); // Wednesday
+                        }
+                        
+                        if (weekday_text[0] == 'T' && weekday_text[1] == 'h')
+                        {
+                                memcpy(&weekday_text, "Quinta", strlen("Quinta")+1); // Thursday
+                        }
+                        
+                        if (weekday_text[0] == 'F')
+                        {
+                                memcpy(&weekday_text, "Sexta", strlen("Sexta")+1); // Friday
+                        }
+                        
+                        if (weekday_text[0] == 'S' && weekday_text[1] == 'a')
+                        {
+                                memcpy(&weekday_text, "Sábado", strlen("Sábado")+1); // Saturday
+                        }
+                        
+                        if (weekday_text[0] == 'S' && weekday_text[1] == 'u')
+                        {
+                                memcpy(&weekday_text, "Domingo", strlen("Domingo")+1); // Sunday
+                        }
+                        
+        } //END OF PORTUGUESE
+			 	else if (language[0] == 'X'){ //FINNISH
+                                if (month_text[0] == 'J' && month_text[1] == 'a')
+                        {
+                                memcpy(&month_text, "  . Tammikuu", strlen("  . Tammikuu")+1); // January
+                        }
+                        
+                        if (month_text[0] == 'F' && month_text[1] == 'e')
+                        {
+                                memcpy(&month_text, "  . Helmikuu", strlen("  . Helmikuu")+1); // Febrary
+                        }
+                        
+                        if (month_text[0] == 'M' && month_text[2] == 'r')
+                        {
+                                memcpy(&month_text, "  . Maaliskuu", strlen("  . Maaliskuu")+1); // March
+                        }
+                        
+                        if (month_text[0] == 'A' && month_text[1] == 'p')
+                        {
+                                memcpy(&month_text, "  . Huhtikuu", strlen("  . Huhtikuu")+1); // April
+                        }
+                        
+                        if (month_text[0] == 'M' && month_text[2] == 'y')
+                        {
+                                memcpy(&month_text, "  . Toukokuu", strlen("  . Toukokuu")+1); // May
+                        }
+                        
+                        if (month_text[0] == 'J' && month_text[2] == 'n')
+                        {
+                                memcpy(&month_text, "  . Kesäkuu", strlen("  . Kesäkuu")+1); // June
+                        }
+                        
+                        if (month_text[0] == 'J' && month_text[2] == 'l')
+                        {
+                                memcpy(&month_text, "  . Heinäkuu", strlen("  . Heinäkuu")+1); // July
+                        }
+                        
+                        if (month_text[0] == 'A' && month_text[1] == 'u')
+                        {
+                                memcpy(&month_text, "  . Elokuu", strlen("  . Elokuu")+1); // August
+                        }
+                        
+                        if (month_text[0] == 'S' && month_text[1] == 'e')
+                        {
+                                memcpy(&month_text, "  . Syyskuu", strlen("  . Syyskuu")+1); // September
+                        }
+                        
+                        if (month_text[0] == 'O' && month_text[1] == 'c')
+                        {
+                                memcpy(&month_text, "  . Lokakuu", strlen("  . Lokakuu")+1); // October
+                        }
+                        
+                        if (month_text[0] == 'N' && month_text[1] == 'o')
+                        {
+                                memcpy(&month_text, "  . Marraskuu", strlen("  . Marraskuu")+1); // November
+                        }
+                        
+                        if (month_text[0] == 'D' && month_text[1] == 'e')
+                        {
+                                memcpy(&month_text, "  . Joulukuu", strlen("  . Joulukuu")+1); // December
+                        }
+                        
+                        // Primitive hack to translate the day of week to another language
+                        // Needs to be exactly 3 characters, e.g. "Mon" or "Mo "
+                        // Supported characters: A-Z, a-z, 0-9
+                        if (weekday_text[0] == 'M')
+                        {
+                                memcpy(&weekday_text, "Maanantai", strlen("Maanantai")+1); // Monday
+                        }
+                        
+                        if (weekday_text[0] == 'T' && weekday_text[1] == 'u')
+                        {
+                                memcpy(&weekday_text, "Tiistai", strlen("Tiistai")+1); // Tuesday
+                        }
+                        
+                        if (weekday_text[0] == 'W')
+                        {
+                                memcpy(&weekday_text, "Keskiviikko", strlen("Keskiviikko")+1); // Wednesday
+                        }
+                        
+                        if (weekday_text[0] == 'T' && weekday_text[1] == 'h')
+                        {
+                                memcpy(&weekday_text, "Torstai", strlen("Torstai")+1); // Thursday
+                        }
+                        
+                        if (weekday_text[0] == 'F')
+                        {
+                                memcpy(&weekday_text, "Perjantai", strlen("Perjantai")+1); // Friday
+                        }
+                        
+                        if (weekday_text[0] == 'S' && weekday_text[1] == 'a')
+                        {
+                                memcpy(&weekday_text, "Lauantai", strlen("Lauantai")+1); // Saturday
+                        }
+                        
+                        if (weekday_text[0] == 'S' && weekday_text[1] == 'u')
+                        {
+                                memcpy(&weekday_text, "Sunnuntai", strlen("Sunnuntai")+1); // Sunday
+                        }
+                        
+        } //END OF FINNISH
+	
+					 	else if (language[0] == 'D'){ //DUTCH
+                                if (month_text[0] == 'J' && month_text[1] == 'a')
+                        {
+                                memcpy(&month_text, "   Januari", strlen("   Januari")+1); // January
+                        }
+                        
+                        if (month_text[0] == 'F' && month_text[1] == 'e')
+                        {
+                                memcpy(&month_text, "   Februari", strlen("   Februari")+1); // Febrary
+                        }
+                        
+                        if (month_text[0] == 'M' && month_text[2] == 'r')
+                        {
+                                memcpy(&month_text, "   Maart", strlen("   Maart")+1); // March
+                        }
+                        
+                        if (month_text[0] == 'A' && month_text[1] == 'p')
+                        {
+                                memcpy(&month_text, "   April", strlen("   April")+1); // April
+                        }
+                        
+                        if (month_text[0] == 'M' && month_text[2] == 'y')
+                        {
+                                memcpy(&month_text, "   Mei", strlen("   Mei")+1); // May
+                        }
+                        
+                        if (month_text[0] == 'J' && month_text[2] == 'n')
+                        {
+                                memcpy(&month_text, "   Juni", strlen("   Juni")+1); // June
+                        }
+                        
+                        if (month_text[0] == 'J' && month_text[2] == 'l')
+                        {
+                                memcpy(&month_text, "   Juli", strlen("   Juli")+1); // July
+                        }
+                        
+                        if (month_text[0] == 'A' && month_text[1] == 'u')
+                        {
+                                memcpy(&month_text, "   Augustus", strlen("   Augustus")+1); // August
+                        }
+                        
+                        if (month_text[0] == 'S' && month_text[1] == 'e')
+                        {
+                                memcpy(&month_text, "   September", strlen("   September")+1); // September
+                        }
+                        
+                        if (month_text[0] == 'O' && month_text[1] == 'c')
+                        {
+                                memcpy(&month_text, "   Oktober", strlen("   Oktober")+1); // October
+                        }
+                        
+                        if (month_text[0] == 'N' && month_text[1] == 'o')
+                        {
+                                memcpy(&month_text, "   November", strlen("   November")+1); // November
+                        }
+                        
+                        if (month_text[0] == 'D' && month_text[1] == 'e')
+                        {
+                                memcpy(&month_text, "   December", strlen("   December")+1); // December
+                        }
+                        
+                        // Primitive hack to translate the day of week to another language
+                        // Needs to be exactly 3 characters, e.g. "Mon" or "Mo "
+                        // Supported characters: A-Z, a-z, 0-9
+                        if (weekday_text[0] == 'M')
+                        {
+                                memcpy(&weekday_text, "Maandag", strlen("Maandag")+1); // Monday
+                        }
+                        
+                        if (weekday_text[0] == 'T' && weekday_text[1] == 'u')
+                        {
+                                memcpy(&weekday_text, "Dinsdag", strlen("Dinsdag")+1); // Tuesday
+                        }
+                        
+                        if (weekday_text[0] == 'W')
+                        {
+                                memcpy(&weekday_text, "Woensdag", strlen("Woensdag")+1); // Wednesday
+                        }
+                        
+                        if (weekday_text[0] == 'T' && weekday_text[1] == 'h')
+                        {
+                                memcpy(&weekday_text, "Donderdag", strlen("Donderdag")+1); // Thursday
+                        }
+                        
+                        if (weekday_text[0] == 'F')
+                        {
+                                memcpy(&weekday_text, "Vrijdag", strlen("Vrijdag")+1); // Friday
+                        }
+                        
+                        if (weekday_text[0] == 'S' && weekday_text[1] == 'a')
+                        {
+                                memcpy(&weekday_text, "Zaterdag", strlen("Zaterdag")+1); // Saturday
+                        }
+                        
+                        if (weekday_text[0] == 'S' && weekday_text[1] == 'u')
+                        {
+                                memcpy(&weekday_text, "Zondag", strlen("Zondag")+1); // Sunday
+                        }
+                        
+        } //END OF DUTCH
+					else if (language[0] == '1'){ //POLISH
+                        if (month_text[0] == 'J' && month_text[1] == 'a')
+                        {
+                                memcpy(&month_text, "   stycznia", strlen("   stycznia")+1); // January
+                        }
+                        
+                        if (month_text[0] == 'F' && month_text[1] == 'e')
+                        {
+                                memcpy(&month_text, "   lutego", strlen("   lutego")+1); // Febrary
+                        }
+                        
+                        if (month_text[0] == 'M' && month_text[2] == 'r')
+                        {
+                                memcpy(&month_text, "   marca", strlen("   marca")+1); // March
+                        }
+                        
+                        if (month_text[0] == 'A' && month_text[1] == 'p')
+                        {
+                                memcpy(&month_text, "   kwietnia", strlen("   kwietnia")+1); // April
+                        }
+                        
+                        if (month_text[0] == 'M' && month_text[2] == 'y')
+                        {
+                                memcpy(&month_text, "   maja", strlen("   maja")+1); // May
+                        }
+                        
+                        if (month_text[0] == 'J' && month_text[2] == 'n')
+                        {
+                                memcpy(&month_text, "   czerwca", strlen("   czerwca")+1); // June
+                        }
+                        
+                        if (month_text[0] == 'J' && month_text[2] == 'l')
+                        {
+                                memcpy(&month_text, "   lipca", strlen("   lipca")+1); // July
+                        }
+                        
+                        if (month_text[0] == 'A' && month_text[1] == 'u')
+                        {
+                                memcpy(&month_text, "   sierpnia", strlen("   sierpnia")+1); // August
+                        }
+                        
+                        if (month_text[0] == 'S' && month_text[1] == 'e')
+                        {
+                                memcpy(&month_text, "   wrzesnia", strlen("   wrzesnia")+1); // September
+                        }
+                        
+                        if (month_text[0] == 'O' && month_text[1] == 'c')
+                        {
+                                memcpy(&month_text, "   pazdziernika", strlen("   pazdziernika")+1); // October
+                        }
+                        
+                        if (month_text[0] == 'N' && month_text[1] == 'o')
+                        {
+                                memcpy(&month_text, "   listopada", strlen("   listopada")+1); // November
+                        }
+                        
+                        if (month_text[0] == 'D' && month_text[1] == 'e')
+                        {
+                                memcpy(&month_text, "   grudnia", strlen("   grudnia")+1); // December
+                        }
+                        
+                        // Primitive hack to translate the day of week to another language
+                        // Needs to be exactly 3 characters, e.g. "Mon" or "Mo "
+                        // Supported characters: A-Z, a-z, 0-9
+                        if (weekday_text[0] == 'M')
+                        {
+                                memcpy(&weekday_text, "Poniedzialek", strlen("Poniedzialek")+1); // Monday
+                        }
+                        
+                        if (weekday_text[0] == 'T' && weekday_text[1] == 'u')
+                        {
+                                memcpy(&weekday_text, "Wtorek", strlen("Wtorek")+1); // Tuesday
+                        }
+                        
+                        if (weekday_text[0] == 'W')
+                        {
+                                memcpy(&weekday_text, "Sroda", strlen("Sroda")+1); // Wednesday
+                        }
+                        
+                        if (weekday_text[0] == 'T' && weekday_text[1] == 'h')
+                        {
+                                memcpy(&weekday_text, "Czwartek", strlen("Czwartek")+1); // Thursday
+                        }
+                        
+                        if (weekday_text[0] == 'F')
+                        {
+                                memcpy(&weekday_text, "Piątek", strlen("Piątek")+1); // Friday
+                        }
+                        
+                        if (weekday_text[0] == 'S' && weekday_text[1] == 'a')
+                        {
+                                memcpy(&weekday_text, "Sobota", strlen("Sobota")+1); // Saturday
+                        }
+                        
+                        if (weekday_text[0] == 'S' && weekday_text[1] == 'u')
+                        {
+                                memcpy(&weekday_text, "Niedziela", strlen("Niedziela")+1); // Sunday
+                        }
+                        
+        } //END OF POLISH
+				else if (language[0] == 'S'){ //SWEDISH
+                        if (month_text[0] == 'J' && month_text[1] == 'a')
+                        {
+                                memcpy(&month_text, "   Januari", strlen("   Januari")+1); // January
+                        }
+                        
+                        if (month_text[0] == 'F' && month_text[1] == 'e')
+                        {
+                                memcpy(&month_text, "   Februari", strlen("   Februari")+1); // Febrary
+                        }
+                        
+                        if (month_text[0] == 'M' && month_text[2] == 'r')
+                        {
+                                memcpy(&month_text, "   Mars", strlen("   Mars")+1); // March
+                        }
+                        
+                        if (month_text[0] == 'A' && month_text[1] == 'p')
+                        {
+                                memcpy(&month_text, "   April", strlen("   April")+1); // April
+                        }
+                        
+                        if (month_text[0] == 'M' && month_text[2] == 'y')
+                        {
+                                memcpy(&month_text, "   Maj", strlen("   Maj")+1); // May
+                        }
+                        
+                        if (month_text[0] == 'J' && month_text[2] == 'n')
+                        {
+                                memcpy(&month_text, "   Juni", strlen("   Juni")+1); // June
+                        }
+                        
+                        if (month_text[0] == 'J' && month_text[2] == 'l')
+                        {
+                                memcpy(&month_text, "   Juli", strlen("   Juli")+1); // July
+                        }
+                        
+                        if (month_text[0] == 'A' && month_text[1] == 'u')
+                        {
+                                memcpy(&month_text, "   Augusti", strlen("   Augusti")+1); // August
+                        }
+                        
+                        if (month_text[0] == 'S' && month_text[1] == 'e')
+                        {
+                                memcpy(&month_text, "   September", strlen("   September")+1); // September
+                        }
+                        
+                        if (month_text[0] == 'O' && month_text[1] == 'c')
+                        {
+                                memcpy(&month_text, "   Oktober", strlen("   Oktober")+1); // October
+                        }
+                        
+                        if (month_text[0] == 'N' && month_text[1] == 'o')
+                        {
+                                memcpy(&month_text, "   November", strlen("   November")+1); // November
+                        }
+                        
+                        if (month_text[0] == 'D' && month_text[1] == 'e')
+                        {
+                                memcpy(&month_text, "   December", strlen("   December")+1); // December
+                        }
+                        
+                        // Primitive hack to translate the day of week to another language
+                        // Needs to be exactly 3 characters, e.g. "Mon" or "Mo "
+                        // Supported characters: A-Z, a-z, 0-9
+                        if (weekday_text[0] == 'M')
+                        {
+                                memcpy(&weekday_text, "Måndag", strlen("Måndag")+1); // Monday
+                        }
+                        
+                        if (weekday_text[0] == 'T' && weekday_text[1] == 'u')
+                        {
+                                memcpy(&weekday_text, "Tisdag", strlen("Tisdag")+1); // Tuesday
+                        }
+                        
+                        if (weekday_text[0] == 'W')
+                        {
+                                memcpy(&weekday_text, "Onsdag", strlen("Onsdag")+1); // Wednesday
+                        }
+                        
+                        if (weekday_text[0] == 'T' && weekday_text[1] == 'h')
+                        {
+                                memcpy(&weekday_text, "Torsdag", strlen("Torsdag")+1); // Thursday
+                        }
+                        
+                        if (weekday_text[0] == 'F')
+                        {
+                                memcpy(&weekday_text, "Fredag", strlen("Fredag")+1); // Friday
+                        }
+                        
+                        if (weekday_text[0] == 'S' && weekday_text[1] == 'a')
+                        {
+                                memcpy(&weekday_text, "Lördag", strlen("Lördag")+1); // Saturday
+                        }
+                        
+                        if (weekday_text[0] == 'S' && weekday_text[1] == 'u')
+                        {
+                                memcpy(&weekday_text, "Söndag ", strlen("Söndag ")+1); // Sunday
+                        }
+                        
+        } //END OF SWEDISH
 } //END OF Translate_Date
 
 //**************************//
