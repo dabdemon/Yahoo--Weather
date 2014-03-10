@@ -133,10 +133,10 @@ enum WeatherKey {
         static char time_text[] = "00:00";
 	  	static char inverted[]="B";
         
-        //bool translate_sp = true;
+        bool translate_sp = true;
         static char language[] = "R"; 	//"0" = English //"E" = Spanish // "I" = Italian // "G" = German 
 										// "C" = Czech // "F" = French // "P" = Portuguese // "X" = Finnish // "D" = Dutch
-										//"1" = Polish // "S" = Swedish
+										//"1" = Polish // "S" = Swedish // "2" = Danish //"3" = Catalan
 		bool color_inverted;
 		int ICON_CODE;
 		bool batt_status = true; //If true, display the battery status all the time; if false, just when running low (<10%)
@@ -342,6 +342,7 @@ void InvertColors(bool inverted)
 void TranslateDate(){
         
         if (language[0] == 'E'){ //SPANISH
+			translate_sp= true;
                         
                         if (month_text[0] == 'J' && month_text[1] == 'a')
                         {
@@ -444,7 +445,9 @@ void TranslateDate(){
 
         }//END OF SPANISH
         else if (language[0] == 'I'){ //ITALIAN
-                                if (month_text[0] == 'J' && month_text[1] == 'a')
+			translate_sp= true;
+			
+                        if (month_text[0] == 'J' && month_text[1] == 'a')
                         {
                                 memcpy(&month_text, "   gennaio", strlen("   gennaio")+1); // January
                         }
@@ -544,7 +547,8 @@ void TranslateDate(){
                         
         } //END OF ITALIAN                        
         else if (language[0] == 'G'){ //GERMAN
-                                if (month_text[0] == 'J' && month_text[1] == 'a')
+			translate_sp= true;
+                        if (month_text[0] == 'J' && month_text[1] == 'a')
                         {
                                 memcpy(&month_text, "  .Januar", strlen("  .Januar")+1); // January
                         }
@@ -644,7 +648,8 @@ void TranslateDate(){
                         
         } //END OF GERMAN                        
                 else if (language[0] == 'C'){ //CZECH
-                                if (month_text[0] == 'J' && month_text[1] == 'a')
+					translate_sp= true;
+                        if (month_text[0] == 'J' && month_text[1] == 'a')
                         {
                                 memcpy(&month_text, "Leden ", strlen("Leden ")+1); // January
                         }
@@ -744,7 +749,8 @@ void TranslateDate(){
                         
         } //END OF CZECH     
 	 	else if (language[0] == 'F'){ //FRENCH
-                                if (month_text[0] == 'J' && month_text[1] == 'a')
+			translate_sp= true;
+                        if (month_text[0] == 'J' && month_text[1] == 'a')
                         {
                                 memcpy(&month_text, "   janvier", strlen("   janvier")+1); // January
                         }
@@ -844,7 +850,9 @@ void TranslateDate(){
                         
         } //END OF FRENCH        
 		 	else if (language[0] == 'P'){ //PORTUGUESE
-                                if (month_text[0] == 'J' && month_text[1] == 'a')
+				translate_sp= true;
+				
+                        if (month_text[0] == 'J' && month_text[1] == 'a')
                         {
                                 memcpy(&month_text, "   Janeiro", strlen("   Janeiro")+1); // January
                         }
@@ -944,7 +952,9 @@ void TranslateDate(){
                         
         } //END OF PORTUGUESE
 			 	else if (language[0] == 'X'){ //FINNISH
-                                if (month_text[0] == 'J' && month_text[1] == 'a')
+					translate_sp= true;
+					
+                        if (month_text[0] == 'J' && month_text[1] == 'a')
                         {
                                 memcpy(&month_text, "  . Tammikuu", strlen("  . Tammikuu")+1); // January
                         }
@@ -1044,8 +1054,10 @@ void TranslateDate(){
                         
         } //END OF FINNISH
 	
-					 	else if (language[0] == 'D'){ //DUTCH
-                                if (month_text[0] == 'J' && month_text[1] == 'a')
+		else if (language[0] == 'D'){ //DUTCH
+						translate_sp= true;
+							
+                        if (month_text[0] == 'J' && month_text[1] == 'a')
                         {
                                 memcpy(&month_text, "   Januari", strlen("   Januari")+1); // January
                         }
@@ -1145,6 +1157,8 @@ void TranslateDate(){
                         
         } //END OF DUTCH
 					else if (language[0] == '1'){ //POLISH
+						translate_sp= true;
+						
                         if (month_text[0] == 'J' && month_text[1] == 'a')
                         {
                                 memcpy(&month_text, "   stycznia", strlen("   stycznia")+1); // January
@@ -1245,6 +1259,8 @@ void TranslateDate(){
                         
         } //END OF POLISH
 				else if (language[0] == 'S'){ //SWEDISH
+						translate_sp= true;
+					
                         if (month_text[0] == 'J' && month_text[1] == 'a')
                         {
                                 memcpy(&month_text, "   Januari", strlen("   Januari")+1); // January
@@ -1344,6 +1360,213 @@ void TranslateDate(){
                         }
                         
         } //END OF SWEDISH
+	
+				else if (language[0] == '2'){ //DANISH
+						translate_sp= true;
+					
+                        if (month_text[0] == 'J' && month_text[1] == 'a')
+                        {
+                                memcpy(&month_text, "   . Januar", strlen("   . Januar")+1); // January
+                        }
+                        
+                        if (month_text[0] == 'F' && month_text[1] == 'e')
+                        {
+                                memcpy(&month_text, "   . Februar", strlen("   . Februar")+1); // Febrary
+                        }
+                        
+                        if (month_text[0] == 'M' && month_text[2] == 'r')
+                        {
+                                memcpy(&month_text, "   . Marts", strlen("   . Marts")+1); // March
+                        }
+                        
+                        if (month_text[0] == 'A' && month_text[1] == 'p')
+                        {
+                                memcpy(&month_text, "   . April", strlen("   . April")+1); // April
+                        }
+                        
+                        if (month_text[0] == 'M' && month_text[2] == 'y')
+                        {
+                                memcpy(&month_text, "   . Maj", strlen("   . Maj")+1); // May
+                        }
+                        
+                        if (month_text[0] == 'J' && month_text[2] == 'n')
+                        {
+                                memcpy(&month_text, "   . Juni", strlen("   . Juni")+1); // June
+                        }
+                        
+                        if (month_text[0] == 'J' && month_text[2] == 'l')
+                        {
+                                memcpy(&month_text, "   . Juli", strlen("   . Juli")+1); // July
+                        }
+                        
+                        if (month_text[0] == 'A' && month_text[1] == 'u')
+                        {
+                                memcpy(&month_text, "   . August", strlen("   . August")+1); // August
+                        }
+                        
+                        if (month_text[0] == 'S' && month_text[1] == 'e')
+                        {
+                                memcpy(&month_text, "   . September", strlen("   . September")+1); // September
+                        }
+                        
+                        if (month_text[0] == 'O' && month_text[1] == 'c')
+                        {
+                                memcpy(&month_text, "   . Oktober", strlen("   . Oktober")+1); // October
+                        }
+                        
+                        if (month_text[0] == 'N' && month_text[1] == 'o')
+                        {
+                                memcpy(&month_text, "   . November", strlen("   . November")+1); // November
+                        }
+                        
+                        if (month_text[0] == 'D' && month_text[1] == 'e')
+                        {
+                                memcpy(&month_text, "   . December", strlen("   . December")+1); // December
+                        }
+                        
+                        // Primitive hack to translate the day of week to another language
+                        // Needs to be exactly 3 characters, e.g. "Mon" or "Mo "
+                        // Supported characters: A-Z, a-z, 0-9
+                        if (weekday_text[0] == 'M')
+                        {
+                                memcpy(&weekday_text, "Mandag", strlen("Mandag")+1); // Monday
+                        }
+                        
+                        if (weekday_text[0] == 'T' && weekday_text[1] == 'u')
+                        {
+                                memcpy(&weekday_text, "Tirsdag", strlen("Tirsdag")+1); // Tuesday
+                        }
+                        
+                        if (weekday_text[0] == 'W')
+                        {
+                                memcpy(&weekday_text, "Onsdag", strlen("Onsdag")+1); // Wednesday
+                        }
+                        
+                        if (weekday_text[0] == 'T' && weekday_text[1] == 'h')
+                        {
+                                memcpy(&weekday_text, "Torsdag", strlen("Torsdag")+1); // Thursday
+                        }
+                        
+                        if (weekday_text[0] == 'F')
+                        {
+                                memcpy(&weekday_text, "Fredag", strlen("Fredag")+1); // Friday
+                        }
+                        
+                        if (weekday_text[0] == 'S' && weekday_text[1] == 'a')
+                        {
+                                memcpy(&weekday_text, "Lørdag", strlen("Lørdag")+1); // Saturday
+                        }
+                        
+                        if (weekday_text[0] == 'S' && weekday_text[1] == 'u')
+                        {
+                                memcpy(&weekday_text, "Søndag ", strlen("Søndag ")+1); // Sunday
+                        }
+                        
+        } //END OF DANISH
+					else if (language[0] == '3'){ //CATALAN
+						translate_sp= true;
+					
+                        if (month_text[0] == 'J' && month_text[1] == 'a')
+                        {
+                                memcpy(&month_text, "   Gener", strlen("   Gener")+1); // January
+                        }
+                        
+                        if (month_text[0] == 'F' && month_text[1] == 'e')
+                        {
+                                memcpy(&month_text, "   Febrer", strlen("   Febrer")+1); // Febrary
+                        }
+                        
+                        if (month_text[0] == 'M' && month_text[2] == 'r')
+                        {
+                                memcpy(&month_text, "   Març", strlen("   Març")+1); // March
+                        }
+                        
+                        if (month_text[0] == 'A' && month_text[1] == 'p')
+                        {
+                                memcpy(&month_text, "   Abril", strlen("   Abril")+1); // April
+                        }
+                        
+                        if (month_text[0] == 'M' && month_text[2] == 'y')
+                        {
+                                memcpy(&month_text, "   Maig", strlen("   Maig")+1); // May
+                        }
+                        
+                        if (month_text[0] == 'J' && month_text[2] == 'n')
+                        {
+                                memcpy(&month_text, "   Juny", strlen("   Juny")+1); // June
+                        }
+                        
+                        if (month_text[0] == 'J' && month_text[2] == 'l')
+                        {
+                                memcpy(&month_text, "   Juliol", strlen("   Juliol")+1); // July
+                        }
+                        
+                        if (month_text[0] == 'A' && month_text[1] == 'u')
+                        {
+                                memcpy(&month_text, "   Agost", strlen("   Agost")+1); // August
+                        }
+                        
+                        if (month_text[0] == 'S' && month_text[1] == 'e')
+                        {
+                                memcpy(&month_text, "   Setembre", strlen("   Setembre")+1); // September
+                        }
+                        
+                        if (month_text[0] == 'O' && month_text[1] == 'c')
+                        {
+                                memcpy(&month_text, "   Octubre", strlen("   Octubre")+1); // October
+                        }
+                        
+                        if (month_text[0] == 'N' && month_text[1] == 'o')
+                        {
+                                memcpy(&month_text, "   Novembre", strlen("   Novembre")+1); // November
+                        }
+                        
+                        if (month_text[0] == 'D' && month_text[1] == 'e')
+                        {
+                                memcpy(&month_text, "   Desembre", strlen("   Desembre")+1); // December
+                        }
+                        
+                        // Primitive hack to translate the day of week to another language
+                        // Needs to be exactly 3 characters, e.g. "Mon" or "Mo "
+                        // Supported characters: A-Z, a-z, 0-9
+                        if (weekday_text[0] == 'M')
+                        {
+                                memcpy(&weekday_text, "Dilluns", strlen("Dilluns")+1); // Monday
+                        }
+                        
+                        if (weekday_text[0] == 'T' && weekday_text[1] == 'u')
+                        {
+                                memcpy(&weekday_text, "Dimarts", strlen("Dimarts")+1); // Tuesday
+                        }
+                        
+                        if (weekday_text[0] == 'W')
+                        {
+                                memcpy(&weekday_text, "Dimecres", strlen("Dimecres")+1); // Wednesday
+                        }
+                        
+                        if (weekday_text[0] == 'T' && weekday_text[1] == 'h')
+                        {
+                                memcpy(&weekday_text, "Dijous", strlen("Dijous")+1); // Thursday
+                        }
+                        
+                        if (weekday_text[0] == 'F')
+                        {
+                                memcpy(&weekday_text, "Divendres", strlen("Divendres")+1); // Friday
+                        }
+                        
+                        if (weekday_text[0] == 'S' && weekday_text[1] == 'a')
+                        {
+                                memcpy(&weekday_text, "Dissabte", strlen("Dissabte")+1); // Saturday
+                        }
+                        
+                        if (weekday_text[0] == 'S' && weekday_text[1] == 'u')
+                        {
+                                memcpy(&weekday_text, "Diumenge ", strlen("Diumenge ")+1); // Sunday
+                        }
+                        
+        } //END OF CATALAN
+
+	else{translate_sp=false;} //If the language is not in the list of translations then keep english.
 } //END OF Translate_Date
 
 //**************************//
@@ -1372,10 +1595,16 @@ void getDate()
 		//Translate to Spanish
 		TranslateDate();
 		
+		if(translate_sp){ 
 		//Concatenate the day to the month
 		//If Czech the month is before day
 		if (language[0] == 'C'){strncat(month_text,day_text,strlen(day_text));}
-		else {memcpy(&month_text, day_text, strlen(day_text));}                                        
+		else {memcpy(&month_text, day_text, strlen(day_text));}    
+		}
+		else{
+		//Keep the Month + Day (English format)
+		strftime(month_text,sizeof(month_text),"%B %e",tz1Ptr);
+		}
 	}
 	
 	
