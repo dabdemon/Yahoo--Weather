@@ -79,6 +79,14 @@
             <option value="true">Yes</option>
           </select>
         </div>
+        
+        <div data-role="fieldcontain">
+          <label for="vibes">Vibes on disconnect</label>
+          <select name="vibes" id="vibes" data-theme="c" data-role="slider" data-track-theme="d">
+            <option value="false">No</option>
+            <option value="true">Yes</option>
+          </select>
+        </div>
 
         <div class='ui-body ui-body-b'>
           <fieldset class='ui-grid-a'>
@@ -107,7 +115,8 @@
           'use_gps': $('#gps_switch').val(),
           'location': $('#location').val(),
           'units': $('input:radio[name=units]:checked').val(),
-          'invert_color': $('#invert_color').val()
+          'invert_color': $('#invert_color').val(),
+          'vibes': $('#vibes').val()
         }
         return options;
       }
@@ -129,6 +138,7 @@
           $('input:radio[name=units][value=fahrenheit]').prop('checked', true).trigger("click");
         }
         $('#invert_color').val(getQueryVariable('invert_color')).change();
+        $('#vibes').val(getQueryVariable('vibes')).change();
 
         // Disable location field based on GPS toggle
         $('#location').prop('disabled', $('#gps_switch').val() == "true");
