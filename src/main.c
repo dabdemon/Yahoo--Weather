@@ -50,27 +50,6 @@ static const uint32_t WEATHER_ICONS[] = {
   RESOURCE_ID_ICON_DRIZZLE,
 };
 
-static const uint32_t WEATHER_ICONSw[] = {
-  RESOURCE_ID_ICON_CLEAR_DAYw,
-  RESOURCE_ID_ICON_CLEAR_NIGHTw,
-  RESOURCE_ID_ICON_WINDw,
-  RESOURCE_ID_ICON_COLDw,
-  RESOURCE_ID_ICON_HOTw,
-  RESOURCE_ID_ICON_PARTLY_CLOUDY_DAYw,
-  RESOURCE_ID_ICON_PARTLY_CLOUDY_NIGHTw,
-  RESOURCE_ID_ICON_FOGw,
-  RESOURCE_ID_ICON_RAINw,
-  RESOURCE_ID_ICON_SNOWw,
-  RESOURCE_ID_ICON_SLEETw,
-  RESOURCE_ID_ICON_SNOW_SLEETw,
-  RESOURCE_ID_ICON_RAIN_SLEETw,
-  RESOURCE_ID_ICON_RAIN_SNOWw,
-  RESOURCE_ID_ICON_CLOUDYw,
-  RESOURCE_ID_ICON_THUNDERw,
-  RESOURCE_ID_ICON_NOT_AVAILABLEw,
-  RESOURCE_ID_ICON_DRIZZLEw,
-};
-
 //*************//
 // Define KEYS //
 //*************//
@@ -80,8 +59,9 @@ enum WeatherKey {
   WEATHER_ICON_KEY = 0x0,        // TUPLE_INT
   WEATHER_TEMPERATURE_KEY = 0x1, // TUPLE_CSTRING
   WEATHER_CITY_KEY = 0x2,        //	TUPLE_CSTRING
-  INVERT_COLOR_KEY = 0x3,  		 // TUPLE_CSTRING
+  INVERT_COLOR_KEY = 0x3,  		 // TUPLE_INT
   language_key = 0x4, 			// TUPLE_CSTRING
+  VIBES_KEY = 0x5,  		 // TUPLE_INT
 };
 
 //Declare initial window        
@@ -105,7 +85,6 @@ enum WeatherKey {
         
         static GBitmap *weather_image;
         static BitmapLayer *weather_icon_layer; //Layer for the weather info
-
 
 //Define and initialize variables
         //FONTS
@@ -136,12 +115,15 @@ enum WeatherKey {
         bool translate_sp = true;
         static char language[] = "R"; 	//"0" = English //"E" = Spanish // "I" = Italian // "G" = German 
 										// "C" = Czech // "F" = French // "P" = Portuguese // "X" = Finnish // "D" = Dutch
-										//"1" = Polish // "S" = Swedish // "2" = Danish //"3" = Catalan
+										//"1" = Polish // "S" = Swedish // "2" = Danish //"3" = Catalan // "H" = Hungarian
+										// "N"= Norwegian
 		bool color_inverted;
 		int ICON_CODE;
 		bool batt_status = true; //If true, display the battery status all the time; if false, just when running low (<10%)
 
+		bool blnvibes;
 
+		InverterLayer *inv_layer;
 
 //**************************//
 // Check the Battery Status //
@@ -156,9 +138,8 @@ static void handle_battery(BatteryChargeState charge_state) {
 
   if (charge_state.is_charging) {
     //snprintf(battery_text, sizeof(battery_text), "charging");
-			  if (color_inverted){Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_CHARw);}
-			  else {Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_CHAR);} 
-              bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
+	  		Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_CHAR);
+            bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
   } else {
 	  //snprintf(battery_text, sizeof(battery_text), "%d%%", charge_state.charge_percent);
 
@@ -168,44 +149,38 @@ static void handle_battery(BatteryChargeState charge_state) {
          //DO NOT display the batt_icon all the time. it is annoying.
          if (charge_state.charge_percent <=10) //If the charge is between 0% and 10%
          {
-			 if (color_inverted){Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_EMPTYw);}
-			 else{Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_EMPTY);}
+			 Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_EMPTY);
              bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
          }
 	  //CHECK IF BATTERY STATUS SHOULD DISPLAY ALL THE TIME OR JUST WHILE RUNNING LOW
 	  else if (batt_status){
 		 if (charge_state.charge_percent <=20) //If the charge is between 10% and 20%
          {
-			 if (color_inverted){Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_20w);}
-			 else{Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_20);}
+			 Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_20);
              bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
          }
 															
 		 else if (charge_state.charge_percent <=40) //If the charge is between 20% and 40%
          {
-			 if (color_inverted){Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_40w);}
-			 else{Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_40);}
+			 Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_40);
              bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
          }
 
 		 else if (charge_state.charge_percent <=60) //If the charge is between 40% and 60%
          {
-			 if (color_inverted){Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_60w);}
-			 else{Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_60);}
+			 Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_60);
              bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
          }
 															
 		 else if (charge_state.charge_percent <=80) //If the charge is between 60% and 80%
          {
-			 if (color_inverted){Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_80w);}
-			 else{Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_80);}
+			 Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_80);
              bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
          }
 															
 		 else if (charge_state.charge_percent >80) //If the charge is between 80% and 100%
          {
-			 if (color_inverted){Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_FULLw);}
-			 else{Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_FULL);}
+			 Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_FULL);
              bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
          }
 		  
@@ -224,9 +199,9 @@ static void vibes()
 	//Vibes on connection
     if (BTConnected == false){
 		if (bluetooth_connection_service_peek() == true){
-    	//Vibes to alert connection
-        vibes_double_pulse();
-        BTConnected = true;
+			//Vibes to alert connection
+			if (blnvibes==true){vibes_double_pulse();}
+			BTConnected = true;
 		}
 	}
                 
@@ -234,8 +209,8 @@ static void vibes()
     if (BTConnected == true){
     	//Vibes to alert disconnection
 		if (bluetooth_connection_service_peek()== false){
-		vibes_long_pulse();
-        BTConnected = false;
+			if(blnvibes==true){vibes_long_pulse();}
+       		BTConnected = false;
 	}
      }
 
@@ -252,8 +227,7 @@ static void handle_bluetooth(bool connected)
         if(connected ==true)
         {
 			if (BT_image) {gbitmap_destroy(BT_image);}
-			if (color_inverted){BT_image = gbitmap_create_with_resource(RESOURCE_ID_BT_CONNECTEDw);}
-			else{BT_image = gbitmap_create_with_resource(RESOURCE_ID_BT_CONNECTED);}
+			BT_image = gbitmap_create_with_resource(RESOURCE_ID_BT_CONNECTED);
             bitmap_layer_set_bitmap(BT_icon_layer, BT_image);
 			if (BTConnected == false){
 			//setup the timer to catch false disconnections (5 secs)
@@ -283,61 +257,16 @@ static void handle_bluetooth(bool connected)
 void InvertColors(bool inverted)
 {
 	
-	if(inverted)
-	{
-		window_set_background_color(my_window, GColorWhite);
-		
-		text_layer_set_text_color(Weekday_Layer, GColorBlack);
-		text_layer_set_text_color(Time_Layer, GColorBlack);
-		text_layer_set_text_color(date_layer, GColorBlack);
-		text_layer_set_text_color(Temperature_Layer, GColorBlack);
-		text_layer_set_text_color(Location_Layer, GColorBlack);
-		text_layer_set_text_color(Last_Update, GColorBlack);
-		
-		//Refresh Images
-		  if (weather_image) {gbitmap_destroy(weather_image);}
-		//weather_image = gbitmap_create_with_resource(WEATHER_ICONSw[persist_read_int(WEATHER_ICON_KEY)]);
-		weather_image = gbitmap_create_with_resource(WEATHER_ICONSw[ICON_CODE]);
-		bitmap_layer_set_bitmap(weather_icon_layer, weather_image);
-		
-		if (BT_image)
-		{
-			BT_image = gbitmap_create_with_resource(RESOURCE_ID_BT_CONNECTEDw);
-			bitmap_layer_set_bitmap(BT_icon_layer, BT_image);
-		}
-
-		
-		
-
+	if (inverted){
+		//Inverter layer
+		inv_layer = inverter_layer_create(GRect(0, 0, 144, 168));
+		layer_add_child(window_get_root_layer(my_window), (Layer*) inv_layer);
 	}
-	else
-	{
-		window_set_background_color(my_window, GColorBlack);
-		
-		text_layer_set_text_color(Weekday_Layer, GColorWhite);
-		text_layer_set_text_color(Time_Layer, GColorWhite);
-		text_layer_set_text_color(date_layer, GColorWhite);
-		text_layer_set_text_color(Temperature_Layer, GColorWhite);
-		text_layer_set_text_color(Location_Layer, GColorWhite);
-		text_layer_set_text_color(Last_Update, GColorWhite);
-		
-		//Refresh Images
-		if (weather_image) {gbitmap_destroy(weather_image);}
-		//weather_image = gbitmap_create_with_resource(WEATHER_ICONS[persist_read_int(WEATHER_ICON_KEY)]);
-		weather_image = gbitmap_create_with_resource(WEATHER_ICONS[ICON_CODE]);
-		bitmap_layer_set_bitmap(weather_icon_layer, weather_image);
-		
-		if (BT_image)
-		{
-			if (BT_image) {gbitmap_destroy(BT_image);}
-			BT_image = gbitmap_create_with_resource(RESOURCE_ID_BT_CONNECTED);
-			bitmap_layer_set_bitmap(BT_icon_layer, BT_image);
-		}
-		
+	else{
+		inverter_layer_destroy(inv_layer);
 	}
-
 	
-}// END - Inver colors
+}// END - Invert colors
 
 void TranslateDate(){
         
@@ -1565,6 +1494,209 @@ void TranslateDate(){
                         }
                         
         } //END OF CATALAN
+	            else if (language[0] == 'H'){ //HUNGARIAN
+					translate_sp= true;
+                        if (month_text[0] == 'J' && month_text[1] == 'a')
+                        {
+                                memcpy(&month_text, "január ", strlen("január ")+1); // January
+                        }
+                        
+                        if (month_text[0] == 'F' && month_text[1] == 'e')
+                        {
+                                memcpy(&month_text, "február ", strlen("február ")+1); // Febrary
+                        }
+                        
+                        if (month_text[0] == 'M' && month_text[2] == 'r')
+                        {
+                                memcpy(&month_text, "március ", strlen("március ")+1); // March
+                        }
+                        
+                        if (month_text[0] == 'A' && month_text[1] == 'p')
+                        {
+                                memcpy(&month_text, "április ", strlen("április ")+1); // April
+                        }
+                        
+                        if (month_text[0] == 'M' && month_text[2] == 'y')
+                        {
+                                memcpy(&month_text, "május ", strlen("május ")+1); // May
+                        }
+                        
+                        if (month_text[0] == 'J' && month_text[2] == 'n')
+                        {
+                                memcpy(&month_text, "június ", strlen("június ")+1); // June
+                        }
+                        
+                        if (month_text[0] == 'J' && month_text[2] == 'l')
+                        {
+                                memcpy(&month_text, "július ", strlen("július ")+1); // July
+                        }
+                        
+                        if (month_text[0] == 'A' && month_text[1] == 'u')
+                        {
+                                memcpy(&month_text, "augusztus ", strlen("augusztus ")+1); // August
+                        }
+                        
+                        if (month_text[0] == 'S' && month_text[1] == 'e')
+                        {
+                                memcpy(&month_text, "szeptember ", strlen("szeptember ")+1); // September
+                        }
+                        
+                        if (month_text[0] == 'O' && month_text[1] == 'c')
+                        {
+                                memcpy(&month_text, "október ", strlen("október ")+1); // October
+                        }
+                        
+                        if (month_text[0] == 'N' && month_text[1] == 'o')
+                        {
+                                memcpy(&month_text, "november ", strlen("november ")+1); // November
+                        }
+                        
+                        if (month_text[0] == 'D' && month_text[1] == 'e')
+                        {
+                                memcpy(&month_text, "december ", strlen("december ")+1); // December
+                        }
+                        
+                        // Primitive hack to translate the day of week to another language
+                        // Needs to be exactly 3 characters, e.g. "Mon" or "Mo "
+                        // Supported characters: A-Z, a-z, 0-9
+                        if (weekday_text[0] == 'M')
+                        {
+                                memcpy(&weekday_text, "Hétfo", strlen("Hétfo")+1); // Monday
+                        }
+                        
+                        if (weekday_text[0] == 'T' && weekday_text[1] == 'u')
+                        {
+                                memcpy(&weekday_text, "Kedd", strlen("Kedd")+1); // Tuesday
+                        }
+                        
+                        if (weekday_text[0] == 'W')
+                        {
+                                memcpy(&weekday_text, "Szerda", strlen("Szerda")+1); // Wednesday
+                        }
+                        
+                        if (weekday_text[0] == 'T' && weekday_text[1] == 'h')
+                        {
+                                memcpy(&weekday_text, "Csütörtök", strlen("Csütörtök")+1); // Thursday
+                        }
+                        
+                        if (weekday_text[0] == 'F')
+                        {
+                                memcpy(&weekday_text, "Péntek", strlen("Péntek")+1); // Friday
+                        }
+                        
+                        if (weekday_text[0] == 'S' && weekday_text[1] == 'a')
+                        {
+                                memcpy(&weekday_text, "Szombat", strlen("Szombat")+1); // Saturday
+                        }
+                        
+                        if (weekday_text[0] == 'S' && weekday_text[1] == 'u')
+                        {
+                                memcpy(&weekday_text, "Vasárnap", strlen("Vasárnap")+1); // Sunday
+                        }
+                        
+        } //END OF HUNGARIAN  
+		else if (language[0] == 'N'){ //NORWEGIAN
+						translate_sp= true;
+					
+                        if (month_text[0] == 'J' && month_text[1] == 'a')
+                        {
+                                memcpy(&month_text, "  . januar", strlen("  . januar")+1); // January
+                        }
+                        
+                        if (month_text[0] == 'F' && month_text[1] == 'e')
+                        {
+                                memcpy(&month_text, "  . februar", strlen("  . februar")+1); // Febrary
+                        }
+                        
+                        if (month_text[0] == 'M' && month_text[2] == 'r')
+                        {
+                                memcpy(&month_text, "  . mars", strlen("  . mars")+1); // March
+                        }
+                        
+                        if (month_text[0] == 'A' && month_text[1] == 'p')
+                        {
+                                memcpy(&month_text, "  . april", strlen("  . april")+1); // April
+                        }
+                        
+                        if (month_text[0] == 'M' && month_text[2] == 'y')
+                        {
+                                memcpy(&month_text, "  . mai", strlen("  . mai")+1); // May
+                        }
+                        
+                        if (month_text[0] == 'J' && month_text[2] == 'n')
+                        {
+                                memcpy(&month_text, "  . juni", strlen("  . juni")+1); // June
+                        }
+                        
+                        if (month_text[0] == 'J' && month_text[2] == 'l')
+                        {
+                                memcpy(&month_text, "  . juli", strlen("  . juli")+1); // July
+                        }
+                        
+                        if (month_text[0] == 'A' && month_text[1] == 'u')
+                        {
+                                memcpy(&month_text, "  . august", strlen("  . august")+1); // August
+                        }
+                        
+                        if (month_text[0] == 'S' && month_text[1] == 'e')
+                        {
+                                memcpy(&month_text, "  . september", strlen("  . september")+1); // September
+                        }
+                        
+                        if (month_text[0] == 'O' && month_text[1] == 'c')
+                        {
+                                memcpy(&month_text, "  . oktober", strlen("  . oktober")+1); // October
+                        }
+                        
+                        if (month_text[0] == 'N' && month_text[1] == 'o')
+                        {
+                                memcpy(&month_text, "  . november", strlen("  . november")+1); // November
+                        }
+                        
+                        if (month_text[0] == 'D' && month_text[1] == 'e')
+                        {
+                                memcpy(&month_text, "  . desember", strlen("  . desember")+1); // December
+                        }
+                        
+                        // Primitive hack to translate the day of week to another language
+                        // Needs to be exactly 3 characters, e.g. "Mon" or "Mo "
+                        // Supported characters: A-Z, a-z, 0-9
+                        if (weekday_text[0] == 'M')
+                        {
+                                memcpy(&weekday_text, "Mandag", strlen("Mandag")+1); // Monday
+                        }
+                        
+                        if (weekday_text[0] == 'T' && weekday_text[1] == 'u')
+                        {
+                                memcpy(&weekday_text, "Tirsdag", strlen("Tirsdag")+1); // Tuesday
+                        }
+                        
+                        if (weekday_text[0] == 'W')
+                        {
+                                memcpy(&weekday_text, "Onsdag", strlen("Onsdag")+1); // Wednesday
+                        }
+                        
+                        if (weekday_text[0] == 'T' && weekday_text[1] == 'h')
+                        {
+                                memcpy(&weekday_text, "Torsdag", strlen("Torsdag")+1); // Thursday
+                        }
+                        
+                        if (weekday_text[0] == 'F')
+                        {
+                                memcpy(&weekday_text, "Fredag", strlen("Fredag")+1); // Friday
+                        }
+                        
+                        if (weekday_text[0] == 'S' && weekday_text[1] == 'a')
+                        {
+                                memcpy(&weekday_text, "Lørdag", strlen("Lørdag")+1); // Saturday
+                        }
+                        
+                        if (weekday_text[0] == 'S' && weekday_text[1] == 'u')
+                        {
+                                memcpy(&weekday_text, "Søndag ", strlen("Søndag ")+1); // Sunday
+                        }
+                        
+        } //END OF NORWEGIAN
 
 	else{translate_sp=false;} //If the language is not in the list of translations then keep english.
 } //END OF Translate_Date
@@ -1599,6 +1731,7 @@ void getDate()
 		//Concatenate the day to the month
 		//If Czech the month is before day
 		if (language[0] == 'C'){strncat(month_text,day_text,strlen(day_text));}
+		else if (language[0] == 'H'){strncat(month_text,day_text,strlen(day_text));} //Hungarian
 		else {memcpy(&month_text, day_text, strlen(day_text));}    
 		}
 		else{
@@ -1635,8 +1768,7 @@ void getDate()
     case WEATHER_ICON_KEY:
 	    if (weather_image) {gbitmap_destroy(weather_image);}
 
-	  		if (color_inverted){weather_image = gbitmap_create_with_resource(WEATHER_ICONSw[new_tuple->value->uint8]);}
-			else{weather_image = gbitmap_create_with_resource(WEATHER_ICONS[new_tuple->value->uint8]);}
+	  		weather_image = gbitmap_create_with_resource(WEATHER_ICONS[new_tuple->value->uint8]);
       		bitmap_layer_set_bitmap(weather_icon_layer, weather_image);
 	  		//persist_write_int(WEATHER_ICON_KEY, new_tuple->value->uint8);
 	  		ICON_CODE = new_tuple->value->uint8;
@@ -1667,6 +1799,11 @@ void getDate()
 		  persist_write_bool(language_key, new_tuple->value->cstring);
 	  		//Init the date
 			getDate();
+		  break;
+	  
+	  case VIBES_KEY:
+		  blnvibes = new_tuple->value->uint8 != 0;
+		  persist_write_bool(VIBES_KEY, blnvibes);
 		  break;
   }
 }
@@ -1723,7 +1860,8 @@ void handle_tick(struct tm *tick_time, TimeUnits units_changed)
 //************************************************//
 static void send_cmd(void) {
          //Tuplet value = TupletInteger(1, 1);
-         Tuplet value = TupletCString(2,"loading...");
+	  	//Tuplet value = TupletCString(2, "loading...");
+         Tuplet value = TupletInteger(5, 0);
         
          DictionaryIterator *iter;
          app_message_outbox_begin(&iter);
@@ -1780,6 +1918,7 @@ void handle_init(void)
                 TupletCString(WEATHER_CITY_KEY, ""),
 				TupletInteger(INVERT_COLOR_KEY, persist_read_bool(INVERT_COLOR_KEY)),
 				TupletCString(language_key, "0"),
+				TupletInteger(VIBES_KEY, persist_read_bool(VIBES_KEY)),
                 }; //TUPLET INITIAL VALUES
         
                  app_sync_init(&sync, sync_buffer, sizeof(sync_buffer), initial_values,
@@ -1788,6 +1927,7 @@ void handle_init(void)
   
 		//load persistent storage options
 		color_inverted = persist_read_bool(INVERT_COLOR_KEY);
+		blnvibes = persist_read_bool(VIBES_KEY);
 		persist_read_string(language_key, language, sizeof(language));
 	
 		//Init the date
@@ -1796,9 +1936,7 @@ void handle_init(void)
         //Create the main window
         my_window = window_create();
         window_stack_push(my_window, true /* Animated */);
-		//Define the Black vs. White layout
-		if (color_inverted){window_set_background_color(my_window, GColorWhite);}
-		else {window_set_background_color(my_window, GColorBlack);}	
+		window_set_background_color(my_window, GColorBlack);
         
         
         
@@ -1813,22 +1951,12 @@ void handle_init(void)
         font_update = fonts_load_custom_font(res_u);
         font_time = fonts_load_custom_font(res_t);
         font_temperature = fonts_load_custom_font(res_temp);
-        //font_temperature = fonts_get_system_font(FONT_KEY_BITHAM_42_LIGHT);
-        
+       
         
         //LOAD THE LAYERS
                 //Display the Weekday layer
                 Weekday_Layer = text_layer_create(WEEKDAY_FRAME);
-	
-				if (color_inverted)
-				{
-					text_layer_set_text_color(Weekday_Layer, GColorBlack);
-				}
-				else
-				{
-					text_layer_set_text_color(Weekday_Layer, GColorWhite);
-				}
-	
+				text_layer_set_text_color(Weekday_Layer, GColorWhite);
 	            text_layer_set_background_color(Weekday_Layer, GColorClear);
                 text_layer_set_font(Weekday_Layer, font_date);
                 text_layer_set_text_alignment(Weekday_Layer, GTextAlignmentLeft);
@@ -1846,34 +1974,15 @@ void handle_init(void)
         
                 //Display the Time layer
                 Time_Layer = text_layer_create(TIME_FRAME);
-	
-				if (color_inverted)
-				{                
-					text_layer_set_text_color(Time_Layer, GColorBlack);
-				}
-				else
-				{
-					text_layer_set_text_color(Time_Layer, GColorWhite);
-				}
-	
+				text_layer_set_text_color(Time_Layer, GColorWhite);
 	            text_layer_set_background_color(Time_Layer, GColorClear);
                 text_layer_set_font(Time_Layer, font_time);
                 text_layer_set_text_alignment(Time_Layer, GTextAlignmentCenter);
                 layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Time_Layer));
         
                 //Display the Date layer
-                date_layer = text_layer_create(DATE_FRAME);
-	
-				if (color_inverted)
-				{ 
-                	text_layer_set_text_color(date_layer, GColorBlack);
-				}
-				else
-				{
-               	 	text_layer_set_text_color(date_layer, GColorWhite);
-	
-				}
-	
+                date_layer = text_layer_create(DATE_FRAME);	
+				text_layer_set_text_color(date_layer, GColorWhite);
 	            text_layer_set_background_color(date_layer, GColorClear);
                 text_layer_set_font(date_layer, font_date);
                 text_layer_set_text_alignment(date_layer, GTextAlignmentRight);
@@ -1886,16 +1995,7 @@ void handle_init(void)
         
                 //Display the Temperature layer
                 Temperature_Layer = text_layer_create(TEMPERATURE_FRAME);
-	
-				if (color_inverted)
-				{ 
-                	text_layer_set_text_color(Temperature_Layer, GColorBlack);
-				}
-				else
-				{
-                	text_layer_set_text_color(Temperature_Layer, GColorWhite);		
-				}
-		
+				text_layer_set_text_color(Temperature_Layer, GColorWhite);
 	            text_layer_set_background_color(Temperature_Layer, GColorClear);	
                 text_layer_set_font(Temperature_Layer, font_temperature);
                 text_layer_set_text_alignment(Temperature_Layer, GTextAlignmentCenter);
@@ -1903,16 +2003,7 @@ void handle_init(void)
         
                 //Display the Location layer
                 Location_Layer = text_layer_create(LOCATION_FRAME);
-	
-				if (color_inverted)
-				{
-                	text_layer_set_text_color(Location_Layer, GColorBlack);
-				}
-				else
-				{
-                	text_layer_set_text_color(Location_Layer, GColorWhite);					
-				}
-		
+				text_layer_set_text_color(Location_Layer, GColorWhite);	
 	            text_layer_set_background_color(Location_Layer, GColorClear);
                 text_layer_set_font(Location_Layer, font_update);
                 text_layer_set_text_alignment(Location_Layer, GTextAlignmentRight);
@@ -1920,44 +2011,21 @@ void handle_init(void)
         
                 //Display the Last Update layer
                 Last_Update = text_layer_create(LAST_UPDATE_FRAME);
-	
-				if (color_inverted)
-				{
-                	text_layer_set_text_color(Last_Update, GColorBlack);
-				}
-				else
-				{
-                	text_layer_set_text_color(Last_Update, GColorWhite);			
-				}
-		
+				text_layer_set_text_color(Last_Update, GColorWhite);
 	            text_layer_set_background_color(Last_Update, GColorClear);	
                 text_layer_set_font(Last_Update, font_update);
                 text_layer_set_text_alignment(Last_Update, GTextAlignmentRight);
                 layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Last_Update));
         
-/*
-        
-         // Setup messaging
-                const int inbound_size = 64;
-                const int outbound_size = 64;
-                app_message_open(inbound_size, outbound_size);
-        
-                Tuplet initial_values[] = {
-                TupletInteger(WEATHER_ICON_KEY, (uint8_t) 16), //INITIALIZE TO "N/A"
-                TupletCString(WEATHER_TEMPERATURE_KEY, ""),
-                TupletCString(WEATHER_CITY_KEY, ""),
-				TupleCstring (COLOR_INVERTED_KEY,""),
-
-                }; //TUPLET INITIAL VALUES
-        
-                 app_sync_init(&sync, sync_buffer, sizeof(sync_buffer), initial_values,
-                ARRAY_LENGTH(initial_values), sync_tuple_changed_callback,
-                NULL, NULL);
-    */    
+ 
+	            //Drawn the normal/inverted based on saved settings
+	            InvertColors(color_inverted);
 	
         // Ensures time is displayed immediately (will break if NULL tick event accessed).
          // (This is why it's a good idea to have a separate routine to do the update itself.)
                  
+	  // Set up the update layer callback
+	
                 time_t now = time(NULL);
                  struct tm *current_time = localtime(&now);
                 handle_tick(current_time, MINUTE_UNIT);
@@ -1999,6 +2067,7 @@ void handle_deinit(void)
         text_layer_destroy(Temperature_Layer);        
         text_layer_destroy(Location_Layer);        
         text_layer_destroy(Last_Update);        
+	    inverter_layer_destroy(inv_layer);
         
         //Deallocate custom fonts
         fonts_unload_custom_font(font_date);

@@ -75,7 +75,8 @@ if (options === null) options = { "language" : "E",
 								  "use_gps" : "true",
                                   "location" : "",
 								  "units" : "celsius",
-								  "invert_color" : "false"};
+								  "invert_color" : "false",
+								  "vibes" : "true"};
 
 function getWeatherFromLatLong(latitude, longitude) {
   var response;
@@ -171,6 +172,7 @@ function getWeatherFromWoeid(woeid, city) {
 			 "city":city,
 			 "invert_color" : (options["invert_color"] == "true" ? 1 : 0),
 			 "language" : options['language'],
+			 "vibes" : (options["vibes"] == "true" ? 1 : 0),
           });
         }
       } else {
@@ -213,7 +215,8 @@ Pebble.addEventListener('showConfiguration', function(e) {
 	'&use_gps=' + encodeURIComponent(options['use_gps']) +
     '&location=' + encodeURIComponent(options['location']) +
     '&units=' + encodeURIComponent(options['units']) +
-    '&invert_color=' + encodeURIComponent(options['invert_color']);
+    '&invert_color=' + encodeURIComponent(options['invert_color']) +
+	'&vibes=' + encodeURIComponent(options['vibes']);
 
 	//console.log('showing configuration at uri: ' + uri);
 
