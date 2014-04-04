@@ -71,7 +71,7 @@ var imageId = {
 
 var options = JSON.parse(localStorage.getItem('options'));
 //console.log('read options: ' + JSON.stringify(options));
-if (options === null) options = { "language" : "E",
+if (options === null) options = { "language" : 0,
 								  "use_gps" : "true",
                                   "location" : "",
 								  "units" : "celsius",
@@ -171,7 +171,7 @@ function getWeatherFromWoeid(woeid, city) {
 			  //Put here the output parameters to "Main.C"
 			 "city":city,
 			 "invert_color" : (options["invert_color"] == "true" ? 1 : 0),
-			 "language" : options['language'],
+			 "language" : parseInt(options['language']),
 			 "vibes" : (options["vibes"] == "true" ? 1 : 0),
           });
         }
@@ -210,7 +210,7 @@ function locationError(err) {
 }
 
 Pebble.addEventListener('showConfiguration', function(e) {
-  var uri = 'http://dabdemon.github.io/Yahoo--Weather/YWsettings.html?' + //Here you need to enter your configuration webservice
+  var uri = 'http://dabdemon.github.io/Yahoo--Weather/Settings.html?' + //Here you need to enter your configuration webservice
     'language=' + encodeURIComponent(options['language']) +
 	'&use_gps=' + encodeURIComponent(options['use_gps']) +
     '&location=' + encodeURIComponent(options['location']) +
