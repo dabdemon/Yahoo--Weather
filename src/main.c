@@ -55,6 +55,16 @@ static const uint32_t WEATHER_ICONS[] = {
 //*********************//
 // DEFINE THE WEEKDAYS //
 //*********************// 
+static const char CHINESE_DAYS[] = {
+	RESOURCE_ID_CHIN_MONDAY,
+	RESOURCE_ID_CHIN_TUESDAY,
+	RESOURCE_ID_CHIN_WEDNESDAY,
+	RESOURCE_ID_CHIN_THURSDAY,
+	RESOURCE_ID_CHIN_FRIDAY,
+	RESOURCE_ID_CHIN_SATURDAY,
+	RESOURCE_ID_CHIN_SUNDAY,
+};
+
 static const char *WEEKDAYS[] = {
 	NULL,
 	//SPANISH - 0
@@ -254,7 +264,7 @@ static const char *MONTHS[] = {
 	//FINNISH - 6
 	". Tammikuu",
 	". Helmikuu", 
-	". Maaliskuu"
+	". Maaliskuu",
 	". Huhtikuu", 
 	". Toukokuu", 
 	". Kesäkuu", 
@@ -424,12 +434,13 @@ enum WeatherKey {
 	  	static char inverted[]="B";
         
         bool translate_sp = true;
-        int language = 0; 	
+        int language = 100;
 		bool color_inverted;
 		int ICON_CODE;
 		bool batt_status = true; //If true, display the battery status all the time; if false, just when running low (<10%)
 
 		bool blnvibes;
+		bool blninverted =  false;
 
 		InverterLayer *inv_layer;
 
@@ -566,11 +577,17 @@ void InvertColors(bool inverted)
 	
 	if (inverted){
 		//Inverter layer
-		inv_layer = inverter_layer_create(GRect(0, 0, 144, 168));
-		layer_add_child(window_get_root_layer(my_window), (Layer*) inv_layer);
+		if (blninverted == false){		
+			inv_layer = inverter_layer_create(GRect(0, 0, 144, 168));
+			layer_add_child(window_get_root_layer(my_window), (Layer*) inv_layer);
+			blninverted =  true;
+	    }
 	}
+	
 	else{
-		inverter_layer_destroy(inv_layer);
+		if(blninverted){
+			inverter_layer_destroy(inv_layer);
+			blninverted = false;}
 	}
 	
 }// END - Invert colors
@@ -586,17 +603,29 @@ void getDate()
 	time_t actualPtr = time(NULL);
 	struct tm *tz1Ptr = gmtime(&actualPtr);
 	
-	//Get the Month + Day (English format)
-	strftime(month_text,sizeof(month_text),"%B %e",tz1Ptr);
-	strftime(weekday_text,sizeof(weekday_text),"%A",tz1Ptr);
-
 	
 	//Try new translation method
+		
+		//Get the number of the weekday
+		strftime(weekday_text,sizeof(weekday_text),"%u",tz1Ptr);
+		int ia = weekday_text[0] - '0'; 
+		int ib = (language*7)+ia;
+	
+		//Get the number of the month	
+		strftime(month_text,sizeof(month_text),"%m",tz1Ptr);
+		int ic = month_text[1] - '0';
+		if (month_text[0]=='1'){ic=ic+10;}			
+		int id = (language*12)+ic;
+	
 	if(language==100){ //ENGLISH
 		
 		//remove the chinese week day
 		if (chinese_day) {gbitmap_destroy(chinese_day);}
 		bitmap_layer_set_bitmap(chinese_day_layer, NULL);
+		
+		//Get the English fortmat
+		strftime(month_text,sizeof(month_text),"%B %e",tz1Ptr);
+		strftime(weekday_text,sizeof(weekday_text),"%A",tz1Ptr);
 		
 		text_layer_set_text(Weekday_Layer,weekday_text); //Update the weekday layer  
 		text_layer_set_text(date_layer,month_text); 
@@ -608,8 +637,11 @@ void getDate()
 		//Get the Month
 		strftime(month_text,sizeof(month_text),"%m/%d",tz1Ptr);
 		
+		//Clean un the text layer
+		text_layer_set_text(Weekday_Layer,"");
+		
 		if (chinese_day) {gbitmap_destroy(chinese_day);}
-		chinese_day = gbitmap_create_with_resource(RESOURCE_ID_CHIN_SATURDAY);
+		chinese_day = gbitmap_create_with_resource(CHINESE_DAYS[ia-1]);
 		//Display the weekday in chinese
 		bitmap_layer_set_bitmap(chinese_day_layer, chinese_day);
 		text_layer_set_text(date_layer, month_text);
@@ -620,18 +652,10 @@ void getDate()
 		//remove the chinese week day
 		if (chinese_day) {gbitmap_destroy(chinese_day);}
 		bitmap_layer_set_bitmap(chinese_day_layer, NULL);
-		//Get the number of the weekday
-		strftime(weekday_text,sizeof(weekday_text),"%u",tz1Ptr);
-		int ia = weekday_text[0] - '0'; 
-		int ib = (language*7)+ia;
+
 		//Set the weekeday
 		text_layer_set_text(Weekday_Layer, WEEKDAYS[ib]); //Update the weekday layer  
 		
-		//Get the number of the month	
-		strftime(month_text,sizeof(month_text),"%m",tz1Ptr);
-		int ic = month_text[1] - '0';
-		if (month_text[0]=='1'){ic=ic+10;}			
-		int id = (language*12)+ic;
 		
 		//Get the day
 		strftime(day_month,sizeof(day_month),"%e",tz1Ptr);
@@ -865,7 +889,7 @@ void handle_init(void)
                 TupletCString(WEATHER_TEMPERATURE_KEY, ""),
                 TupletCString(WEATHER_CITY_KEY, ""),
 				TupletInteger(INVERT_COLOR_KEY, persist_read_bool(INVERT_COLOR_KEY)),
-				TupletInteger(language_key, (uint8_t) 0), //INITIALIZE TO SPANISH
+				TupletInteger(language_key, language), //INITIALIZE TO LAST SAVED
 				TupletInteger(VIBES_KEY, persist_read_bool(VIBES_KEY)),
                 }; //TUPLET INITIAL VALUES
         
