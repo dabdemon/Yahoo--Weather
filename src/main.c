@@ -662,8 +662,9 @@ void getDate()
 		
 		//Set the month
 		//text_layer_set_text(date_layer, MONTHS[id]);
-				if (language == 3){text_layer_set_text(date_layer,strncat(day_month,MONTHS[id],strlen(MONTHS[id])));} //Czech
-				else if (language == 12){text_layer_set_text(date_layer,strncat(day_month,MONTHS[id],strlen(MONTHS[id])));} //Hungarian
+				 if ((language == 12)||(language == 3)){
+					memcpy(&month_text, MONTHS[id], strlen(MONTHS[id])+1);
+					text_layer_set_text(date_layer,strncat(month_text,day_month,strlen(month_text)));} //Czech or Hungarian
 				else{text_layer_set_text(date_layer,strncat(day_month,MONTHS[id],strlen(MONTHS[id]))); }
 		
 	}
