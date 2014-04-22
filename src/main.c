@@ -593,6 +593,7 @@ void InvertColors(bool inverted)
 }// END - Invert colors
 
 
+
 //**************************//
 //** Get the current date **//
 //**************************//
@@ -866,6 +867,16 @@ static void timer_callback(void *context) {
 }
 
 
+//**************************//
+//** Handle accel **//
+//**************************//
+
+void accel_tap_handler(AccelAxisType axis, int32_t direction){
+
+    send_cmd();
+
+}
+
 //****************************//
 // Initialize the application //
 //****************************//
@@ -1016,6 +1027,9 @@ void handle_init(void)
                 //setup the timer to refresh the weather info every 30min
                 //const uint32_t timeout_ms = 1800000;
                 timer = app_timer_register(timeout_ms, timer_callback, NULL);
+	
+
+    			accel_tap_service_subscribe(accel_tap_handler);
         
 } //HANDLE_INIT
 
@@ -1032,6 +1046,7 @@ void handle_deinit(void)
         tick_timer_service_unsubscribe();
         battery_state_service_unsubscribe();
         bluetooth_connection_service_unsubscribe();
+		accel_tap_service_unsubscribe();
         
         if (BT_image){gbitmap_destroy(BT_image);}
         if (Batt_image){gbitmap_destroy(Batt_image);}
