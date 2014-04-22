@@ -8,6 +8,8 @@
 	//Spanish: 3ab59c04-142f-4ff1-b90d-aab93ce54a32
 	//Italian: 6279f406-1114-4b2f-852d-65b0e8ff2a73
 
+#define MyTupletCString(_key, _cstring) ((const Tuplet) { .type = TUPLE_CSTRING, .key = _key, .cstring = { .data = _cstring, .length = strlen(_cstring) + 1 }})
+	
 #define WEEKDAY_FRAME    (GRect(5, 2, 102, 168-145)) //,,95,
 #define BATT_FRAME       (GRect(103, 4, 40, 168-146)) //98,,
 #define BT_FRAME         (GRect(127, 4, 23, 168-146))
@@ -417,6 +419,10 @@ enum WeatherKey {
         //Vibe Control
         bool BTConnected = true;
 
+		// Setup messaging
+		const int inbound_size = 256;
+		const int outbound_size = 256;
+
         //Time control for weather refresh
         static AppTimer *timer;
         const uint32_t timeout_ms = 1800000; //30min (1min = 60000)
@@ -432,6 +438,7 @@ enum WeatherKey {
         static char day_month[]= "31 SEPTEMBER";
         static char time_text[] = "00:00";
 	  	static char inverted[]="B";
+		static char temperature[]="    ";
         
         bool translate_sp = true;
         int language = 100;
@@ -671,52 +678,7 @@ void getDate()
 	}
 
 
-	
-	/*
-	if(language[0] == '4'){ //Chinese
-		
-			//Get the Month
-			strftime(month_text,sizeof(month_text),"%m/%d",tz1Ptr);
-			//Get the day
-			strftime(day_text,sizeof(day_text),"%d",tz1Ptr);
-			//Translate 
-			TranslateDate();
-		
-		//Display the weekday in chinese
-		bitmap_layer_set_bitmap(chinese_day_layer, chinese_day);
-		text_layer_set_text(date_layer, month_text);
-	}
-
-	
-	else if(language[0] != '0'){
-		
-			//remove the chinese week day
-			if (chinese_day) {gbitmap_destroy(chinese_day);}
-			bitmap_layer_set_bitmap(chinese_day_layer, NULL);
-		
-			//Get the Month
-			strftime(month_text,sizeof(month_text),"%B",tz1Ptr);
-			//Get the day
-			strftime(day_text,sizeof(day_text),"%e",tz1Ptr);
-			//Translate 
-			TranslateDate();
-			
-			if(translate_sp){ 
-				//Concatenate the day to the month
-				//If Czech the month is before day
-				if (language[0] == 'C'){strncat(month_text,day_text,strlen(day_text));}
-				else if (language[0] == 'H'){strncat(month_text,day_text,strlen(day_text));} //Hungarian
-				else {memcpy(&month_text, day_text, strlen(day_text));}    
-			}
-			else{
-				//Keep the Month + Day (English format)
-				strftime(month_text,sizeof(month_text),"%B %e",tz1Ptr);
-			}
-		
-	}	
-*/
-		//text_layer_set_text(date_layer, day_text);
-		//text_layer_set_text(Weekday_Layer, weekday_text); //Update the weekday layer    
+  
 		
 }
 
@@ -744,13 +706,14 @@ void getDate()
 
 	  		weather_image = gbitmap_create_with_resource(WEATHER_ICONS[new_tuple->value->uint8]);
       		bitmap_layer_set_bitmap(weather_icon_layer, weather_image);
-	  		//persist_write_int(WEATHER_ICON_KEY, new_tuple->value->uint8);
 	  		ICON_CODE = new_tuple->value->uint8;
+	  	  	persist_write_int(WEATHER_ICON_KEY, new_tuple->value->uint8);
       		break;
 
     case WEATHER_TEMPERATURE_KEY:
          //Update the temperature
       		text_layer_set_text(Temperature_Layer, new_tuple->value->cstring);
+	    	persist_write_string(WEATHER_TEMPERATURE_KEY, new_tuple->value->cstring);
          //Set the time on which weather was retrived
          	memcpy(&last_update, time_text, strlen(time_text));
          	text_layer_set_text(Last_Update, last_update);
@@ -881,63 +844,8 @@ void accel_tap_handler(AccelAxisType axis, int32_t direction){
 // Initialize the application //
 //****************************//
 
-void handle_init(void)
-{
-        //Define Resources
-    	ResHandle res_d;
-        ResHandle res_u;
-        ResHandle res_t;
-        ResHandle res_temp;
-	
-	
-	         // Setup messaging
-                const int inbound_size = 256;
-                const int outbound_size = 256;
-	
-                app_message_open(inbound_size, outbound_size);
-        
-                Tuplet initial_values[] = {
-                TupletInteger(WEATHER_ICON_KEY, (uint8_t) 16), //INITIALIZE TO "N/A"
-                TupletCString(WEATHER_TEMPERATURE_KEY, ""),
-                TupletCString(WEATHER_CITY_KEY, ""),
-				TupletInteger(INVERT_COLOR_KEY, persist_read_bool(INVERT_COLOR_KEY)),
-				TupletInteger(language_key, language), //INITIALIZE TO LAST SAVED
-				TupletInteger(VIBES_KEY, persist_read_bool(VIBES_KEY)),
-                }; //TUPLET INITIAL VALUES
-        
-                 app_sync_init(&sync, sync_buffer, sizeof(sync_buffer), initial_values,
-                ARRAY_LENGTH(initial_values), sync_tuple_changed_callback,
-                NULL, NULL);
-  
-		//load persistent storage options
-		color_inverted = persist_read_bool(INVERT_COLOR_KEY);
-		blnvibes = persist_read_bool(VIBES_KEY);
-		language = persist_read_int(language_key);
-	
-		//Init the date
-		//getDate();
-
-        //Create the main window
-        my_window = window_create();
-        window_stack_push(my_window, true /* Animated */);
-		window_set_background_color(my_window, GColorBlack);
-        
-        
-        
-        //Load the custom fonts
-        res_t = resource_get_handle(RESOURCE_ID_FUTURA_CONDENSED_53); // Time font
-        res_d = resource_get_handle(RESOURCE_ID_FUTURA_17); // Date font
-        res_u = resource_get_handle(RESOURCE_ID_FUTURA_10); // Last Update font
-        res_temp = resource_get_handle(RESOURCE_ID_FUTURA_43); //Temperature
-        
-                
-    	font_date = fonts_load_custom_font(res_d);
-        font_update = fonts_load_custom_font(res_u);
-        font_time = fonts_load_custom_font(res_t);
-        font_temperature = fonts_load_custom_font(res_temp);
-       
-        
-        //LOAD THE LAYERS
+void LoadMainWindow(){
+	        //LOAD THE LAYERS
                 //Display the Weekday layer
                 Weekday_Layer = text_layer_create(WEEKDAY_FRAME);
 				text_layer_set_text_color(Weekday_Layer, GColorWhite);
@@ -1008,6 +916,71 @@ void handle_init(void)
  
 	            //Drawn the normal/inverted based on saved settings
 	            InvertColors(color_inverted);
+}//LoadMainWindow END
+
+void SetupMessages(){
+
+	
+                app_message_open(inbound_size, outbound_size);
+        
+                Tuplet initial_values[] = {
+                TupletInteger(WEATHER_ICON_KEY, ICON_CODE), //INITIALIZE TO "N/A"
+				MyTupletCString(WEATHER_TEMPERATURE_KEY,temperature),
+                MyTupletCString(WEATHER_CITY_KEY, ""),
+				TupletInteger(INVERT_COLOR_KEY, color_inverted),
+				TupletInteger(language_key, language), //INITIALIZE TO LAST SAVED
+				TupletInteger(VIBES_KEY, blnvibes),
+                }; //TUPLET INITIAL VALUES
+        
+                 app_sync_init(&sync, sync_buffer, sizeof(sync_buffer), initial_values,
+                ARRAY_LENGTH(initial_values), sync_tuple_changed_callback,
+                NULL, NULL);
+}
+
+void handle_init(void)
+{
+        //Define Resources
+    	ResHandle res_d;
+        ResHandle res_u;
+        ResHandle res_t;
+        ResHandle res_temp;
+	
+	
+
+  
+		//load persistent storage options
+		color_inverted = persist_read_bool(INVERT_COLOR_KEY);
+		blnvibes = persist_read_bool(VIBES_KEY);
+		language = persist_read_int(language_key);
+		ICON_CODE = persist_read_int(WEATHER_ICON_KEY);
+		persist_read_string(WEATHER_TEMPERATURE_KEY, temperature, sizeof(temperature));
+
+	
+
+        //Create the main window
+        my_window = window_create();
+        window_stack_push(my_window, true /* Animated */);
+		window_set_background_color(my_window, GColorBlack);
+        
+        
+        
+        //Load the custom fonts
+        res_t = resource_get_handle(RESOURCE_ID_FUTURA_CONDENSED_53); // Time font
+        res_d = resource_get_handle(RESOURCE_ID_FUTURA_17); // Date font
+        res_u = resource_get_handle(RESOURCE_ID_FUTURA_10); // Last Update font
+        res_temp = resource_get_handle(RESOURCE_ID_FUTURA_43); //Temperature
+        
+                
+    	font_date = fonts_load_custom_font(res_d);
+        font_update = fonts_load_custom_font(res_u);
+        font_time = fonts_load_custom_font(res_t);
+        font_temperature = fonts_load_custom_font(res_temp);
+       
+        
+		//Load the Main Window
+		LoadMainWindow();
+		//Get Current Date
+		getDate();
 	
         // Ensures time is displayed immediately (will break if NULL tick event accessed).
          // (This is why it's a good idea to have a separate routine to do the update itself.)
@@ -1030,6 +1003,9 @@ void handle_init(void)
 	
 
     			accel_tap_service_subscribe(accel_tap_handler);
+	
+		//Initialize the Message Service
+		SetupMessages();
         
 } //HANDLE_INIT
 
