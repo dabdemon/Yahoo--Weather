@@ -1,15 +1,41 @@
 {
-    "versionLabel": "1.8",
+    "versionLabel": "2.0",
     "appKeys": {
         "city": 2,
         "vibes": 5,
         "icon": 0,
+        "wind": 10,
+        "high": 6,
+        "sunset": 9,
         "temperature": 1,
         "invert_color": 3,
-        "language": 4
+        "sunrise": 8,
+        "low": 7,
+        "language": 4,
+        "humidity": 11
     },
     "resources": {
         "media": [
+            {
+                "type": "png",
+                "file": "images/low.png",
+                "name": "LOW"
+            },
+            {
+                "type": "png",
+                "file": "images/high.png",
+                "name": "HIGH"
+            },
+            {
+                "type": "png",
+                "file": "images/sunrise_small.PNG",
+                "name": "SUNRISE"
+            },
+            {
+                "type": "png",
+                "file": "images/sunset_small.PNG",
+                "name": "SUNSET"
+            },
             {
                 "type": "font",
                 "trackingAdjust": -4,

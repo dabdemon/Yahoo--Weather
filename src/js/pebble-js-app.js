@@ -54,7 +54,7 @@ var imageId = {
   33 : CLEAR_NIGHT, //fair (night)
   34 : CLEAR_DAY, //fair (day)
   35 : SNOW_SLEET, //mixed rain and hail
-  36 : CLEAR_DAY, //hot
+  36 : HOT, //hot
   37 : STORM, //isolated thunderstorms
   38 : STORM, //scattered thunderstorms
   39 : STORM, //scattered thunderstorms
@@ -139,12 +139,8 @@ function getWeatherFromWoeid(woeid, city) {
 	/*if Hong Kong then override the woeid with a valid one*/
 	if (woeid ==24865698){woeid=12467924};
   var celsius = options['units'] == 'celsius';
-	/*Works fine
-  var query = encodeURI("select item.condition from weather.forecast where woeid = " + woeid +
-                        " and u = " + (celsius ? "\"c\"" : "\"f\""));
-						*/
 	
-	var query = encodeURI("select item.condition, item.forecast from weather.forecast where woeid = " + woeid +
+	var query = encodeURI("select  item.condition, item.forecast, astronomy, wind, atmosphere from weather.forecast where woeid = " + woeid +
                         " and u = " + (celsius ? "\"c\"" : "\"f\"")+" | truncate(count=1)");
 	
   var url = "http://query.yahooapis.com/v1/public/yql?q=" + query + "&format=json";
@@ -159,12 +155,22 @@ function getWeatherFromWoeid(woeid, city) {
         response = JSON.parse(req.responseText);
         if (response) {
           var condition = response.query.results.channel.item.condition;
+          var forecast = response.query.results.channel.item.forecast;	
+	      var astronomy = response.query.results.channel.astronomy;		
+		  //var vwind = response.query.results.channel.wind;	
+		  //var atmosphere = response.query.results.channel.atmosphere;	
           //temperature = condition.temp + (celsius ? "\u00B0C" : "\u00B0F"); //Use this format if you want to display the unit
 			temperature = condition.temp + "\u00B0";
-          icon = imageId[condition.code];
-			//var inverted == 'B';
-			//if (options['color_inverted']=true) {inverted == 'W';}
+          	icon = imageId[condition.code];
 			console.log("icon: " + icon + " temp: " + temperature + " city: " + city);
+			//Forecast for the day
+			high = forecast.high + "\u00B0";
+			low = forecast.low + "\u00B0";
+			sunrise = astronomy.sunrise;
+			sunset = astronomy.sunset;
+			//wind = vwind.speed;
+			//humidity = atmosphere.humidity;
+			
           Pebble.sendAppMessage({
             "icon":icon,
             "temperature":temperature,
@@ -173,6 +179,13 @@ function getWeatherFromWoeid(woeid, city) {
 			 "invert_color" : (options["invert_color"] == "true" ? 1 : 0),
 			 "language" : parseInt(options['language']),
 			 "vibes" : (options["vibes"] == "true" ? 1 : 0),
+			 //Forecast for the day
+			"high":high,
+            "low":low,
+			"sunrise":sunrise,
+            "sunset":sunset,
+			//"wind":wind,
+            //"humidity":humidity,
           });
         }
       } else {

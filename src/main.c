@@ -26,6 +26,19 @@
 #define LOCATION_FRAME    (GRect(1, 148, 110, 168-145))
 #define WEATHER_FRAME     (GRect(5, 90, 65, 168-108))
 #define TEMPERATURE_FRAME (GRect(65, 95, 82, 168-118))
+	
+//#define HIGH_FRAME (GRect(40, 95, 41, 168-108))
+#define LOW_FRAME (GRect(106, 93, 41, 168-108))
+#define LOW_ICON_FRAME (GRect(87, 92, 26, 26))
+	
+#define HIGH_FRAME (GRect(106, 115, 41, 168-108))
+#define HIGH_ICON_FRAME (GRect(87, 115, 26, 26))
+
+#define SUNRISE_FRAME (GRect(30, 95, 42, 168-108))
+#define SUNRISE_ICON_FRAME (GRect(1, 98, 26, 17))
+
+#define SUNSET_FRAME (GRect(30, 115, 42, 168-108))
+#define SUNSET_ICON_FRAME (GRect(1, 118, 26, 17))
         
 
         
@@ -382,6 +395,13 @@ enum WeatherKey {
   INVERT_COLOR_KEY = 0x3,  		 // TUPLE_INT
   language_key = 0x4, 			// TUPLE_INT
   VIBES_KEY = 0x5,  		 // TUPLE_INT
+//Forecast for the day
+	WEATHER_HIGH_KEY = 0x6,	//TUPLE_CSTRING
+	WEATHER_LOW_KEY = 0x7,	//TUPLE_CSTRING
+	SUNRISE_KEY = 0x8, //TUPLE_CSTRING
+	SUNSET_KEY = 0x9, //TUPLE_CSTRING
+	WIND_KEY = 0xa, //TUPLE_CSTRING
+	HUMIDITY_KEY = 0xb, //TUPLE_CSTRING
 };
 
 //Declare initial window        
@@ -397,6 +417,12 @@ enum WeatherKey {
         TextLayer *BT_Layer;                        //Layer for the BT connection
         TextLayer *Temperature_Layer;        //Layer for the Temperature
 
+		TextLayer *High_Layer;        //Layer for the High Temperature
+		TextLayer *Low_Layer;        //Layer for the Low Temperature
+
+		TextLayer *Sunrise_Layer;        //Layer for the High Temperature
+		TextLayer *Sunset_Layer;        //Layer for the Low Temperature
+
         static GBitmap *BT_image;
         static BitmapLayer *BT_icon_layer; //Layer for the BT connection
         
@@ -405,6 +431,18 @@ enum WeatherKey {
         
         static GBitmap *weather_image;
         static BitmapLayer *weather_icon_layer; //Layer for the weather info
+
+        static GBitmap *sunset_image;
+        static BitmapLayer *sunset_icon_layer; //Layer for the sunset info
+
+        static GBitmap *sunrise_image;
+        static BitmapLayer *sunrise_icon_layer; //Layer for the sunrise info
+
+        static GBitmap *high_image;
+        static BitmapLayer *high_icon_layer; //Layer for the high info
+
+        static GBitmap *low_image;
+        static BitmapLayer *low_icon_layer; //Layer for the low info
 
         static GBitmap *chinese_day;
         static BitmapLayer *chinese_day_layer; //Layer for the weather info
@@ -420,12 +458,14 @@ enum WeatherKey {
         bool BTConnected = true;
 
 		// Setup messaging
-		const int inbound_size = 256;
-		const int outbound_size = 256;
+		const int inbound_size = 512;
+		const int outbound_size = 512;
 
         //Time control for weather refresh
         static AppTimer *timer;
         const uint32_t timeout_ms = 1800000; //30min (1min = 60000)
+
+        static AppTimer *weather;
 
         //Date & Time        
         static char last_update[]="00:00 ";
@@ -439,6 +479,10 @@ enum WeatherKey {
         static char time_text[] = "00:00";
 	  	static char inverted[]="B";
 		static char temperature[]="    ";
+		static char high[]="    ";
+		static char low[]="    ";
+		static char sunrise[]="     ";
+		static char sunset[]="     ";
         
         bool translate_sp = true;
         int language = 100;
@@ -448,6 +492,7 @@ enum WeatherKey {
 
 		bool blnvibes;
 		bool blninverted =  false;
+		bool blnForecast = false;
 
 		InverterLayer *inv_layer;
 
@@ -676,20 +721,15 @@ void getDate()
 				else{text_layer_set_text(date_layer,strncat(day_month,MONTHS[id],strlen(MONTHS[id]))); }
 		
 	}
-
-
-  
-		
+	
 }
-
-
 
 //*****************//
 // AppSync options //
 //*****************//
 
         static AppSync sync;
-        static uint8_t sync_buffer[256];
+        static uint8_t sync_buffer[512];
 
 
 
@@ -742,6 +782,37 @@ void getDate()
 		  blnvibes = new_tuple->value->uint8 != 0;
 		  persist_write_bool(VIBES_KEY, blnvibes);
 		  break;
+  
+	  //Forecast for the day
+		case WEATHER_HIGH_KEY: 
+	  		//Save the High temperature
+	        memcpy(&high,  new_tuple->value->cstring, strlen( new_tuple->value->cstring));
+	    	persist_write_string(WEATHER_HIGH_KEY, new_tuple->value->cstring);
+      		break;
+		case WEATHER_LOW_KEY:
+	  	  	//Save the Low temperature
+	  		memcpy(&low,  new_tuple->value->cstring, strlen( new_tuple->value->cstring));
+	    	persist_write_string(WEATHER_LOW_KEY, new_tuple->value->cstring);
+      		break;
+		case SUNRISE_KEY:
+	  	  	//Save the Sunrise Time
+	  	  	memcpy(&sunrise,  new_tuple->value->cstring, strlen(sunrise));
+	    	persist_write_string(SUNRISE_KEY, new_tuple->value->cstring);
+      		break;
+		case SUNSET_KEY:
+	  	  	//Save the Sunset Time
+	  	  	memcpy(&sunset,  new_tuple->value->cstring, strlen(sunset));
+	    	persist_write_string(SUNSET_KEY, new_tuple->value->cstring);
+      		break;
+		case WIND_KEY:
+	  	  	 //Save the Wind Speed
+	    	persist_write_string(WIND_KEY, new_tuple->value->cstring);
+      		break;
+		case HUMIDITY_KEY:
+	  	  	//Save the Humidity
+	    	persist_write_string(HUMIDITY_KEY, new_tuple->value->cstring);
+      		break;
+	  
   }
 }
 
@@ -829,6 +900,132 @@ static void timer_callback(void *context) {
 
 }
 
+void LoadTemperature()
+{	
+	//Track that we are displaying the primary screen
+	blnForecast = false;
+	//Destroy the forecast Layers
+	text_layer_destroy(High_Layer);
+	text_layer_destroy(Low_Layer);
+	text_layer_destroy(Sunrise_Layer);
+	text_layer_destroy(Sunset_Layer);
+	bitmap_layer_destroy(sunrise_icon_layer);
+	bitmap_layer_destroy(sunset_icon_layer);
+	bitmap_layer_destroy(high_icon_layer);
+	bitmap_layer_destroy(low_icon_layer);
+	
+	//Display the Weather layer
+	weather_icon_layer = bitmap_layer_create(WEATHER_FRAME);
+	bitmap_layer_set_bitmap(weather_icon_layer, weather_image);
+    layer_add_child(window_get_root_layer(my_window), bitmap_layer_get_layer(weather_icon_layer));
+	
+	//Create the Temperature Layer
+	Temperature_Layer = text_layer_create(TEMPERATURE_FRAME);
+	text_layer_set_text_color(Temperature_Layer, GColorWhite);
+	text_layer_set_background_color(Temperature_Layer, GColorClear);	
+	text_layer_set_font(Temperature_Layer, font_temperature);
+	text_layer_set_text_alignment(Temperature_Layer, GTextAlignmentCenter);
+	layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Temperature_Layer));
+	
+	//set back the temperature
+	persist_read_string(WEATHER_TEMPERATURE_KEY, temperature, sizeof(temperature));
+	text_layer_set_text(Temperature_Layer, temperature);
+	
+}
+
+
+static void forecast_callback(void *context) {
+       
+        //Refresh the weather
+        LoadTemperature();
+    
+
+}
+
+void LoadForecast()
+{
+	
+	//Track that we are displaying the secondary screen
+	blnForecast = true;
+	//Destroy the temperature Layer
+	text_layer_destroy(Temperature_Layer);
+	bitmap_layer_destroy(weather_icon_layer);
+	
+	//Create the Forecast Layers
+	
+	//HIGH
+	High_Layer = text_layer_create(HIGH_FRAME);	
+	text_layer_set_text_color(High_Layer, GColorWhite);
+	text_layer_set_background_color(High_Layer, GColorClear);
+	text_layer_set_font(High_Layer, font_date);
+	text_layer_set_text_alignment(High_Layer, GTextAlignmentRight);
+	layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(High_Layer));
+	
+	persist_read_string(WEATHER_HIGH_KEY, high, sizeof(high));
+	text_layer_set_text(High_Layer,high);
+	
+	//Display the High icon
+	high_image = gbitmap_create_with_resource(RESOURCE_ID_HIGH);
+	high_icon_layer = bitmap_layer_create(HIGH_ICON_FRAME);
+	bitmap_layer_set_bitmap(high_icon_layer, high_image);
+    layer_add_child(window_get_root_layer(my_window), bitmap_layer_get_layer(high_icon_layer));
+	
+	//LOW
+	Low_Layer = text_layer_create(LOW_FRAME);	
+	text_layer_set_text_color(Low_Layer, GColorWhite);
+	text_layer_set_background_color(Low_Layer, GColorClear);
+	text_layer_set_font(Low_Layer, font_date);
+	text_layer_set_text_alignment(Low_Layer, GTextAlignmentRight);
+	layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Low_Layer));
+	
+	persist_read_string(WEATHER_LOW_KEY, low, sizeof(low));
+	text_layer_set_text(Low_Layer,low);
+	
+	//Display the Low icon
+	low_image = gbitmap_create_with_resource(RESOURCE_ID_LOW);
+	low_icon_layer = bitmap_layer_create(LOW_ICON_FRAME);
+	bitmap_layer_set_bitmap(low_icon_layer, low_image);
+    layer_add_child(window_get_root_layer(my_window), bitmap_layer_get_layer(low_icon_layer));
+	
+	//SUNRISE
+	Sunrise_Layer = text_layer_create(SUNRISE_FRAME);	
+	text_layer_set_text_color(Sunrise_Layer, GColorWhite);
+	text_layer_set_background_color(Sunrise_Layer, GColorClear);
+	text_layer_set_font(Sunrise_Layer, font_date);
+	text_layer_set_text_alignment(Sunrise_Layer, GTextAlignmentRight);
+	layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Sunrise_Layer));
+	
+	persist_read_string(SUNRISE_KEY, sunrise, sizeof(sunrise));
+	text_layer_set_text(Sunrise_Layer,sunrise);
+	
+	//Display the sunset icon
+	sunrise_image = gbitmap_create_with_resource(RESOURCE_ID_SUNRISE);
+	sunrise_icon_layer = bitmap_layer_create(SUNRISE_ICON_FRAME);
+	bitmap_layer_set_bitmap(sunrise_icon_layer, sunrise_image);
+    layer_add_child(window_get_root_layer(my_window), bitmap_layer_get_layer(sunrise_icon_layer));
+	
+	//SUNSET
+	Sunset_Layer = text_layer_create(SUNSET_FRAME);	
+	text_layer_set_text_color(Sunset_Layer, GColorWhite);
+	text_layer_set_background_color(Sunset_Layer, GColorClear);
+	text_layer_set_font(Sunset_Layer, font_date);
+	text_layer_set_text_alignment(Sunset_Layer, GTextAlignmentRight);
+	layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Sunset_Layer));
+	
+	persist_read_string(SUNSET_KEY, sunset, sizeof(sunset));
+	text_layer_set_text(Sunset_Layer,sunset);
+	
+	//Display the sunset icon
+	sunset_image = gbitmap_create_with_resource(RESOURCE_ID_SUNSET);
+	sunset_icon_layer = bitmap_layer_create(SUNSET_ICON_FRAME);
+	bitmap_layer_set_bitmap(sunset_icon_layer, sunset_image);
+    layer_add_child(window_get_root_layer(my_window), bitmap_layer_get_layer(sunset_icon_layer));
+	
+	//setup the timer to set back the temperature after 5sec
+	weather = app_timer_register(5000, forecast_callback, NULL);
+	
+}
+
 
 //**************************//
 //** Handle accel **//
@@ -836,7 +1033,9 @@ static void timer_callback(void *context) {
 
 void accel_tap_handler(AccelAxisType axis, int32_t direction){
 
-    send_cmd();
+    //send_cmd();
+	//Just fire the event while displaying the primary screen
+	if (blnForecast==false){LoadForecast();}
 
 }
 
@@ -884,18 +1083,9 @@ void LoadMainWindow(){
                 text_layer_set_text_alignment(date_layer, GTextAlignmentRight);
                 layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(date_layer));
         
-                //Display the Weather layer
-                weather_icon_layer = bitmap_layer_create(WEATHER_FRAME);
-                bitmap_layer_set_bitmap(weather_icon_layer, weather_image);
-                layer_add_child(window_get_root_layer(my_window), bitmap_layer_get_layer(weather_icon_layer));
         
                 //Display the Temperature layer
-                Temperature_Layer = text_layer_create(TEMPERATURE_FRAME);
-				text_layer_set_text_color(Temperature_Layer, GColorWhite);
-	            text_layer_set_background_color(Temperature_Layer, GColorClear);	
-                text_layer_set_font(Temperature_Layer, font_temperature);
-                text_layer_set_text_alignment(Temperature_Layer, GTextAlignmentCenter);
-                layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Temperature_Layer));
+				LoadTemperature();
         
                 //Display the Location layer
                 Location_Layer = text_layer_create(LOCATION_FRAME);
@@ -930,6 +1120,10 @@ void SetupMessages(){
 				TupletInteger(INVERT_COLOR_KEY, color_inverted),
 				TupletInteger(language_key, language), //INITIALIZE TO LAST SAVED
 				TupletInteger(VIBES_KEY, blnvibes),
+				MyTupletCString(WEATHER_HIGH_KEY,high),
+				MyTupletCString(WEATHER_LOW_KEY,low),
+				MyTupletCString(SUNRISE_KEY,sunrise),
+				MyTupletCString(SUNSET_KEY,sunset),
                 }; //TUPLET INITIAL VALUES
         
                  app_sync_init(&sync, sync_buffer, sizeof(sync_buffer), initial_values,
