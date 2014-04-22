@@ -90,7 +90,7 @@ static const char *WEEKDAYS[] = {
 	"Donnerstag", 
 	"Freitag", 
 	"Samstag", 
-	"Neděle",
+	"Sonntag",
 	//CZECH - 3
 	"Pondělí",
 	"Úterý", 
