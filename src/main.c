@@ -466,6 +466,7 @@ enum WeatherKey {
         const uint32_t timeout_ms = 1800000; //30min (1min = 60000)
 
         static AppTimer *weather;
+		static AppTimer *accelerometer;
 
         //Date & Time        
         static char last_update[]="00:00 ";
@@ -965,6 +966,7 @@ void LoadForecast()
 	text_layer_set_text(High_Layer,high);
 	
 	//Display the High icon
+	if (high_image){gbitmap_destroy(high_image);}
 	high_image = gbitmap_create_with_resource(RESOURCE_ID_HIGH);
 	high_icon_layer = bitmap_layer_create(HIGH_ICON_FRAME);
 	bitmap_layer_set_bitmap(high_icon_layer, high_image);
@@ -982,6 +984,7 @@ void LoadForecast()
 	text_layer_set_text(Low_Layer,low);
 	
 	//Display the Low icon
+	if (low_image){gbitmap_destroy(low_image);}
 	low_image = gbitmap_create_with_resource(RESOURCE_ID_LOW);
 	low_icon_layer = bitmap_layer_create(LOW_ICON_FRAME);
 	bitmap_layer_set_bitmap(low_icon_layer, low_image);
@@ -999,6 +1002,7 @@ void LoadForecast()
 	text_layer_set_text(Sunrise_Layer,sunrise);
 	
 	//Display the sunset icon
+	if (sunrise_image){gbitmap_destroy(sunrise_image);}
 	sunrise_image = gbitmap_create_with_resource(RESOURCE_ID_SUNRISE);
 	sunrise_icon_layer = bitmap_layer_create(SUNRISE_ICON_FRAME);
 	bitmap_layer_set_bitmap(sunrise_icon_layer, sunrise_image);
@@ -1016,6 +1020,7 @@ void LoadForecast()
 	text_layer_set_text(Sunset_Layer,sunset);
 	
 	//Display the sunset icon
+	if (sunset_image){gbitmap_destroy(sunset_image);}
 	sunset_image = gbitmap_create_with_resource(RESOURCE_ID_SUNSET);
 	sunset_icon_layer = bitmap_layer_create(SUNSET_ICON_FRAME);
 	bitmap_layer_set_bitmap(sunset_icon_layer, sunset_image);
@@ -1148,7 +1153,10 @@ void handle_init(void)
 		language = persist_read_int(language_key);
 		ICON_CODE = persist_read_int(WEATHER_ICON_KEY);
 		persist_read_string(WEATHER_TEMPERATURE_KEY, temperature, sizeof(temperature));
-
+		persist_read_string(WEATHER_HIGH_KEY, high, sizeof(high));
+		persist_read_string(WEATHER_LOW_KEY, low, sizeof(low));
+		persist_read_string(SUNRISE_KEY, sunrise, sizeof(sunrise));
+		persist_read_string(SUNSET_KEY, sunset, sizeof(sunset));
 	
 
         //Create the main window
@@ -1222,6 +1230,11 @@ void handle_deinit(void)
         if (Batt_image){gbitmap_destroy(Batt_image);}
         if (weather_image){gbitmap_destroy(weather_image);}
 		if (chinese_day) {gbitmap_destroy(chinese_day);}
+	
+		if (high_image){gbitmap_destroy(high_image);}
+		if (low_image){gbitmap_destroy(low_image);}
+		if (sunrise_image){gbitmap_destroy(sunrise_image);}
+		if (sunset_image){gbitmap_destroy(sunset_image);}
 	
         
         //Deallocate layers
