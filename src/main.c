@@ -846,7 +846,10 @@ void handle_tick(struct tm *tick_time, TimeUnits units_changed)
                                 strftime(time_text, sizeof(time_text), "%I:%M", tick_time);
                         }
                 
-                                 
+                        //Remove the leading 0s
+						if (time_text[0]=='0') {memcpy(&time_text," ",1);}
+			
+						//Set the time to the Time Layer
                         text_layer_set_text(Time_Layer, time_text);
                 
                         //Check Battery Status
