@@ -34,11 +34,16 @@
 #define HIGH_FRAME (GRect(106, 115, 41, 168-108))
 #define HIGH_ICON_FRAME (GRect(87, 115, 26, 26))
 
-#define SUNRISE_FRAME (GRect(30, 95, 42, 168-108))
+#define SUNRISE_FRAME (GRect(30, 95, 50, 168-108))
 #define SUNRISE_ICON_FRAME (GRect(1, 98, 26, 17))
 
-#define SUNSET_FRAME (GRect(30, 115, 42, 168-108))
+#define SUNSET_FRAME (GRect(30, 115, 50, 168-108))
 #define SUNSET_ICON_FRAME (GRect(1, 118, 26, 17))
+	
+#define WIND_FRAME (GRect(30, 135, 50, 168-108))
+#define WIND_ICON_FRAME (GRect(1, 138, 26, 26))
+	
+#define WDIRECTION_FRAME (GRect(30, 155, 50, 168-108))
         
 
         
@@ -387,7 +392,6 @@ static const char *MONTHS[] = {
 // Define KEYS //
 //*************//
 
-
 enum WeatherKey {
   WEATHER_ICON_KEY = 0x0,        // TUPLE_INT
   WEATHER_TEMPERATURE_KEY = 0x1, // TUPLE_CSTRING
@@ -402,6 +406,7 @@ enum WeatherKey {
 	SUNSET_KEY = 0x9, //TUPLE_CSTRING
 	WIND_KEY = 0xa, //TUPLE_CSTRING
 	HUMIDITY_KEY = 0xb, //TUPLE_CSTRING
+	WDIRECTION_KEY = 0xc, //TUPLE_INT
 };
 
 //Declare initial window        
@@ -423,6 +428,9 @@ enum WeatherKey {
 		TextLayer *Sunrise_Layer;        //Layer for the High Temperature
 		TextLayer *Sunset_Layer;        //Layer for the Low Temperature
 
+		TextLayer *Wind_Layer;        //Layer for the Wind speed 
+		TextLayer *WDirection_Layer;        //Layer for the Wind direction
+
         static GBitmap *BT_image;
         static BitmapLayer *BT_icon_layer; //Layer for the BT connection
         
@@ -443,6 +451,9 @@ enum WeatherKey {
 
         static GBitmap *low_image;
         static BitmapLayer *low_icon_layer; //Layer for the low info
+
+        static GBitmap *wind_image;
+        static BitmapLayer *wind_icon_layer; //Layer for the wind info
 
         static GBitmap *chinese_day;
         static BitmapLayer *chinese_day_layer; //Layer for the weather info
@@ -482,8 +493,12 @@ enum WeatherKey {
 		static char temperature[]="    ";
 		static char high[]="    ";
 		static char low[]="    ";
-		static char sunrise[]="     ";
-		static char sunset[]="     ";
+		static char sunrise[]="    ";
+		static char sunset[]="    ";
+		static char wind[]="     ";
+		static int wdirection;
+		static char strwdirection[] = "   ";
+		static char city[100];
         
         bool translate_sp = true;
         int language = 100;
@@ -761,6 +776,7 @@ void getDate()
       		break;
 
      case WEATHER_CITY_KEY:
+	  		persist_write_string(WEATHER_CITY_KEY, new_tuple->value->cstring);
          	text_layer_set_text(Location_Layer, new_tuple->value->cstring);
          	break;
 
@@ -807,6 +823,7 @@ void getDate()
       		break;
 		case WIND_KEY:
 	  	  	 //Save the Wind Speed
+	  	  	memcpy(&wind,  new_tuple->value->cstring, strlen(wind));
 	    	persist_write_string(WIND_KEY, new_tuple->value->cstring);
       		break;
 		case HUMIDITY_KEY:
@@ -814,9 +831,14 @@ void getDate()
 	    	persist_write_string(HUMIDITY_KEY, new_tuple->value->cstring);
       		break;
 	  
+	  	case WDIRECTION_KEY:
+	  	  	//Save the Wind Direction
+	  	  	wdirection = new_tuple->value->uint8;
+	  	  	persist_write_int(WDIRECTION_KEY, wdirection);
+      		break;
+	  
   }
 }
-
 
 //************************//
 // Capture the Tick event //
@@ -913,10 +935,13 @@ void LoadTemperature()
 	text_layer_destroy(Low_Layer);
 	text_layer_destroy(Sunrise_Layer);
 	text_layer_destroy(Sunset_Layer);
+	text_layer_destroy(Wind_Layer);
+	text_layer_destroy(WDirection_Layer);
 	bitmap_layer_destroy(sunrise_icon_layer);
 	bitmap_layer_destroy(sunset_icon_layer);
 	bitmap_layer_destroy(high_icon_layer);
 	bitmap_layer_destroy(low_icon_layer);
+	bitmap_layer_destroy(wind_icon_layer);
 	
 	//Display the Weather layer
 	weather_icon_layer = bitmap_layer_create(WEATHER_FRAME);
@@ -931,9 +956,33 @@ void LoadTemperature()
 	text_layer_set_text_alignment(Temperature_Layer, GTextAlignmentCenter);
 	layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Temperature_Layer));
 	
+	//Display the Location layer
+	Location_Layer = text_layer_create(LOCATION_FRAME);
+	text_layer_set_text_color(Location_Layer, GColorWhite);	
+	text_layer_set_background_color(Location_Layer, GColorClear);
+	text_layer_set_font(Location_Layer, font_update);
+	text_layer_set_text_alignment(Location_Layer, GTextAlignmentRight);
+	layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Location_Layer));
+	
+	//Display the Last Update layer
+	Last_Update = text_layer_create(LAST_UPDATE_FRAME);
+	text_layer_set_text_color(Last_Update, GColorWhite);
+	text_layer_set_background_color(Last_Update, GColorClear);	
+	text_layer_set_font(Last_Update, font_update);
+	text_layer_set_text_alignment(Last_Update, GTextAlignmentRight);
+	layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Last_Update));
+	
+	//set back the location
+	memset(&city[0], 0, sizeof(city));
+	persist_read_string(WEATHER_CITY_KEY, city, sizeof(city));
+	text_layer_set_text(Location_Layer, city);
+	
 	//set back the temperature
 	persist_read_string(WEATHER_TEMPERATURE_KEY, temperature, sizeof(temperature));
 	text_layer_set_text(Temperature_Layer, temperature);
+	
+	//set back the last update
+	text_layer_set_text(Last_Update, last_update);
 	
 }
 
@@ -946,6 +995,48 @@ static void forecast_callback(void *context) {
 
 }
 
+void windDirection()
+{
+/*
+Wind directions
+	
+N 348.75 - 11.25
+NNE 11.25 - 33.75
+NE 33.75 - 56.25
+ENE 56.25 - 78.75
+E 78.75 - 101.25
+ESE 101.25 - 123.75
+SE 123.75 - 146.25
+SSE 146.25 - 168.75
+S 168.75 - 191.25
+SSW 191.25 - 213.75
+SW 213.75 - 236.25
+WSW 236.25 - 258.75
+W 258.75 - 281.25
+WNW 281.25 - 303.75
+NW 303.75 - 326.25
+NNW 326.25 - 348.75
+
+*/
+	if((wdirection>348)||(wdirection<12)){memcpy(&strwdirection, "N", 1);}
+	else if((wdirection>11)&&(wdirection<34)){memcpy(&strwdirection, "NNE", 3);}
+	else if((wdirection>33)&&(wdirection<57)){memcpy(&strwdirection, "NE", 2);}
+	else if((wdirection>56)&&(wdirection<79)){memcpy(&strwdirection, "ENE", 3);}
+	else if((wdirection>78)&&(wdirection<102)){memcpy(&strwdirection, "E", 1);}
+	else if((wdirection>101)&&(wdirection<124)){memcpy(&strwdirection, "ESE", 3);}
+	else if((wdirection>123)&&(wdirection<147)){memcpy(&strwdirection, "SE", 2);}
+	else if((wdirection>146)&&(wdirection<169)){memcpy(&strwdirection, "SSE", 3);}
+	else if((wdirection>168)&&(wdirection<191)){memcpy(&strwdirection, "S", 1);}
+	else if((wdirection>191)&&(wdirection<214)){memcpy(&strwdirection, "SSW", 3);}
+	else if((wdirection>214)&&(wdirection<237)){memcpy(&strwdirection, "SW", 2);}
+	else if((wdirection>237)&&(wdirection<259)){memcpy(&strwdirection, "WSW", 3);}
+	else if((wdirection>259)&&(wdirection<282)){memcpy(&strwdirection, "W", 1);}
+	else if((wdirection>282)&&(wdirection<304)){memcpy(&strwdirection, "WNW", 3);}
+	else if((wdirection>304)&&(wdirection<327)){memcpy(&strwdirection, "NW", 2);}
+	else if((wdirection>326)&&(wdirection<349)){memcpy(&strwdirection, "NNW", 3);}
+
+}
+	
 void LoadForecast()
 {
 	
@@ -954,6 +1045,8 @@ void LoadForecast()
 	//Destroy the temperature Layer
 	text_layer_destroy(Temperature_Layer);
 	bitmap_layer_destroy(weather_icon_layer);
+	text_layer_destroy(Location_Layer);
+	text_layer_destroy(Last_Update);
 	
 	//Create the Forecast Layers
 	
@@ -1029,6 +1122,37 @@ void LoadForecast()
 	bitmap_layer_set_bitmap(sunset_icon_layer, sunset_image);
     layer_add_child(window_get_root_layer(my_window), bitmap_layer_get_layer(sunset_icon_layer));
 	
+	//WIND SPEED
+	Wind_Layer = text_layer_create(WIND_FRAME);	
+	text_layer_set_text_color(Wind_Layer, GColorWhite);
+	text_layer_set_background_color(Wind_Layer, GColorClear);
+	text_layer_set_font(Wind_Layer, font_date);
+	text_layer_set_text_alignment(Wind_Layer, GTextAlignmentRight);
+	layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Wind_Layer));
+	
+	persist_read_string(WIND_KEY, wind, sizeof(wind));
+	text_layer_set_text(Wind_Layer,wind);
+	
+	//WIND DIRECTION
+	WDirection_Layer = text_layer_create(WDIRECTION_FRAME);	
+	text_layer_set_text_color(WDirection_Layer, GColorWhite);
+	text_layer_set_background_color(WDirection_Layer, GColorClear);
+	text_layer_set_font(WDirection_Layer, font_update);
+	text_layer_set_text_alignment(WDirection_Layer, GTextAlignmentRight);
+	layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(WDirection_Layer));
+	
+	wdirection =  persist_read_int(WDIRECTION_KEY); 
+	//decode the wind direction code to text
+	windDirection();
+	text_layer_set_text(WDirection_Layer,strwdirection);
+	
+	//Display the wind icon
+	if (wind_image){gbitmap_destroy(wind_image);}
+	wind_image = gbitmap_create_with_resource(RESOURCE_ID_WIND_SMALL);
+	wind_icon_layer = bitmap_layer_create(WIND_ICON_FRAME);
+	bitmap_layer_set_bitmap(wind_icon_layer, wind_image);
+    layer_add_child(window_get_root_layer(my_window), bitmap_layer_get_layer(wind_icon_layer));
+	
 	//setup the timer to set back the temperature after 5sec
 	weather = app_timer_register(5000, forecast_callback, NULL);
 	
@@ -1095,21 +1219,7 @@ void LoadMainWindow(){
                 //Display the Temperature layer
 				LoadTemperature();
         
-                //Display the Location layer
-                Location_Layer = text_layer_create(LOCATION_FRAME);
-				text_layer_set_text_color(Location_Layer, GColorWhite);	
-	            text_layer_set_background_color(Location_Layer, GColorClear);
-                text_layer_set_font(Location_Layer, font_update);
-                text_layer_set_text_alignment(Location_Layer, GTextAlignmentRight);
-                layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Location_Layer));
-        
-                //Display the Last Update layer
-                Last_Update = text_layer_create(LAST_UPDATE_FRAME);
-				text_layer_set_text_color(Last_Update, GColorWhite);
-	            text_layer_set_background_color(Last_Update, GColorClear);	
-                text_layer_set_font(Last_Update, font_update);
-                text_layer_set_text_alignment(Last_Update, GTextAlignmentRight);
-                layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Last_Update));
+
         
  
 	            //Drawn the normal/inverted based on saved settings
@@ -1132,6 +1242,8 @@ void SetupMessages(){
 				MyTupletCString(WEATHER_LOW_KEY,low),
 				MyTupletCString(SUNRISE_KEY,sunrise),
 				MyTupletCString(SUNSET_KEY,sunset),
+				MyTupletCString(WIND_KEY,wind),
+				TupletInteger(WDIRECTION_KEY,wdirection),
                 }; //TUPLET INITIAL VALUES
         
                  app_sync_init(&sync, sync_buffer, sizeof(sync_buffer), initial_values,
@@ -1160,6 +1272,8 @@ void handle_init(void)
 		persist_read_string(WEATHER_LOW_KEY, low, sizeof(low));
 		persist_read_string(SUNRISE_KEY, sunrise, sizeof(sunrise));
 		persist_read_string(SUNSET_KEY, sunset, sizeof(sunset));
+		persist_read_string(WIND_KEY, wind, sizeof(wind));
+		wdirection =  persist_read_int(WDIRECTION_KEY); 
 	
 
         //Create the main window

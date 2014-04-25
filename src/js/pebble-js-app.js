@@ -157,8 +157,8 @@ function getWeatherFromWoeid(woeid, city) {
           var condition = response.query.results.channel.item.condition;
           var forecast = response.query.results.channel.item.forecast;	
 	      var astronomy = response.query.results.channel.astronomy;		
-		  //var vwind = response.query.results.channel.wind;	
-		  //var atmosphere = response.query.results.channel.atmosphere;	
+		  var vwind = response.query.results.channel.wind;	
+		  var atmosphere = response.query.results.channel.atmosphere;	
           //temperature = condition.temp + (celsius ? "\u00B0C" : "\u00B0F"); //Use this format if you want to display the unit
 			temperature = condition.temp + "\u00B0";
           	icon = imageId[condition.code];
@@ -168,8 +168,9 @@ function getWeatherFromWoeid(woeid, city) {
 			low = forecast.low + "\u00B0";
 			sunrise = astronomy.sunrise;
 			sunset = astronomy.sunset;
-			//wind = vwind.speed;
-			//humidity = atmosphere.humidity;
+			wind = vwind.speed;
+			wdirection = vwind.direction;
+			humidity = atmosphere.humidity;
 			
           Pebble.sendAppMessage({
             "icon":icon,
@@ -184,8 +185,9 @@ function getWeatherFromWoeid(woeid, city) {
             "low":low,
 			"sunrise":sunrise,
             "sunset":sunset,
-			//"wind":wind,
-            //"humidity":humidity,
+			"wind":wind,
+			"wdirection":parseInt(wdirection),
+            "humidity":humidity,
           });
         }
       } else {
