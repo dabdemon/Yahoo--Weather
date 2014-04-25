@@ -405,8 +405,7 @@ enum WeatherKey {
 	SUNRISE_KEY = 0x8, //TUPLE_CSTRING
 	SUNSET_KEY = 0x9, //TUPLE_CSTRING
 	WIND_KEY = 0xa, //TUPLE_CSTRING
-	HUMIDITY_KEY = 0xb, //TUPLE_CSTRING
-	WDIRECTION_KEY = 0xc, //TUPLE_INT
+	WDIRECTION_KEY = 0xb, //TUPLE_INT
 };
 
 //Declare initial window        
@@ -499,6 +498,7 @@ enum WeatherKey {
 		static int wdirection;
 		static char strwdirection[] = "   ";
 		static char city[100];
+static char varrr[100];
         
         bool translate_sp = true;
         int language = 100;
@@ -826,14 +826,10 @@ void getDate()
 	  	  	memcpy(&wind,  new_tuple->value->cstring, strlen(wind));
 	    	persist_write_string(WIND_KEY, new_tuple->value->cstring);
       		break;
-		case HUMIDITY_KEY:
-	  	  	//Save the Humidity
-	    	persist_write_string(HUMIDITY_KEY, new_tuple->value->cstring);
-      		break;
 	  
 	  	case WDIRECTION_KEY:
 	  	  	//Save the Wind Direction
-	  	  	wdirection = new_tuple->value->uint8;
+	  	  	wdirection = new_tuple->value->uint32;
 	  	  	persist_write_int(WDIRECTION_KEY, wdirection);
       		break;
 	  
@@ -1018,6 +1014,9 @@ NW 303.75 - 326.25
 NNW 326.25 - 348.75
 
 */
+	
+	memset(&strwdirection[0],0,strlen(strwdirection));
+	
 	if((wdirection>348)||(wdirection<12)){memcpy(&strwdirection, "N", 1);}
 	else if((wdirection>11)&&(wdirection<34)){memcpy(&strwdirection, "NNE", 3);}
 	else if((wdirection>33)&&(wdirection<57)){memcpy(&strwdirection, "NE", 2);}
@@ -1145,6 +1144,7 @@ void LoadForecast()
 	//decode the wind direction code to text
 	windDirection();
 	text_layer_set_text(WDirection_Layer,strwdirection);
+
 	
 	//Display the wind icon
 	if (wind_image){gbitmap_destroy(wind_image);}
