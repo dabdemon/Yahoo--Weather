@@ -496,7 +496,7 @@ enum WeatherKey {
 		static char sunset[]="    ";
 		static char wind[]="     ";
 		static int wdirection;
-		static char strwdirection[] = "   ";
+		static char strwdirection[100];
 		static char city[100];
 static char varrr[100];
         
