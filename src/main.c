@@ -492,13 +492,18 @@ enum WeatherKey {
 		static char temperature[]="    ";
 		static char high[]="    ";
 		static char low[]="    ";
-		static char sunrise[]="    ";
-		static char sunset[]="    ";
+		static char sunrise[]="     ";
+		static char sunset[]="     ";
 		static char wind[]="     ";
 		static int wdirection;
 		static char strwdirection[100];
 		static char city[100];
-static char varrr[100];
+
+		int iHours;
+		int iHours2;
+		int iMinutes;
+		int iMinutes2;
+
         
         bool translate_sp = true;
         int language = 100;
@@ -1035,6 +1040,103 @@ NNW 326.25 - 348.75
 	else if((wdirection>326)&&(wdirection<349)){memcpy(&strwdirection, "NNW", 3);}
 
 }
+
+void formatSunset(){
+	
+	time_t actualPtr = time(NULL);
+	
+	//Split the sunset hour and minutes (assume sunset is always after noon)
+	
+	if (sunset[1]==':'){
+		
+	
+		//hours
+		iHours = sunset[0] - '0';
+		//minutes
+		iMinutes = sunset[2] - '0';
+		iMinutes2 = sunset[3] - '0';
+		
+		iMinutes = ((iMinutes*10)+iMinutes2);
+	}
+	else{
+		//hours
+		iHours = sunset[0] - '0';
+		iHours2 = sunset[1] - '0';
+		
+		iHours = ((iHours*10)+iHours2);
+		
+		//minutes
+		iMinutes = sunset[3] - '0';
+		iMinutes2 = sunset[4] - '0';
+		
+		iMinutes = ((iMinutes*10)+iMinutes2);
+		
+	}
+
+
+
+
+	//SUNSET
+	struct tm *tz1Ptr = gmtime(&actualPtr);
+	tz1Ptr->tm_hour = iHours+12; //assume sunset is always after noon
+	tz1Ptr->tm_min = iMinutes;
+	
+	
+	if (clock_is_24h_style()){strftime(sunset, sizeof(sunset), "%H:%M", tz1Ptr);}
+	else {strftime(sunset, sizeof(sunset), "%I:%M", tz1Ptr);}	
+	
+	//Remove the leading 0s
+	if (sunset[0]=='0') {memcpy(&sunset," ",1);}
+}
+
+void formatSunrise(){
+	
+	time_t actualPtr2 = time(NULL);
+	
+	//Split the sunset hour and minutes (assume sunrise is always before noon)
+	
+	if (sunrise[1]==':'){
+		
+	
+		//hours
+		iHours = sunrise[0] - '0';
+		//minutes
+		iMinutes = sunrise[2] - '0';
+		iMinutes2 = sunrise[3] - '0';
+		
+		iMinutes = ((iMinutes*10)+iMinutes2);
+	}
+	else{
+		//hours
+		iHours = sunrise[0] - '0';
+		iHours2 = sunrise[1] - '0';
+		
+		iHours = ((iHours*10)+iHours2);
+		
+		//minutes
+		iMinutes = sunrise[3] - '0';
+		iMinutes2 = sunrise[4] - '0';
+		
+		iMinutes = ((iMinutes*10)+iMinutes2);
+		
+	}
+
+
+
+
+	//SUNSET
+	struct tm *tz2Ptr = gmtime(&actualPtr2);
+	tz2Ptr->tm_hour = iHours; //assume sunrise is always before noon
+	tz2Ptr->tm_min = iMinutes;
+	
+	
+	if (clock_is_24h_style()){strftime(sunrise, sizeof(sunrise), "%H:%M", tz2Ptr);}
+	else {strftime(sunrise, sizeof(sunrise), "%I:%M", tz2Ptr);}	
+	
+	//Remove the leading 0s
+	if (sunrise[0]=='0') {memcpy(&sunrise," ",1);}
+}
+
 	
 void LoadForecast()
 {
@@ -1094,6 +1196,7 @@ void LoadForecast()
 	layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Sunrise_Layer));
 	
 	persist_read_string(SUNRISE_KEY, sunrise, sizeof(sunrise));
+	formatSunrise();
 	text_layer_set_text(Sunrise_Layer,sunrise);
 	
 	//Display the sunset icon
@@ -1112,6 +1215,7 @@ void LoadForecast()
 	layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Sunset_Layer));
 	
 	persist_read_string(SUNSET_KEY, sunset, sizeof(sunset));
+	formatSunset();
 	text_layer_set_text(Sunset_Layer,sunset);
 	
 	//Display the sunset icon
@@ -1342,7 +1446,7 @@ void handle_deinit(void)
         battery_state_service_unsubscribe();
         bluetooth_connection_service_unsubscribe();
 		accel_tap_service_unsubscribe();
-        
+  /*      
         if (BT_image){gbitmap_destroy(BT_image);}
         if (Batt_image){gbitmap_destroy(Batt_image);}
         if (weather_image){gbitmap_destroy(weather_image);}
@@ -1352,7 +1456,8 @@ void handle_deinit(void)
 		if (low_image){gbitmap_destroy(low_image);}
 		if (sunrise_image){gbitmap_destroy(sunrise_image);}
 		if (sunset_image){gbitmap_destroy(sunset_image);}
-	
+		if (wind_image){gbitmap_destroy(wind_image);}
+
         
         //Deallocate layers
         text_layer_destroy(Time_Layer);
@@ -1362,7 +1467,20 @@ void handle_deinit(void)
         text_layer_destroy(Location_Layer);        
         text_layer_destroy(Last_Update);        
 	    inverter_layer_destroy(inv_layer);
-        
+	
+		text_layer_destroy(High_Layer);
+		text_layer_destroy(Low_Layer);
+		text_layer_destroy(Sunrise_Layer);
+		text_layer_destroy(Sunset_Layer);
+		text_layer_destroy(Wind_Layer);
+		text_layer_destroy(WDirection_Layer);
+		bitmap_layer_destroy(sunrise_icon_layer);
+		bitmap_layer_destroy(sunset_icon_layer);
+		bitmap_layer_destroy(high_icon_layer);
+		bitmap_layer_destroy(low_icon_layer);
+		bitmap_layer_destroy(wind_icon_layer);
+ */
+	
         //Deallocate custom fonts
         fonts_unload_custom_font(font_date);
         fonts_unload_custom_font(font_update);
