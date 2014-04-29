@@ -26,6 +26,46 @@
     "resources": {
         "media": [
             {
+                "file": "images/moon_7.png",
+                "type": "png",
+                "name": "MOON_7"
+            },
+            {
+                "file": "images/moon_6.png",
+                "type": "png",
+                "name": "MOON_6"
+            },
+            {
+                "file": "images/moon_5.png",
+                "type": "png",
+                "name": "MOON_5"
+            },
+            {
+                "file": "images/moon_4.png",
+                "type": "png",
+                "name": "MOON_4"
+            },
+            {
+                "file": "images/moon_3.png",
+                "type": "png",
+                "name": "MOON_3"
+            },
+            {
+                "file": "images/moon_2.png",
+                "type": "png",
+                "name": "MOON_2"
+            },
+            {
+                "file": "images/moon_1.png",
+                "type": "png",
+                "name": "MOON_1"
+            },
+            {
+                "file": "images/moon_0.png",
+                "type": "png",
+                "name": "MOON_0"
+            },
+            {
                 "file": "images/wind_small.png",
                 "type": "png",
                 "name": "WIND_SMALL"

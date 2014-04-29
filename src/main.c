@@ -45,11 +45,22 @@
 	
 #define WDIRECTION_FRAME (GRect(30, 155, 50, 168-108))
         
-
-        
+#define TOTAL_MOON_DIGITS 1
+#define MOON_ICON_FRAME (GRect(106, 138, 26, 26))
+	
 //******************//
 // DEFINE THE ICONS //
-//******************//        
+//******************//  
+const int MOON_IMAGE_RESOURCE_IDS[] = {
+  RESOURCE_ID_MOON_0,
+  RESOURCE_ID_MOON_1,
+  RESOURCE_ID_MOON_2,
+  RESOURCE_ID_MOON_3,
+  RESOURCE_ID_MOON_4,
+  RESOURCE_ID_MOON_5,
+  RESOURCE_ID_MOON_6,
+  RESOURCE_ID_MOON_7
+};
 
 static const uint32_t WEATHER_ICONS[] = {
   RESOURCE_ID_ICON_CLEAR_DAY,
@@ -454,6 +465,9 @@ enum WeatherKey {
         static GBitmap *wind_image;
         static BitmapLayer *wind_icon_layer; //Layer for the wind info
 
+        static GBitmap *moon_image;
+        static BitmapLayer *moon_icon_layer; //Layer for the wind info
+
         static GBitmap *chinese_day;
         static BitmapLayer *chinese_day_layer; //Layer for the weather info
 
@@ -503,6 +517,11 @@ enum WeatherKey {
 		int iHours2;
 		int iMinutes;
 		int iMinutes2;
+
+		int moonphase_number;
+		int intday;
+		int intmonth;
+		int intyear;
 
         
         bool translate_sp = true;
@@ -676,6 +695,11 @@ void getDate()
 	//Get the date
 	time_t actualPtr = time(NULL);
 	struct tm *tz1Ptr = gmtime(&actualPtr);
+	
+	//get day, month and year for moon phase
+	intday = tz1Ptr->tm_mday;
+	intmonth = tz1Ptr->tm_mon;
+	intyear = tz1Ptr->tm_year;
 	
 	
 	//Try new translation method
@@ -927,6 +951,9 @@ static void timer_callback(void *context) {
 
 }
 
+/*********************************/
+/* Load  the main weather screen */
+/*********************************/
 void LoadTemperature()
 {	
 	//Track that we are displaying the primary screen
@@ -943,6 +970,7 @@ void LoadTemperature()
 	bitmap_layer_destroy(high_icon_layer);
 	bitmap_layer_destroy(low_icon_layer);
 	bitmap_layer_destroy(wind_icon_layer);
+	bitmap_layer_destroy(moon_icon_layer);
 	
 	//Display the Weather layer
 	weather_icon_layer = bitmap_layer_create(WEATHER_FRAME);
@@ -996,6 +1024,10 @@ static void forecast_callback(void *context) {
 
 }
 
+/*****************************/
+/* Decode the Wind Direction */
+/*****************************/
+
 void windDirection()
 {
 /*
@@ -1041,6 +1073,9 @@ NNW 326.25 - 348.75
 
 }
 
+/*********************************************************/
+/* Format Sunrise/Sunset time based on Pebble's settings */
+/*********************************************************/
 void formatSunset(){
 	
 	time_t actualPtr = time(NULL);
@@ -1072,9 +1107,6 @@ void formatSunset(){
 		iMinutes = ((iMinutes*10)+iMinutes2);
 		
 	}
-
-
-
 
 	//SUNSET
 	struct tm *tz1Ptr = gmtime(&actualPtr);
@@ -1122,8 +1154,6 @@ void formatSunrise(){
 	}
 
 
-
-
 	//SUNSET
 	struct tm *tz2Ptr = gmtime(&actualPtr2);
 	tz2Ptr->tm_hour = iHours; //assume sunrise is always before noon
@@ -1137,7 +1167,40 @@ void formatSunrise(){
 	if (sunrise[0]=='0') {memcpy(&sunrise," ",1);}
 }
 
-	
+/****************************/
+/* Calculate the Moon Phase */
+/****************************/
+
+//Extracted from "Ninety Weather Moon" by Novo//
+int moon_phase(int y, int m, int d) {
+    /*
+      calculates the moon phase (0-7), accurate to 1 segment.
+      0 = > new moon.
+      4 => full moon.
+    */
+    int c,e;
+    double jd;
+    int b;
+
+    if (m < 3) {
+        y--;
+        m += 12;
+    }
+    ++m;
+    c = 365.25*y;
+    e = 30.6*m;
+    jd = c+e+d-694039.09;  	/* jd is total days elapsed */
+    jd /= 29.53;        	/* divide by the moon cycle (29.53 days) */
+    b = jd;		   			/* int(jd) -> b, take integer part of jd */
+    jd -= b;		   		/* subtract integer part to leave fractional part of original jd */
+    b = jd*8 + 0.5;	   		/* scale fraction from 0-8 and round by adding 0.5 */
+    b = b & 7;		   		/* 0 and 8 are the same so turn 8 into 0 */
+    return b;
+}
+
+/****************************************/
+/* Display the secondary weather screen */
+/****************************************/
 void LoadForecast()
 {
 	
@@ -1150,7 +1213,7 @@ void LoadForecast()
 	text_layer_destroy(Last_Update);
 	
 	//Create the Forecast Layers
-	
+
 	//HIGH
 	High_Layer = text_layer_create(HIGH_FRAME);	
 	text_layer_set_text_color(High_Layer, GColorWhite);
@@ -1248,7 +1311,6 @@ void LoadForecast()
 	//decode the wind direction code to text
 	windDirection();
 	text_layer_set_text(WDirection_Layer,strwdirection);
-
 	
 	//Display the wind icon
 	if (wind_image){gbitmap_destroy(wind_image);}
@@ -1257,15 +1319,23 @@ void LoadForecast()
 	bitmap_layer_set_bitmap(wind_icon_layer, wind_image);
     layer_add_child(window_get_root_layer(my_window), bitmap_layer_get_layer(wind_icon_layer));
 	
+	//moonphase
+	moonphase_number = moon_phase(intyear+1900,intmonth,intday);
+	
+	moon_image = gbitmap_create_with_resource(MOON_IMAGE_RESOURCE_IDS[moonphase_number]);
+	moon_icon_layer = bitmap_layer_create(MOON_ICON_FRAME);
+	bitmap_layer_set_bitmap(moon_icon_layer, moon_image);
+    layer_add_child(window_get_root_layer(my_window), bitmap_layer_get_layer(moon_icon_layer));
+	
 	//setup the timer to set back the temperature after 5sec
 	weather = app_timer_register(5000, forecast_callback, NULL);
 	
 }
 
 
-//**************************//
-//** Handle accel **//
-//**************************//
+//************************************//
+//** Capture the accelerometer Taps **//
+//************************************//
 
 void accel_tap_handler(AccelAxisType axis, int32_t direction){
 
