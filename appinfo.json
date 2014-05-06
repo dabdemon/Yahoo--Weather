@@ -4,6 +4,12 @@
     "resources": {
         "media": [
             {
+                "menuIcon": true,
+                "file": "images/YWeather_Menu.png",
+                "name": "Menu_Image",
+                "type": "png"
+            },
+            {
                 "file": "images/moon_7.png",
                 "name": "MOON_7",
                 "type": "png"
@@ -260,7 +266,7 @@
     },
     "uuid": "35a28a4d-0c9f-408f-9c6d-551e65f03186",
     "versionLabel": "2.0",
-    "companyName": "dabdemon",
+    "companyName": "David Rodriguez Rincon",
     "capabilities": [
         "configurable"
     ],

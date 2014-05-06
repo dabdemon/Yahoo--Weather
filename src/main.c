@@ -1498,6 +1498,10 @@ void handle_init(void)
 	
         // Ensures time is displayed immediately (will break if NULL tick event accessed).
          // (This is why it's a good idea to have a separate routine to do the update itself.)
+	
+		//Initialize the Message Service
+		SetupMessages();
+	
                  
 	  // Set up the update layer callback
 	
@@ -1518,8 +1522,7 @@ void handle_init(void)
 
     			accel_tap_service_subscribe(accel_tap_handler);
 	
-		//Initialize the Message Service
-		SetupMessages();
+
         
 } //HANDLE_INIT
 
