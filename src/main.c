@@ -212,9 +212,9 @@ static const char *WEEKDAYS[] = {
 	"Søndag ",  
 	//TURKISH - 14
 	"Pazartesi",
-	"Salý",
-	"Çarþamba",
-	"Perþembe",
+	"Salı",
+	"Çarşamba",
+	"Perşembe",
 	"Cuma",
 	"Cumartesi",
 	"Pazar",
@@ -406,17 +406,17 @@ static const char *MONTHS[] = {
 	". desember", 
 	//TURKISH - 14
 	" Ocak",
-	" Þubat",
+	" Şubat",
 	" Mart",
 	" Nisan",
-	" Mayýs",
+	" Mayıs",
 	" Haziran",
 	" Temmuz",
-	" Aðustos",
+	" Ağustos",
 	" Eylül",
 	" Ekim",
-	" Kasým",
-	" Aralýk",
+	" Kasım",
+	" Aralık",
 };
 	
 
