@@ -977,6 +977,8 @@ static void timer_callback(void *context) {
 /*********************************/
 void LoadTemperature()
 {	
+	//remove the inverted layer (if any) before creating the new text layers
+	if(blninverted){inverter_layer_destroy(inv_layer);	blninverted = false;}
 	//Track that we are displaying the primary screen
 	blnForecast = false;
 	//Destroy the forecast Layers
@@ -1033,6 +1035,9 @@ void LoadTemperature()
 	
 	//set back the last update
 	text_layer_set_text(Last_Update, last_update);
+	
+	//if color inverted, then create the inverted layer
+	InvertColors(color_inverted);
 	
 }
 
@@ -1224,7 +1229,8 @@ int moon_phase(int y, int m, int d) {
 /****************************************/
 void LoadForecast()
 {
-	
+	//remove the inverted layer (if any) before creating the new text layers
+	if(blninverted){inverter_layer_destroy(inv_layer);	blninverted = false;}
 	//Track that we are displaying the secondary screen
 	blnForecast = true;
 	//Destroy the temperature Layer
@@ -1348,8 +1354,12 @@ void LoadForecast()
 	bitmap_layer_set_bitmap(moon_icon_layer, moon_image);
     layer_add_child(window_get_root_layer(my_window), bitmap_layer_get_layer(moon_icon_layer));
 	
+	//if color inverted, then create the inverted layer
+	InvertColors(color_inverted);
+	
 	//setup the timer to set back the temperature after 5sec
 	weather = app_timer_register(5000, forecast_callback, NULL);
+
 	
 }
 
@@ -1418,7 +1428,7 @@ void LoadMainWindow(){
         
  
 	            //Drawn the normal/inverted based on saved settings
-	            InvertColors(color_inverted);
+	            //InvertColors(color_inverted);
 }//LoadMainWindow END
 
 void SetupMessages(){
