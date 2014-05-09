@@ -512,6 +512,7 @@ enum WeatherKey {
 
         static AppTimer *weather;
 		static AppTimer *accelerometer;
+		static AppTimer *initialize;
 
         //Date & Time        
         static char last_update[]="00:00 ";
@@ -554,6 +555,7 @@ enum WeatherKey {
 		bool blnvibes;
 		bool blninverted =  false;
 		bool blnForecast = false;
+
 
 		InverterLayer *inv_layer;
 
@@ -982,18 +984,18 @@ void LoadTemperature()
 	//Track that we are displaying the primary screen
 	blnForecast = false;
 	//Destroy the forecast Layers
-	text_layer_destroy(High_Layer);
-	text_layer_destroy(Low_Layer);
-	text_layer_destroy(Sunrise_Layer);
-	text_layer_destroy(Sunset_Layer);
-	text_layer_destroy(Wind_Layer);
-	text_layer_destroy(WDirection_Layer);
-	bitmap_layer_destroy(sunrise_icon_layer);
-	bitmap_layer_destroy(sunset_icon_layer);
-	bitmap_layer_destroy(high_icon_layer);
-	bitmap_layer_destroy(low_icon_layer);
-	bitmap_layer_destroy(wind_icon_layer);
-	bitmap_layer_destroy(moon_icon_layer);
+	if(High_Layer){text_layer_destroy(High_Layer);}
+	if(Low_Layer){text_layer_destroy(Low_Layer);}
+	if(Sunrise_Layer){text_layer_destroy(Sunrise_Layer);}
+	if(Sunset_Layer){text_layer_destroy(Sunset_Layer);}
+	if(Wind_Layer){text_layer_destroy(Wind_Layer);}
+	if(WDirection_Layer){text_layer_destroy(WDirection_Layer);}
+	if(sunrise_icon_layer){bitmap_layer_destroy(sunrise_icon_layer);}
+	if(sunset_icon_layer){bitmap_layer_destroy(sunset_icon_layer);}
+	if(high_icon_layer){bitmap_layer_destroy(high_icon_layer);}
+	if(low_icon_layer){bitmap_layer_destroy(low_icon_layer);}
+	if(wind_icon_layer){bitmap_layer_destroy(wind_icon_layer);}
+	if(moon_icon_layer){bitmap_layer_destroy(moon_icon_layer);}
 	
 	//Display the Weather layer
 	weather_icon_layer = bitmap_layer_create(WEATHER_FRAME);
@@ -1038,6 +1040,7 @@ void LoadTemperature()
 	
 	//if color inverted, then create the inverted layer
 	InvertColors(color_inverted);
+	
 	
 }
 
@@ -1234,11 +1237,13 @@ void LoadForecast()
 	//Track that we are displaying the secondary screen
 	blnForecast = true;
 	//Destroy the temperature Layer
-	text_layer_destroy(Temperature_Layer);
-	bitmap_layer_destroy(weather_icon_layer);
-	text_layer_destroy(Location_Layer);
-	text_layer_destroy(Last_Update);
+	if(Temperature_Layer){text_layer_destroy(Temperature_Layer);}
+	if(weather_icon_layer){bitmap_layer_destroy(weather_icon_layer);}
+	if(Location_Layer){text_layer_destroy(Location_Layer);}
+	if(Last_Update){text_layer_destroy(Last_Update);}
 	
+	
+
 	//Create the Forecast Layers
 
 	//HIGH
@@ -1372,7 +1377,7 @@ void accel_tap_handler(AccelAxisType axis, int32_t direction){
 
     //send_cmd();
 	//Just fire the event while displaying the primary screen
-	if (blnForecast==false){LoadForecast();}
+		if (blnForecast==false){LoadForecast();}
 
 }
 
@@ -1456,6 +1461,13 @@ void SetupMessages(){
                 NULL, NULL);
 }
 
+static void init_callback(void *context) {
+       
+        //Subscribe to the accelerometer event.
+        accel_tap_service_subscribe(accel_tap_handler);
+    
+}
+
 void handle_init(void)
 {
         //Define Resources
@@ -1529,10 +1541,10 @@ void handle_init(void)
                 //const uint32_t timeout_ms = 1800000;
                 timer = app_timer_register(timeout_ms, timer_callback, NULL);
 	
-
-    			accel_tap_service_subscribe(accel_tap_handler);
-	
-
+				//setup a timer to wait 5 seconds before subscribe to tap events.
+				//that will avoid a crash when loading extended screen before all the
+				//componenets are properly loaded.
+				initialize = app_timer_register(5000, init_callback, NULL);
         
 } //HANDLE_INIT
 
