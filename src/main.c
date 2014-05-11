@@ -567,7 +567,7 @@ static void handle_battery(BatteryChargeState charge_state) {
           static char battery_text[] = "100%";
 	
 	//kill previous batt_image to avoid invalid ones.
-	if (Batt_image) {gbitmap_destroy(Batt_image);}
+	if (Batt_image !=NULL) {gbitmap_destroy(Batt_image);}
     bitmap_layer_set_bitmap(Batt_icon_layer, NULL);
 
   if (charge_state.is_charging) {
@@ -624,11 +624,12 @@ static void handle_battery(BatteryChargeState charge_state) {
   //text_layer_set_text(Batt_Layer, battery_text);
 }
 
+
 static void vibes()
 {
-//************************//
+////
 // Vibes on disconnection //
-//************************//
+////
 
 	//Vibes on connection
     if (BTConnected == false){
@@ -650,6 +651,7 @@ static void vibes()
 
 }	
 
+
 //******************************//
 // Handle Bluetooth Connection //
 //*****************************//
@@ -660,7 +662,7 @@ static void handle_bluetooth(bool connected)
         //draw the BT icon if connected        
         if(connected ==true)
         {
-			if (BT_image) {gbitmap_destroy(BT_image);}
+			if (BT_image !=NULL) {gbitmap_destroy(BT_image);}
 			BT_image = gbitmap_create_with_resource(RESOURCE_ID_BT_CONNECTED);
             bitmap_layer_set_bitmap(BT_icon_layer, BT_image);
 			if (BTConnected == false){
@@ -672,13 +674,14 @@ static void handle_bluetooth(bool connected)
         else
         {
             //Kill the previous image
-		    if (BT_image) {gbitmap_destroy(BT_image);}
+		    //if (BT_image!=NULL) {gbitmap_destroy(BT_image);}
             bitmap_layer_set_bitmap(BT_icon_layer, NULL);
 			if (BTConnected == true){
 			//setup the timer to catch false disconnections (5 secs)
          	timer = app_timer_register(5000, vibes, NULL);
-			}
-       
+		}
+			
+      
         }
 	
 
@@ -761,7 +764,7 @@ void getDate()
 		//Clean un the text layer
 		text_layer_set_text(Weekday_Layer,"");
 		
-		if (chinese_day) {gbitmap_destroy(chinese_day);}
+		if (chinese_day!= NULL) {gbitmap_destroy(chinese_day);}
 		chinese_day = gbitmap_create_with_resource(CHINESE_DAYS[ia-1]);
 		//Display the weekday in chinese
 		bitmap_layer_set_bitmap(chinese_day_layer, chinese_day);
@@ -771,7 +774,7 @@ void getDate()
 
 	else{
 		//remove the chinese week day
-		if (chinese_day) {gbitmap_destroy(chinese_day);}
+		if (chinese_day !=NULL) {gbitmap_destroy(chinese_day);}
 		bitmap_layer_set_bitmap(chinese_day_layer, NULL);
 
 		//Set the weekeday
@@ -810,7 +813,7 @@ void getDate()
   // App Sync keeps new_tuple in sync_buffer, so we may use it directly
   switch (key) {
     case WEATHER_ICON_KEY:
-	    if (weather_image) {gbitmap_destroy(weather_image);}
+	    if (weather_image != NULL){gbitmap_destroy(weather_image);}
 
 	  		weather_image = gbitmap_create_with_resource(WEATHER_ICONS[new_tuple->value->uint8]);
       		bitmap_layer_set_bitmap(weather_icon_layer, weather_image);
@@ -1040,7 +1043,6 @@ void LoadTemperature()
 	
 	//if color inverted, then create the inverted layer
 	InvertColors(color_inverted);
-	
 	
 }
 
@@ -1353,7 +1355,7 @@ void LoadForecast()
 	
 	//moonphase
 	moonphase_number = moon_phase(intyear+1900,intmonth,intday);
-	
+	if (moon_image) {gbitmap_destroy(moon_image);}
 	moon_image = gbitmap_create_with_resource(MOON_IMAGE_RESOURCE_IDS[moonphase_number]);
 	moon_icon_layer = bitmap_layer_create(MOON_ICON_FRAME);
 	bitmap_layer_set_bitmap(moon_icon_layer, moon_image);
