@@ -1,6 +1,11 @@
 //Declare and Import references
 #include "pebble.h"
 #include "pebble_fonts.h"
+#include "language.h"
+#include "variables.h"
+#include "bitmaps.h"
+#include "textlayers.h"
+#include "frames.h"
 
  
 //UIDs:
@@ -8,563 +13,18 @@
 	//Spanish: 3ab59c04-142f-4ff1-b90d-aab93ce54a32
 	//Italian: 6279f406-1114-4b2f-852d-65b0e8ff2a73
 
-#define MyTupletCString(_key, _cstring) ((const Tuplet) { .type = TUPLE_CSTRING, .key = _key, .cstring = { .data = _cstring, .length = strlen(_cstring) + 1 }})
-	
-#define WEEKDAY_FRAME    (GRect(5, 2, 102, 168-145)) //,,95,
-#define BATT_FRAME       (GRect(103, 4, 40, 168-146)) //98,,
-#define BT_FRAME         (GRect(127, 4, 23, 168-146))
-#define TIME_FRAME       (GRect(0, 15, 144, 168-16))
-#define DATE_FRAME       (GRect(1, 69, 139, 168-62))
-	
-#define CHIN_WEEKDAY_FRAME    (GRect(5, 2, 60, 168-145)) //,,95,
-/*
-#define MAX_FRAME (GRect(65, 90, 40, 168-145))
-#define MIN_FRAME (GRect(105, 90, 40, 168-145))
-*/
-        
-#define LAST_UPDATE_FRAME (GRect(110, 148, 34, 168-145))
-#define LOCATION_FRAME    (GRect(1, 148, 110, 168-145))
-#define WEATHER_FRAME     (GRect(5, 90, 65, 168-108))
-#define TEMPERATURE_FRAME (GRect(65, 95, 82, 168-118))
-	
-//#define HIGH_FRAME (GRect(40, 95, 41, 168-108))
-#define LOW_FRAME (GRect(106, 93, 41, 168-108))
-#define LOW_ICON_FRAME (GRect(87, 92, 26, 26))
-	
-#define HIGH_FRAME (GRect(106, 115, 41, 168-108))
-#define HIGH_ICON_FRAME (GRect(87, 115, 26, 26))
-
-#define SUNRISE_FRAME (GRect(30, 95, 50, 168-108))
-#define SUNRISE_ICON_FRAME (GRect(1, 98, 26, 17))
-
-#define SUNSET_FRAME (GRect(30, 115, 50, 168-108))
-#define SUNSET_ICON_FRAME (GRect(1, 118, 26, 17))
-	
-#define WIND_FRAME (GRect(30, 135, 50, 168-108))
-#define WIND_ICON_FRAME (GRect(1, 138, 26, 26))
-	
-#define WDIRECTION_FRAME (GRect(30, 155, 50, 168-108))
-        
-#define TOTAL_MOON_DIGITS 1
-#define MOON_ICON_FRAME (GRect(106, 138, 26, 26))
-	
-//******************//
-// DEFINE THE ICONS //
-//******************//  
-const int MOON_IMAGE_RESOURCE_IDS[] = {
-  RESOURCE_ID_MOON_0,
-  RESOURCE_ID_MOON_1,
-  RESOURCE_ID_MOON_2,
-  RESOURCE_ID_MOON_3,
-  RESOURCE_ID_MOON_4,
-  RESOURCE_ID_MOON_5,
-  RESOURCE_ID_MOON_6,
-  RESOURCE_ID_MOON_7
-};
-
-static const uint32_t WEATHER_ICONS[] = {
-  RESOURCE_ID_ICON_CLEAR_DAY,
-  RESOURCE_ID_ICON_CLEAR_NIGHT,
-  RESOURCE_ID_ICON_WIND,
-  RESOURCE_ID_ICON_COLD,
-  RESOURCE_ID_ICON_HOT,
-  RESOURCE_ID_ICON_PARTLY_CLOUDY_DAY,
-  RESOURCE_ID_ICON_PARTLY_CLOUDY_NIGHT,
-  RESOURCE_ID_ICON_FOG,
-  RESOURCE_ID_ICON_RAIN,
-  RESOURCE_ID_ICON_SNOW,
-  RESOURCE_ID_ICON_SLEET,
-  RESOURCE_ID_ICON_SNOW_SLEET,
-  RESOURCE_ID_ICON_RAIN_SLEET,
-  RESOURCE_ID_ICON_RAIN_SNOW,
-  RESOURCE_ID_ICON_CLOUDY,
-  RESOURCE_ID_ICON_THUNDER,
-  RESOURCE_ID_ICON_NOT_AVAILABLE,
-  RESOURCE_ID_ICON_DRIZZLE,
-};
-
-//*********************//
-// DEFINE THE WEEKDAYS //
-//*********************// 
-static const char CHINESE_DAYS[] = {
-	RESOURCE_ID_CHIN_MONDAY,
-	RESOURCE_ID_CHIN_TUESDAY,
-	RESOURCE_ID_CHIN_WEDNESDAY,
-	RESOURCE_ID_CHIN_THURSDAY,
-	RESOURCE_ID_CHIN_FRIDAY,
-	RESOURCE_ID_CHIN_SATURDAY,
-	RESOURCE_ID_CHIN_SUNDAY,
-};
-
-static const char *WEEKDAYS[] = {
-	NULL,
-	//SPANISH - 0
-	"Lunes",
-	"Martes",
-	"Miércoles",
-	"Jueves",
-	"Viernes",
-	"Sábado", 
-	"Domingo", 
-	//ITALIAN - 1
-	"Lunedi",
-	"Martedi",
-	"Mercoledi", 
-	"Giovedi", 
-	"Venerdi", 
-	"Sabato", 
-	"Domenica", 
-	//GERMAN - 2
-	"Montag", 
-	"Dienstag", 
-	"Mittwoch", 
-	"Donnerstag", 
-	"Freitag", 
-	"Samstag", 
-	"Sonntag",
-	//CZECH - 3
-	"Pondělí",
-	"Úterý", 
-	"Streda", 
-	"Čtvrtek", 
-	"Pátek", 
-	"Sobota", 
-	"Neděle", 
-	//FRENCH - 4
-	"Lundi",
-	"Mardi", 
-	"Mercredi",
-	"Jeudi", 
-	"Vendredi", 
-	"Samedi", 
-	"Dimanche", 
-	//PORTUGUESE - 5
-	"Segunda", 
-	"Terça", 
-	"Quarta",
-	"Quinta", 
-	"Sexta", 
-	"Sábado", 
-	"Domingo", 
-	//FINNISH - 6
-	"Maanantai", 
-	"Tiistai", 
-	"Keskiviikko",
-	"Torstai", 
-	"Perjantai",
-	"Lauantai",
-	"Sunnuntai", 
-	//DUTCH - 7
-	"Maandag", 
-	"Dinsdag", 
-	"Woensdag", 
-	"Donderdag",
-	"Vrijdag", 
-	"Zaterdag", 
-	"Zondag", 
-	//POLISH - 8
-	"Poniedzialek",
-	"Wtorek", 
-	"Sroda", 
-	"Czwartek",
-	"Piątek", 
-	"Sobota",
-	"Niedziela",
-	//SWEDISH - 9
-	"Måndag",
-	"Tisdag", 
-	"Onsdag", 
-	"Torsdag", 
-	"Fredag", 
-	"Lördag",
-	"Söndag ",
-	//DANISH - 10
-	"Mandag",
-	"Tirsdag",
-	"Onsdag",
-	"Torsdag",
-	"Fredag", 
-	"Lørdag",
-	"Søndag ",
-	//CATALAN - 11
-	"Dilluns", 
-	"Dimarts",
-	"Dimecres", 
-	"Dijous", 
-	"Divendres",
-	"Dissabte",
-	"Diumenge ",
-	//HUNGARIAN - 12
-	"Hétfo",
-	"Kedd", 
-	"Szerda",
-	"Csütörtök",
-	"Péntek", 
-	"Szombat",
-	"Vasárnap", 
-	//NORWEGIAN - 13
-	"Mandag",
-	"Tirsdag",
-	"Onsdag",
-	"Torsdag",
-	"Fredag", 
-	"Lørdag",
-	"Søndag ",  
-	//TURKISH - 14
-	"Pazartesi",
-	"Salı",
-	"Çarşamba",
-	"Perşembe",
-	"Cuma",
-	"Cumartesi",
-	"Pazar",
-};
-
-static const char *MONTHS[] = {
-	NULL,
-	 //SPANISH - 0
-	" enero",
-	" febrero",
-	" marzo",
-	" abril",
-	" mayo",
-	" junio",
-	" julio",
-	" agosto", 
-	" septiembre",
-	" octubre", 
-	" noviembre", 
-	" diciembre", 
-	//ITALIAN - 1
-	" gennaio", 
-	" febbraio",
-	" marzo",
-	" aprile",
-	" maggio",
-	" giugno",
-	" luglio",
-	" agosto",
-	" settembre",
-	" ottobre",
-	" novembre",
-	" dicembre",
-	//GERMAN - 2
-	".Januar",
-	".Februar",
-	".März",
-	".April",
-	".Mai", 
-	".Juni", 
-	".Juli", 
-	".August",
-	".September",
-	".Oktober",
-	".November",
-	".Dezember",
-	//CZECH - 3
-	"Leden ",
-	"Únor ",
-	"Brezen ",
-	"Duben ", 
-	"Květen ", 
-	"Červen ",
-	"Červenec ", 
-	"Srpen ",
-	"Zárí ",
-	"Ríjen ",
-	"Listopad ",
-	"Prosinec ",
-	//FRENCH - 4
-	" janvier",
-	" février", 
-	" mars", 
-	" avril", 
-	" mai", 
-	" juin", 
-	" juillet", 
-	" août", 
-	" septembre", 
-	" octobre",
-	" novembre", 
-	" décembre", 
-	//PORTUGUESE - 5
-	" Janeiro", 
-	" Fevereiro", 
-	" Março", 
-	" Abril",
-	" Maio",
-	" Junho",
-	" Julho",
-	" Agosto",
-	" Setembro",
-	" Outubro",
-	" Novembro",
-	" Dezembro",
-	//FINNISH - 6
-	". Tammikuu",
-	". Helmikuu", 
-	". Maaliskuu",
-	". Huhtikuu", 
-	". Toukokuu", 
-	". Kesäkuu", 
-	". Heinäkuu", 
-	". Elokuu", 
-	". Syyskuu", 
-	". Lokakuu", 
-	". Marraskuu", 
-	". Joulukuu", 
-	//DUTCH - 7
-	" Januari", 
-	" Februari",
-	" Maart",
-	" April",
-	" Mei", 
-	" Juni", 
-	" Juli", 
-	" Augustus", 
-	" September", 
-	" Oktober", 
-	" November",
-	" December", 
-	//POLISH - 8
-	" stycznia",
-	" lutego", 
-	" marca", 
-	" kwietnia", 
-	" maja", 
-	" czerwca",
-	" lipca", 
-	" sierpnia",
-	" wrzesnia",
-	" pazdziernika",
-	" listopada", 
-	" grudnia", 
-	//SWEDISH - 9
-	" Januari", 
-	" Februari",
-	" Mars", 
-	" April", 
-	" Maj", 
-	" Juni",
-	" Juli", 
-	" Augusti",
-	" September", 
-	" Oktober",
-	" November", 
-	" December", 
-	//DANISH - 10
-	". Januar",
-	". Februar", 
-	". Marts", 
-	". April", 
-	". Maj", 
-	". Juni", 
-	". Juli",
-	". August",
-	". September", 
-	". Oktober", 
-	". November",
-	". December",
-	//CATALAN - 11
-	" Gener", 
-	" Febrer", 
-	" Març", 
-	" Abril", 
-	" Maig", 
-	" Juny",
-	" Juliol", 
-	" Agost", 
-	" Setembre", 
-	" Octubre", 
-	" Novembre", 
-	" Desembre", 
-	//HUNGARIAN - 12
-	"január ", 
-	"február ", 
-	"március ",
-	"április ", 
-	"május ", 
-	"június ", 
-	"július ", 
-	"augusztus ", 
-	"szeptember ", 
-	"október ",
-	"november ", 
-	"december ", 
-	//NORWEGIAN - 13
-	". januar", 
-	". februar", 
-	". mars", 
-	". april", 
-	". mai", 
-	". juni", 
-	". juli", 
-	". august", 
-	". september", 
-	". oktober", 
-	". november", 
-	". desember", 
-	//TURKISH - 14
-	" Ocak",
-	" Şubat",
-	" Mart",
-	" Nisan",
-	" Mayıs",
-	" Haziran",
-	" Temmuz",
-	" Ağustos",
-	" Eylül",
-	" Ekim",
-	" Kasım",
-	" Aralık",
-};
-	
-
-//*************//
-// Define KEYS //
-//*************//
-
-enum WeatherKey {
-  WEATHER_ICON_KEY = 0x0,        // TUPLE_INT
-  WEATHER_TEMPERATURE_KEY = 0x1, // TUPLE_CSTRING
-  WEATHER_CITY_KEY = 0x2,        //	TUPLE_CSTRING
-  INVERT_COLOR_KEY = 0x3,  		 // TUPLE_INT
-  language_key = 0x4, 			// TUPLE_INT
-  VIBES_KEY = 0x5,  		 // TUPLE_INT
-//Forecast for the day
-	WEATHER_HIGH_KEY = 0x6,	//TUPLE_CSTRING
-	WEATHER_LOW_KEY = 0x7,	//TUPLE_CSTRING
-	SUNRISE_KEY = 0x8, //TUPLE_CSTRING
-	SUNSET_KEY = 0x9, //TUPLE_CSTRING
-	WIND_KEY = 0xa, //TUPLE_CSTRING
-	WDIRECTION_KEY = 0xb, //TUPLE_INT
-};
 
 //Declare initial window        
         Window *my_window;
 
-//Define the layers
-        TextLayer *date_layer;                 // Layer for the date
-        TextLayer *Time_Layer;                         // Layer for the time
-        TextLayer *Weekday_Layer;                 //Layer for the weekday
-        TextLayer *Last_Update;                 // Layer for the last update
-        TextLayer *Location_Layer;                 // Layer for the last update
-        TextLayer *Batt_Layer;                        //Layer for the BT connection
-        TextLayer *BT_Layer;                        //Layer for the BT connection
-        TextLayer *Temperature_Layer;        //Layer for the Temperature
 
-		TextLayer *High_Layer;        //Layer for the High Temperature
-		TextLayer *Low_Layer;        //Layer for the Low Temperature
-
-		TextLayer *Sunrise_Layer;        //Layer for the High Temperature
-		TextLayer *Sunset_Layer;        //Layer for the Low Temperature
-
-		TextLayer *Wind_Layer;        //Layer for the Wind speed 
-		TextLayer *WDirection_Layer;        //Layer for the Wind direction
-
-        static GBitmap *BT_image;
-        static BitmapLayer *BT_icon_layer; //Layer for the BT connection
-        
-        static GBitmap *Batt_image;
-        static BitmapLayer *Batt_icon_layer; //Layer for the Battery status
-        
-        static GBitmap *weather_image;
-        static BitmapLayer *weather_icon_layer; //Layer for the weather info
-
-        static GBitmap *sunset_image;
-        static BitmapLayer *sunset_icon_layer; //Layer for the sunset info
-
-        static GBitmap *sunrise_image;
-        static BitmapLayer *sunrise_icon_layer; //Layer for the sunrise info
-
-        static GBitmap *high_image;
-        static BitmapLayer *high_icon_layer; //Layer for the high info
-
-        static GBitmap *low_image;
-        static BitmapLayer *low_icon_layer; //Layer for the low info
-
-        static GBitmap *wind_image;
-        static BitmapLayer *wind_icon_layer; //Layer for the wind info
-
-        static GBitmap *moon_image;
-        static BitmapLayer *moon_icon_layer; //Layer for the wind info
-
-        static GBitmap *chinese_day;
-        static BitmapLayer *chinese_day_layer; //Layer for the weather info
-
-//Define and initialize variables
-        //FONTS
-        GFont font_date; // Font for date
-        GFont font_time; // Font for time
-        GFont font_update; // Font for last update
-        GFont font_temperature;        // Font for the temperature
-
-        //Vibe Control
-        bool BTConnected = true;
-
-		// Setup messaging
-		const int inbound_size = 512;
-		const int outbound_size = 512;
-
-        //Time control for weather refresh
-        static AppTimer *timer;
-        const uint32_t timeout_ms = 1800000; //30min (1min = 60000)
-
-        static AppTimer *weather;
-		static AppTimer *accelerometer;
-		static AppTimer *initialize;
-
-        //Date & Time        
-        static char last_update[]="00:00 ";
-        static int initial_minute;
-
-        static char weekday_text[] = "XXXXXXXXXXXX";
-        static char date_text[] = "XXX 00";
-        static char month_text[] = "XXXXXXXXXXXXX";
-        static char day_text[] = "1";
-        static char day_month[]= "31 SEPTEMBER";
-        static char time_text[] = "00:00";
-	  	static char inverted[]="B";
-		static char temperature[]="    ";
-		static char high[]="    ";
-		static char low[]="    ";
-		static char sunrise[]="     ";
-		static char sunset[]="     ";
-		static char wind[]="     ";
-		static int wdirection;
-		static char strwdirection[100];
-		static char city[100];
-
-		int iHours;
-		int iHours2;
-		int iMinutes;
-		int iMinutes2;
-
-		int moonphase_number;
-		int intday;
-		int intmonth;
-		int intyear;
-
-        
-        bool translate_sp = true;
-        int language = 100;
-		bool color_inverted;
-		int ICON_CODE;
-		bool batt_status = true; //If true, display the battery status all the time; if false, just when running low (<10%)
-
-		bool blnvibes;
-		bool blninverted =  false;
-		bool blnForecast = false;
-
-
-		InverterLayer *inv_layer;
 
 //**************************//
 // Check the Battery Status //
 //**************************//
 
 static void handle_battery(BatteryChargeState charge_state) {
-          static char battery_text[] = "100%";
+     //static char battery_text[] = "100%";
 	
 	//kill previous batt_image to avoid invalid ones.
 	if (Batt_image !=NULL) {gbitmap_destroy(Batt_image);}
@@ -625,11 +85,12 @@ static void handle_battery(BatteryChargeState charge_state) {
 }
 
 
+/**************************/
+// Vibes on disconnection //
+/**************************/
 static void vibes()
 {
-////
-// Vibes on disconnection //
-////
+
 
 	//Vibes on connection
     if (BTConnected == false){
@@ -646,8 +107,8 @@ static void vibes()
 		if (bluetooth_connection_service_peek()== false){
 			if(blnvibes==true){vibes_long_pulse();}
        		BTConnected = false;
-	}
-     }
+	    }
+    }
 
 }	
 
@@ -688,8 +149,9 @@ static void handle_bluetooth(bool connected)
         
 } //handle_bluetooth
 
-
-//Invert colors
+/////////////////	
+//Invert colors//
+/////////////////
 void InvertColors(bool inverted)
 {
 	
@@ -711,65 +173,64 @@ void InvertColors(bool inverted)
 }// END - Invert colors
 
 
-
 //**************************//
 //** Get the current date **//
 //**************************//
 void getDate()
 {
-	
+
 	//Get the date
 	time_t actualPtr = time(NULL);
 	struct tm *tz1Ptr = gmtime(&actualPtr);
-	
+
 	//get day, month and year for moon phase
 	intday = tz1Ptr->tm_mday;
 	intmonth = tz1Ptr->tm_mon;
 	intyear = tz1Ptr->tm_year;
-	
-	
+
+
 	//Try new translation method
-		
+
 		//Get the number of the weekday
 		strftime(weekday_text,sizeof(weekday_text),"%u",tz1Ptr);
 		int ia = weekday_text[0] - '0'; 
 		int ib = (language*7)+ia;
-	
+
 		//Get the number of the month	
 		strftime(month_text,sizeof(month_text),"%m",tz1Ptr);
 		int ic = month_text[1] - '0';
 		if (month_text[0]=='1'){ic=ic+10;}			
 		int id = (language*12)+ic;
-	
+
 	if(language==100){ //ENGLISH
-		
+
 		//remove the chinese week day
 		if (chinese_day) {gbitmap_destroy(chinese_day);}
 		bitmap_layer_set_bitmap(chinese_day_layer, NULL);
-		
+
 		//Get the English fortmat
 		strftime(month_text,sizeof(month_text),"%B %e",tz1Ptr);
 		strftime(weekday_text,sizeof(weekday_text),"%A",tz1Ptr);
-		
+
 		text_layer_set_text(Weekday_Layer,weekday_text); //Update the weekday layer  
 		text_layer_set_text(date_layer,month_text); 
-		
+
 	}
 	else if (language==99){//CHINESE
-		
+
 		//Work on retrieving the correct weekday
 		//Get the Month
 		strftime(month_text,sizeof(month_text),"%m/%d",tz1Ptr);
-		
+
 		//Clean un the text layer
 		text_layer_set_text(Weekday_Layer,"");
-		
+
 		if (chinese_day!= NULL) {gbitmap_destroy(chinese_day);}
 		chinese_day = gbitmap_create_with_resource(CHINESE_DAYS[ia-1]);
 		//Display the weekday in chinese
 		bitmap_layer_set_bitmap(chinese_day_layer, chinese_day);
 		text_layer_set_text(date_layer, month_text);
-		
+
 	}
 
 	else{
@@ -779,28 +240,29 @@ void getDate()
 
 		//Set the weekeday
 		text_layer_set_text(Weekday_Layer, WEEKDAYS[ib]); //Update the weekday layer  
-		
-		
+
+
 		//Get the day
 		strftime(day_month,sizeof(day_month),"%e",tz1Ptr);
-		
+
 		//Set the month
 		//text_layer_set_text(date_layer, MONTHS[id]);
 				 if ((language == 12)||(language == 3)){
 					memcpy(&month_text, MONTHS[id], strlen(MONTHS[id])+1);
 					text_layer_set_text(date_layer,strncat(month_text,day_month,strlen(month_text)));} //Czech or Hungarian
 				else{text_layer_set_text(date_layer,strncat(day_month,MONTHS[id],strlen(MONTHS[id]))); }
-		
+
 	}
-	
+
 }
+
 
 //*****************//
 // AppSync options //
 //*****************//
 
         static AppSync sync;
-        static uint8_t sync_buffer[512];
+        static uint8_t sync_buffer[256];
 
 
 
@@ -896,10 +358,7 @@ void getDate()
 //************************//
 void handle_tick(struct tm *tick_time, TimeUnits units_changed)
 {
-
- 
-                                
-
+                     
         if (units_changed & MINUTE_UNIT)
         {
 
@@ -944,8 +403,7 @@ void handle_tick(struct tm *tick_time, TimeUnits units_changed)
 // TIMER to refresh the weather data every 30 min //
 //************************************************//
 static void send_cmd(void) {
-         //Tuplet value = TupletInteger(1, 1);
-	  	//Tuplet value = TupletCString(2, "loading...");
+
          Tuplet value = TupletInteger(5, 0);
         
          DictionaryIterator *iter;
@@ -960,8 +418,6 @@ static void send_cmd(void) {
         
          app_message_outbox_send();
 	
-		//JavaScript call is broken after 2h. Not sure if that is because lack of memory or Pebble App is breaking this.
-		//Check that weather info is updated, and close the AppMessage and create a new session if not.
 }
 
 static void timer_callback(void *context) {
@@ -1477,9 +933,6 @@ void handle_init(void)
         ResHandle res_u;
         ResHandle res_t;
         ResHandle res_temp;
-	
-	
-
   
 		//load persistent storage options
 		color_inverted = persist_read_bool(INVERT_COLOR_KEY);
@@ -1494,20 +947,16 @@ void handle_init(void)
 		persist_read_string(WIND_KEY, wind, sizeof(wind));
 		wdirection =  persist_read_int(WDIRECTION_KEY); 
 	
-
         //Create the main window
         my_window = window_create();
         window_stack_push(my_window, true /* Animated */);
-		window_set_background_color(my_window, GColorBlack);
-        
-        
+		window_set_background_color(my_window, GColorBlack);          
         
         //Load the custom fonts
         res_t = resource_get_handle(RESOURCE_ID_FUTURA_CONDENSED_53); // Time font
         res_d = resource_get_handle(RESOURCE_ID_FUTURA_17); // Date font
         res_u = resource_get_handle(RESOURCE_ID_FUTURA_10); // Last Update font
-        res_temp = resource_get_handle(RESOURCE_ID_FUTURA_43); //Temperature
-        
+        res_temp = resource_get_handle(RESOURCE_ID_FUTURA_43); //Temperature     
                 
     	font_date = fonts_load_custom_font(res_d);
         font_update = fonts_load_custom_font(res_u);
@@ -1525,28 +974,27 @@ void handle_init(void)
 	
 		//Initialize the Message Service
 		SetupMessages();
-	
-                 
+	               
 	  // Set up the update layer callback
 	
-                time_t now = time(NULL);
-                 struct tm *current_time = localtime(&now);
-                handle_tick(current_time, MINUTE_UNIT);
-                tick_timer_service_subscribe(MINUTE_UNIT, &handle_tick);
-        
-                //Enable the Battery check event
-                battery_state_service_subscribe(&handle_battery);
-                //Enable the Bluetooth check event
-                bluetooth_connection_service_subscribe(&handle_bluetooth);
-        
-                //setup the timer to refresh the weather info every 30min
-                //const uint32_t timeout_ms = 1800000;
-                timer = app_timer_register(timeout_ms, timer_callback, NULL);
-	
-				//setup a timer to wait 5 seconds before subscribe to tap events.
-				//that will avoid a crash when loading extended screen before all the
-				//componenets are properly loaded.
-				initialize = app_timer_register(5000, init_callback, NULL);
+		time_t now = time(NULL);
+		struct tm *current_time = localtime(&now);
+		handle_tick(current_time, MINUTE_UNIT);
+		tick_timer_service_subscribe(MINUTE_UNIT, &handle_tick);
+		
+		//Enable the Battery check event
+		battery_state_service_subscribe(&handle_battery);
+		//Enable the Bluetooth check event
+		bluetooth_connection_service_subscribe(&handle_bluetooth);
+		
+		//setup the timer to refresh the weather info every 30min
+		//const uint32_t timeout_ms = 1800000;
+		timer = app_timer_register(timeout_ms, timer_callback, NULL);
+		
+		//setup a timer to wait 5 seconds before subscribe to tap events.
+		//that will avoid a crash when loading extended screen before all the
+		//componenets are properly loaded.
+		initialize = app_timer_register(5000, init_callback, NULL);
         
 } //HANDLE_INIT
 
