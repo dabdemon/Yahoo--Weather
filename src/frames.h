@@ -12,17 +12,17 @@
 #define MIN_FRAME (GRect(105, 90, 40, 168-145))
 */
         
-#define LAST_UPDATE_FRAME (GRect(110, 148, 34, 168-145))
+#define LAST_UPDATE_FRAME (GRect(110, 148, 34, 168-145)) //xStart, yStart, xLength, yLength
 #define LOCATION_FRAME    (GRect(1, 148, 110, 168-145))
-#define WEATHER_FRAME     (GRect(5, 90, 65, 168-108))
-#define TEMPERATURE_FRAME (GRect(65, 95, 82, 168-118))
+#define WEATHER_FRAME     (GRect(5, 90, 60, 60))
+#define TEMPERATURE_FRAME (GRect(58, 95, 94, 60))
 	
 //#define HIGH_FRAME (GRect(40, 95, 41, 168-108))
-#define LOW_FRAME (GRect(106, 93, 41, 168-108))
-#define LOW_ICON_FRAME (GRect(87, 92, 26, 26))
+#define LOW_FRAME (GRect(100, 93, 47, 168-108))
+#define LOW_ICON_FRAME (GRect(81, 92, 26, 26))
 	
-#define HIGH_FRAME (GRect(106, 115, 41, 168-108))
-#define HIGH_ICON_FRAME (GRect(87, 115, 26, 26))
+#define HIGH_FRAME (GRect(100, 115, 47, 168-108))
+#define HIGH_ICON_FRAME (GRect(81, 115, 26, 26))
 
 #define SUNRISE_FRAME (GRect(30, 95, 50, 168-108))
 #define SUNRISE_ICON_FRAME (GRect(1, 98, 26, 17))
