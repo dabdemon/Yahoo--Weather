@@ -285,11 +285,13 @@ void getDate()
 
     case WEATHER_TEMPERATURE_KEY:
          //Update the temperature
-      		text_layer_set_text(Temperature_Layer, new_tuple->value->cstring);
-	    	persist_write_string(WEATHER_TEMPERATURE_KEY, new_tuple->value->cstring);
-         //Set the time on which weather was retrived
+	        //Set the time on which weather was retrived
          	memcpy(&last_update, time_text, strlen(time_text));
          	text_layer_set_text(Last_Update, last_update);
+	  		//Save the temperature
+	        memcpy(&temperature,  new_tuple->value->cstring, strlen( new_tuple->value->cstring));
+	    	persist_write_string(WEATHER_TEMPERATURE_KEY, new_tuple->value->cstring);
+	        text_layer_set_text(Temperature_Layer, temperature);
       		break;
 
      case WEATHER_CITY_KEY:
@@ -885,8 +887,7 @@ void LoadMainWindow(){
         
         
                 //Display the Temperature layer
-				LoadTemperature();
-        
+				LoadTemperature();     
 
         
  
@@ -901,7 +902,8 @@ void SetupMessages(){
         
                 Tuplet initial_values[] = {
                 TupletInteger(WEATHER_ICON_KEY, ICON_CODE), //INITIALIZE TO "N/A"
-				MyTupletCString(WEATHER_TEMPERATURE_KEY,temperature),
+				MyTupletCString(WEATHER_TEMPERATURE_KEY, temp),
+				//MyTupletCString(WEATHER_TEMPERATURE_KEY,low), //Init to something
                 MyTupletCString(WEATHER_CITY_KEY, ""),
 				TupletInteger(INVERT_COLOR_KEY, color_inverted),
 				TupletInteger(language_key, language), //INITIALIZE TO LAST SAVED
@@ -910,7 +912,8 @@ void SetupMessages(){
 				MyTupletCString(WEATHER_LOW_KEY,low),
 				MyTupletCString(SUNRISE_KEY,sunrise),
 				MyTupletCString(SUNSET_KEY,sunset),
-				MyTupletCString(WIND_KEY,wind),
+				//MyTupletCString(WIND_KEY,wind),
+				MyTupletCString(WIND_KEY,"0"), //Init to something
 				TupletInteger(WDIRECTION_KEY,wdirection),
                 }; //TUPLET INITIAL VALUES
         
@@ -939,7 +942,7 @@ void handle_init(void)
 		blnvibes = persist_read_bool(VIBES_KEY);
 		language = persist_read_int(language_key);
 		ICON_CODE = persist_read_int(WEATHER_ICON_KEY);
-		persist_read_string(WEATHER_TEMPERATURE_KEY, temperature, sizeof(temperature));
+persist_read_string(WEATHER_TEMPERATURE_KEY, temp, sizeof(temp));
 		persist_read_string(WEATHER_HIGH_KEY, high, sizeof(high));
 		persist_read_string(WEATHER_LOW_KEY, low, sizeof(low));
 		persist_read_string(SUNRISE_KEY, sunrise, sizeof(sunrise));
@@ -947,6 +950,7 @@ void handle_init(void)
 		persist_read_string(WIND_KEY, wind, sizeof(wind));
 		wdirection =  persist_read_int(WDIRECTION_KEY); 
 	
+
         //Create the main window
         my_window = window_create();
         window_stack_push(my_window, true /* Animated */);
