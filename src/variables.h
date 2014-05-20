@@ -18,6 +18,10 @@ enum WeatherKey {
 	WDIRECTION_KEY = 0xb, //TUPLE_INT
 };
 
+	#define TAP_TIME 2000
+	bool is_tapped_waiting = false;
+	int TapCount = 0;
+
 //Define and initialize variables
 	//FONTS
 	GFont font_date; // Font for date
@@ -39,6 +43,7 @@ enum WeatherKey {
 	static AppTimer *weather;
 	static AppTimer *accelerometer;
 	static AppTimer *initialize;
+	static AppTimer *tap_timer;
 	
 	
 	InverterLayer *inv_layer;

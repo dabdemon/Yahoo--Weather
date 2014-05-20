@@ -359,7 +359,13 @@ void getDate()
 //************************//
 void handle_tick(struct tm *tick_time, TimeUnits units_changed)
 {
-                     
+     
+	    if (units_changed & SECOND_UNIT)
+		{
+			//refresh the tap counter every second
+			TapCount = 0;
+			
+		}
         if (units_changed & MINUTE_UNIT)
         {
 
@@ -821,6 +827,9 @@ void LoadForecast()
 	//if color inverted, then create the inverted layer
 	InvertColors(color_inverted);
 	
+	//refresh the tap counter 
+	TapCount = 0;
+	
 	//setup the timer to set back the temperature after 5sec
 	weather = app_timer_register(5000, forecast_callback, NULL);
 
@@ -832,13 +841,47 @@ void LoadForecast()
 //** Capture the accelerometer Taps **//
 //************************************//
 
+
 void accel_tap_handler(AccelAxisType axis, int32_t direction){
 
     //send_cmd();
 	//Just fire the event while displaying the primary screen
-		if (blnForecast==false){LoadForecast();}
-
+	if (blnForecast==false){
+		TapCount = TapCount + 1;
+		if (TapCount > 1){
+			LoadForecast();
+		}
+	}
 }
+
+
+/*
+void double_tap() {
+  	//Just fire the event while displaying the primary screen
+	if (blnForecast==false){LoadForecast();}
+	//vibes_short_pulse();
+}
+
+static void tap_timer_callback() {
+  is_tapped_waiting = false;
+ 
+  // DEBUG ONLY - VIBE TRIGGERS ANOTHER TAP
+   //vibes_short_pulse();
+}
+
+static void accel_tap_handler(AccelAxisType axis, int32_t direction) {
+    if (!is_tapped_waiting) {
+      is_tapped_waiting = true;
+      tap_timer = app_timer_register(TAP_TIME, tap_timer_callback, NULL);
+    }
+    
+    else {
+	  app_timer_cancel(tap_timer);
+      is_tapped_waiting = false;
+      double_tap();
+    }
+}  
+*/
 
 //****************************//
 // Initialize the application //
