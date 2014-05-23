@@ -232,6 +232,22 @@ void getDate()
 		text_layer_set_text(date_layer, month_text);
 
 	}
+	else if (language==98){//JAPANESE (use the same layer and bitmap than japanese)
+
+		//Work on retrieving the correct weekday
+		//Get the Month
+		strftime(month_text,sizeof(month_text),"%m/%d",tz1Ptr);
+
+		//Clean un the text layer
+		text_layer_set_text(Weekday_Layer,"");
+
+		if (chinese_day!= NULL) {gbitmap_destroy(chinese_day);}
+		chinese_day = gbitmap_create_with_resource(JAPANESE_DAYS[ia-1]);
+		//Display the weekday in chinese
+		bitmap_layer_set_bitmap(chinese_day_layer, chinese_day);
+		text_layer_set_text(date_layer, month_text);
+
+	}
 
 	else{
 		//remove the chinese week day
