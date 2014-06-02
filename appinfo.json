@@ -1,327 +1,327 @@
 {
+    "versionCode": 1,
+    "versionLabel": "2.0.4",
+    "shortName": "YWeather",
     "resources": {
         "media": [
             {
-                "file": "images/Wednesday17.png",
                 "type": "png",
+                "file": "images/Wednesday17.png",
                 "name": "JAP_WED"
             },
             {
-                "file": "images/Tuesday17.png",
                 "type": "png",
+                "file": "images/Tuesday17.png",
                 "name": "JAP_TUE"
             },
             {
-                "file": "images/Thursday17.png",
                 "type": "png",
+                "file": "images/Thursday17.png",
                 "name": "JAP_THU"
             },
             {
-                "file": "images/sunday17.png",
                 "type": "png",
+                "file": "images/sunday17.png",
                 "name": "JAP_SUN"
             },
             {
-                "file": "images/Saturday17.png",
                 "type": "png",
+                "file": "images/Saturday17.png",
                 "name": "JAP_SAT"
             },
             {
-                "file": "images/monday17.png",
                 "type": "png",
+                "file": "images/monday17.png",
                 "name": "JAP_MON"
             },
             {
-                "file": "images/Friday17.png",
                 "type": "png",
+                "file": "images/Friday17.png",
                 "name": "JAP_FRI"
             },
             {
-                "file": "images/low.png",
                 "type": "png",
+                "file": "images/low.png",
                 "name": "LOW"
             },
             {
-                "file": "images/high.png",
                 "type": "png",
+                "file": "images/high.png",
                 "name": "HIGH"
             },
             {
-                "file": "images/sunrise_small.PNG",
                 "type": "png",
+                "file": "images/sunrise_small.PNG",
                 "name": "SUNRISE"
             },
             {
-                "file": "images/sunset_small.PNG",
                 "type": "png",
+                "file": "images/sunset_small.PNG",
                 "name": "SUNSET"
             },
             {
-                "file": "fonts/futura.ttf",
                 "type": "font",
-                "name": "FUTURA_43",
+                "file": "fonts/futura.ttf",
                 "characterRegex": "[0-9\u00b0 -]",
-                "trackingAdjust": -4
+                "trackingAdjust": -4,
+                "name": "FUTURA_43"
             },
             {
-                "file": "fonts/futura.ttf",
                 "type": "font",
+                "file": "fonts/futura.ttf",
                 "name": "FUTURA_10"
             },
             {
-                "file": "fonts/futura.ttf",
                 "type": "font",
+                "file": "fonts/futura.ttf",
                 "name": "FUTURA_17"
             },
             {
-                "file": "images/batt_full_2.png",
                 "type": "png",
+                "file": "images/batt_full_2.png",
                 "name": "BATT_FULL"
             },
             {
-                "file": "images/batt_80_2.png",
                 "type": "png",
+                "file": "images/batt_80_2.png",
                 "name": "BATT_80"
             },
             {
-                "file": "images/batt_60_2.png",
                 "type": "png",
+                "file": "images/batt_60_2.png",
                 "name": "BATT_60"
             },
             {
-                "file": "images/batt_40_2.png",
                 "type": "png",
+                "file": "images/batt_40_2.png",
                 "name": "BATT_40"
             },
             {
-                "file": "images/batt_20_2.png",
                 "type": "png",
+                "file": "images/batt_20_2.png",
                 "name": "BATT_20"
             },
             {
-                "file": "images/not-available.png",
                 "type": "png",
+                "file": "images/not-available.png",
                 "name": "ICON_NOT_AVAILABLE"
             },
             {
-                "file": "images/wind.png",
                 "type": "png",
+                "file": "images/wind.png",
                 "name": "ICON_WIND"
             },
             {
-                "file": "images/thunder.png",
                 "type": "png",
+                "file": "images/thunder.png",
                 "name": "ICON_THUNDER"
             },
             {
-                "file": "images/snow-sleet.png",
                 "type": "png",
+                "file": "images/snow-sleet.png",
                 "name": "ICON_SNOW_SLEET"
             },
             {
-                "file": "images/snow.png",
                 "type": "png",
+                "file": "images/snow.png",
                 "name": "ICON_SNOW"
             },
             {
-                "file": "images/sleet.png",
                 "type": "png",
+                "file": "images/sleet.png",
                 "name": "ICON_SLEET"
             },
             {
-                "file": "images/rain-snow.png",
                 "type": "png",
+                "file": "images/rain-snow.png",
                 "name": "ICON_RAIN_SNOW"
             },
             {
-                "file": "images/rain-sleet.png",
                 "type": "png",
+                "file": "images/rain-sleet.png",
                 "name": "ICON_RAIN_SLEET"
             },
             {
-                "file": "images/rain.png",
                 "type": "png",
+                "file": "images/rain.png",
                 "name": "ICON_RAIN"
             },
             {
-                "file": "images/partly-cloudy-night.png",
                 "type": "png",
+                "file": "images/partly-cloudy-night.png",
                 "name": "ICON_PARTLY_CLOUDY_NIGHT"
             },
             {
-                "file": "images/partly-cloudy-day.png",
                 "type": "png",
+                "file": "images/partly-cloudy-day.png",
                 "name": "ICON_PARTLY_CLOUDY_DAY"
             },
             {
-                "file": "images/fog.png",
                 "type": "png",
+                "file": "images/fog.png",
                 "name": "ICON_FOG"
             },
             {
-                "file": "images/drizzle.png",
                 "type": "png",
+                "file": "images/drizzle.png",
                 "name": "ICON_DRIZZLE"
             },
             {
-                "file": "images/hot.png",
                 "type": "png",
+                "file": "images/hot.png",
                 "name": "ICON_HOT"
             },
             {
-                "file": "images/cold.png",
                 "type": "png",
+                "file": "images/cold.png",
                 "name": "ICON_COLD"
             },
             {
-                "file": "images/cloudy.png",
                 "type": "png",
+                "file": "images/cloudy.png",
                 "name": "ICON_CLOUDY"
             },
             {
-                "file": "images/clear-night.png",
                 "type": "png",
+                "file": "images/clear-night.png",
                 "name": "ICON_CLEAR_NIGHT"
             },
             {
-                "file": "images/clear-day.png",
                 "type": "png",
+                "file": "images/clear-day.png",
                 "name": "ICON_CLEAR_DAY"
             },
             {
-                "file": "images/batt_empty.png",
                 "type": "png",
+                "file": "images/batt_empty.png",
                 "name": "BATT_EMPTY"
             },
             {
-                "file": "images/batt_char.png",
                 "type": "png",
+                "file": "images/batt_char.png",
                 "name": "BATT_CHAR"
             },
             {
-                "file": "images/bluetooth_white_small.png",
                 "type": "png",
+                "file": "images/bluetooth_white_small.png",
                 "name": "BT_CONNECTED"
             },
             {
-                "file": "fonts/futura_condensed_bold-webfont.ttf",
                 "type": "font",
-                "name": "FUTURA_CONDENSED_53",
-                "characterRegex": "[0-9: ]"
+                "file": "fonts/futura_condensed_bold-webfont.ttf",
+                "characterRegex": "[0-9: ]",
+                "name": "FUTURA_CONDENSED_53"
             },
             {
-                "file": "images/monday.png",
                 "type": "png",
+                "file": "images/monday.png",
                 "name": "CHIN_MONDAY"
             },
             {
-                "file": "images/tuesday.png",
                 "type": "png",
+                "file": "images/tuesday.png",
                 "name": "CHIN_TUESDAY"
             },
             {
-                "file": "images/wednesday.png",
                 "type": "png",
+                "file": "images/wednesday.png",
                 "name": "CHIN_WEDNESDAY"
             },
             {
-                "file": "images/thursday.png",
                 "type": "png",
+                "file": "images/thursday.png",
                 "name": "CHIN_THURSDAY"
             },
             {
-                "file": "images/friday.png",
                 "type": "png",
+                "file": "images/friday.png",
                 "name": "CHIN_FRIDAY"
             },
             {
-                "file": "images/saturday.png",
                 "type": "png",
+                "file": "images/saturday.png",
                 "name": "CHIN_SATURDAY"
             },
             {
-                "file": "images/sunday.png",
                 "type": "png",
+                "file": "images/sunday.png",
                 "name": "CHIN_SUNDAY"
             },
             {
-                "file": "images/wind_small.png",
                 "type": "png",
+                "file": "images/wind_small.png",
                 "name": "WIND_SMALL"
             },
             {
-                "file": "images/moon_0.png",
                 "type": "png",
+                "file": "images/moon_0.png",
                 "name": "MOON_0"
             },
             {
-                "file": "images/moon_1.png",
                 "type": "png",
+                "file": "images/moon_1.png",
                 "name": "MOON_1"
             },
             {
-                "file": "images/moon_2.png",
                 "type": "png",
+                "file": "images/moon_2.png",
                 "name": "MOON_2"
             },
             {
-                "file": "images/moon_3.png",
                 "type": "png",
+                "file": "images/moon_3.png",
                 "name": "MOON_3"
             },
             {
-                "file": "images/moon_4.png",
                 "type": "png",
+                "file": "images/moon_4.png",
                 "name": "MOON_4"
             },
             {
-                "file": "images/moon_5.png",
                 "type": "png",
+                "file": "images/moon_5.png",
                 "name": "MOON_5"
             },
             {
-                "file": "images/moon_6.png",
                 "type": "png",
+                "file": "images/moon_6.png",
                 "name": "MOON_6"
             },
             {
-                "file": "images/moon_7.png",
                 "type": "png",
+                "file": "images/moon_7.png",
                 "name": "MOON_7"
             },
             {
-                "file": "images/YWeather_Menu.png",
+                "menuIcon": true,
                 "type": "png",
-                "name": "Menu_Image",
-                "menuIcon": true
+                "file": "images/YWeather_Menu.png",
+                "name": "Menu_Image"
             }
         ]
     },
+    "appKeys": {
+        "wind": 10,
+        "low": 7,
+        "sunrise": 8,
+        "temperature": 1,
+        "wdirection": 11,
+        "sunset": 9,
+        "high": 6,
+        "vibes": 5,
+        "language": 4,
+        "invert_color": 3,
+        "city": 2,
+        "icon": 0
+    },
+    "longName": "YWeather",
+    "uuid": "35a28a4d-0c9f-408f-9c6d-551e65f03186",
     "capabilities": [
         "location",
         "configurable"
     ],
-    "uuid": "35a28a4d-0c9f-408f-9c6d-551e65f03186",
-    "shortName": "YWeather",
-    "versionCode": 1,
-    "companyName": "David Rodriguez Rincon",
-    "appKeys": {
-        "language": 4,
-        "wdirection": 11,
-        "low": 7,
-        "invert_color": 3,
-        "wind": 10,
-        "vibes": 5,
-        "city": 2,
-        "sunrise": 8,
-        "icon": 0,
-        "temperature": 1,
-        "sunset": 9,
-        "high": 6
-    },
-    "longName": "YWeather",
-    "versionLabel": "2.0.3",
     "watchapp": {
         "watchface": true
-    }
+    },
+    "companyName": "David Rodriguez Rincon"
 }

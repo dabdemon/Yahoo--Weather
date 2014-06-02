@@ -83,7 +83,7 @@ function getWeatherFromLatLong(latitude, longitude) {
   var woeid = -1;
   var key = "b732076fc242bf05e5f0637eaa439d62"; //my Flickr API key. If you want to reuse this code, please use your own key.
   var req = new XMLHttpRequest();
-  var url = "http://api.flickr.com/services/rest/?method=flickr.places.findByLatLon&api_key=" + key + "&lat=" + latitude + "&lon=" + longitude + "&accuracy=16&format=json&nojsoncallback=1";
+  var url = "https://api.flickr.com/services/rest/?method=flickr.places.findByLatLon&api_key=" + key + "&lat=" + latitude + "&lon=" + longitude + "&accuracy=16&format=json&nojsoncallback=1";
   req.open('GET', url, true);
   req.onload = function(e) {
     if (req.readyState == 4) {

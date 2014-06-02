@@ -33,8 +33,8 @@ enum WeatherKey {
 	bool BTConnected = true;
 	
 	// Setup messaging
-	const int inbound_size = 512;
-	const int outbound_size = 512;
+	const int inbound_size = 256;
+	const int outbound_size = 256;
 	
 	//Time control for weather refresh
 	static AppTimer *timer;
