@@ -187,6 +187,10 @@ void getDate()
 	intday = tz1Ptr->tm_mday;
 	intmonth = tz1Ptr->tm_mon;
 	intyear = tz1Ptr->tm_year;
+	
+	//Check that the selected language exists in the installed watchface version
+	//(EXCLIDING CHINESE, JAPANESE AND ENGLISH!!) -- SET TO ENGLISH
+	if((language>intLangCounter)&&(language<98)){language=100;}
 
 
 	//Try new translation method

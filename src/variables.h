@@ -79,6 +79,9 @@ enum WeatherKey {
 	int intday;
 	int intmonth;
 	int intyear;
+
+	//variable to avoid the app crashing when adding new languages
+	int intLangCounter = 15;
 	
 	
 	bool translate_sp = true;

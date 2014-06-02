@@ -143,6 +143,14 @@ static const char *WEEKDAYS[] = {
 	"Cuma",
 	"Cumartesi",
 	"Pazar",
+	//SLOVAK - 15
+	"Pondelok", 
+	"Utorok", 
+	"Streda", 
+	"Stvrtok", 
+	"Piatok", 
+	"Sobota", 
+	"Nedela",
 };
 
 static const char *MONTHS[] = {
@@ -342,5 +350,18 @@ static const char *MONTHS[] = {
 	" Ekim",
 	" Kasım",
 	" Aralık",
+	//SLOVAK - 15
+	". Januar", 
+	". Februar", 
+	". Marec", 
+	". April", 
+	". Maj", 
+	". Jun", 
+	". Jul", 
+	". August", 
+	". September", 
+	". Oktober", 
+	". November", 
+	". December",
 };
 	
