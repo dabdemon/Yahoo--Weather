@@ -94,6 +94,10 @@
           </select>
         </div>
         
+        *************************************
+        * EXTRA FEATURES (For backers only) *
+        *************************************
+        If you donate 1€ or more, you unlocks:
         <div data-role="fieldcontain">
           <label for="feelslike">Display Feels Like (instead of real temperature)</label>
           <select name="feelslike" id="feelslike" data-theme="c" data-role="slider" data-track-theme="d">
@@ -101,9 +105,25 @@
             <option value="true">Yes</option>
           </select>
         </div>
-        
-        This settings page is compatible with YWeather v2.0.4 or higher
-        
+        If you donate 3€ or more, you unlocks:
+        <div data-role="fieldcontain">
+          <label for="timer">Weather Update every</label>
+          <select name="timer"  id="timer" data-theme="c" data-track-theme="d">
+            <option value="5">5 minutes</option>
+            <option value="15">15 minutes</option>
+            <option value="30">30 minutes</option>
+            <option value="45">45 minutes</option>
+            <option value="60">60 minutes</option>
+          </select>
+        </div>
+        If you donate 5€ or more, you unlocks:
+        <div data-role="fieldcontain">
+          <label for="forecast">Display 3 day forecast</label>
+          <select name="forecast" id="forecast" data-theme="c" data-role="slider" data-track-theme="d">
+            <option value="false">No</option>
+            <option value="true">Yes</option>
+          </select>
+        </div>
 
         <div class='ui-body ui-body-b'>
           <fieldset class='ui-grid-a'>
@@ -111,6 +131,8 @@
             <div class='ui-block-b'><button type='submit' data-theme='b' id='b-submit'>Submit</button></div>
           </fieldset>
         </div>
+        
+        This settings page is compatible with YWeather v2.0.4 or higher        
 
       </div>
     </div>
@@ -135,6 +157,8 @@
           'invert_color': $('#invert_color').val(),
           'vibes': $('#vibes').val(),
           'feelslike': $('#feelslike').val(),
+          'timer': $('#timer').val(),
+          'forecast': $('#forecast').val(),
           'version' : "2.0.5"
         }
         return options;
@@ -159,7 +183,9 @@
         $('#invert_color').val(getQueryVariable('invert_color')).change();
         $('#vibes').val(getQueryVariable('vibes')).change();
         $('#feelslike').val(getQueryVariable('feelslike')).change();
-
+        $('#timer').val(getQueryVariable('timer')).change();
+        $('#forecast').val(getQueryVariable('forecast')).change();
+        
         // Disable location field based on GPS toggle
         $('#location').prop('disabled', $('#gps_switch').val() == "true");
         $('#gps_switch').change(function() {
