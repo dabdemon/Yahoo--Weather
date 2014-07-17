@@ -95,9 +95,9 @@
         </div>
         
        
-        <b>EXTRA FEATURES (For backers only)</b><br>
+        <b>EXTRA FEATURES (For backers only)</b><br><br>
 
-        If you donate 1€ or more, you unlocks:
+        <b>If you donate 1€ or more, you unlocks:</b>
         <div data-role="fieldcontain">
           <label for="feelslike">Display Feels Like (instead of real temperature)</label>
           <select name="feelslike" id="feelslike" data-theme="c" data-role="slider" data-track-theme="d">
@@ -105,9 +105,18 @@
             <option value="true">Yes</option>
           </select>
         </div>
-        If you donate 3€ or more, you unlocks:
         <div data-role="fieldcontain">
-          <label for="timer">Weather Update every</label>
+          <label for="ESDuration">Extended screen duration</label>
+          <select name="ESDuration"  id="ESDuration" data-theme="c" data-track-theme="d">
+            <option value="5">5 seconds</option>
+            <option value="8">8 seconds</option>
+            <option value="10">10 seconds</option>
+            <option value="15">15 seconds</option>
+          </select>
+        </div>
+       <b>If you donate 3€ or more, you unlocks:</b> 
+        <div data-role="fieldcontain">
+          <label for="timer">Weather updates every</label>
           <select name="timer"  id="timer" data-theme="c" data-track-theme="d">
             <option value="5">5 minutes</option>
             <option value="15">15 minutes</option>
@@ -116,7 +125,7 @@
             <option value="60">60 minutes</option>
           </select>
         </div>
-        If you donate 5€ or more, you unlocks:
+        <b>If you donate 5€ or more, you unlocks:</b>
         <div data-role="fieldcontain">
           <label for="forecast">Display 3 day forecast</label>
           <select name="forecast" id="forecast" data-theme="c" data-role="slider" data-track-theme="d">
@@ -157,6 +166,7 @@
           'invert_color': $('#invert_color').val(),
           'vibes': $('#vibes').val(),
           'feelslike': $('#feelslike').val(),
+          'ESDuration': $('#ESDuration').val(),
           'timer': $('#timer').val(),
           'forecast': $('#forecast').val(),
           'version' : "2.0.5"
@@ -183,6 +193,7 @@
         $('#invert_color').val(getQueryVariable('invert_color')).change();
         $('#vibes').val(getQueryVariable('vibes')).change();
         $('#feelslike').val(getQueryVariable('feelslike')).change();
+        $('#ESDuration').val(getQueryVariable('ESDuration')).change();
         $('#timer').val(getQueryVariable('timer')).change();
         $('#forecast').val(getQueryVariable('forecast')).change();
         
