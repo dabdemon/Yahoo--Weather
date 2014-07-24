@@ -175,6 +175,12 @@
       }
 
       $().ready(function() {
+        //Disable fields based on donation
+        $('#feelslike').prop('disabled', "true");
+        $('#ESDuration').prop('disabled', "true");
+        $('#timer').prop('disabled', "true");
+        $('#forecast').prop('disabled', "true");
+        
         $('#b-cancel').click(function() {
           document.location = 'pebblejs://close#';
         });
@@ -197,11 +203,7 @@
         $('#timer').val(getQueryVariable('timer')).change();
         $('#forecast').val(getQueryVariable('forecast')).change();
         
-        //Disable fields based on donation
-        $('#feelslike').prop('disabled', "true");
-        $('#ESDuration').prop('disabled', "true");
-        $('#timer').prop('disabled', "true");
-        $('#forecast').prop('disabled', "true");
+
         // Disable location field based on GPS toggle
         $('#location').prop('disabled', $('#gps_switch').val() == "true");
         $('#gps_switch').change(function() {
