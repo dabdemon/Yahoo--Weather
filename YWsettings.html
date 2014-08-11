@@ -95,7 +95,7 @@
         </div>
         
        
-        <b>EXTRA FEATURES (For backers only)</b><br><br>
+        <b>COMING SOON: EXTRA FEATURES (For backers only)</b><br><br>
 
         <b>If you donate 1€ or more, you unlock:</b>
         <div data-role="fieldcontain">
@@ -112,6 +112,13 @@
             <option value="8">8 seconds</option>
             <option value="10">10 seconds</option>
             <option value="15">15 seconds</option>
+          </select>
+        </div>
+        <div data-role="fieldcontain">
+          <label for="beaufort">Display Beaufort Wind Speed</label>
+          <select name="beaufort" id="beaufort" data-theme="c" data-role="slider" data-track-theme="d">
+            <option value="false">No</option>
+            <option value="true">Yes</option>
           </select>
         </div>
        <b>If you donate 3€ or more, you unlock:</b> 
@@ -167,6 +174,7 @@
           'vibes': $('#vibes').val(),
           'feelslike': $('#feelslike').val(),
           'ESDuration': $('#ESDuration').val(),
+          'beaufort': $('#beaufort').val(),
           'timer': $('#timer').val(),
           'forecast': $('#forecast').val(),
           'version' : "2.0.5"
@@ -194,6 +202,7 @@
         $('#vibes').val(getQueryVariable('vibes')).change();
         $('#feelslike').val(getQueryVariable('feelslike')).change();
         $('#ESDuration').val(getQueryVariable('ESDuration')).change();
+        $('#beaufort').val(getQueryVariable('beaufort')).change();
         $('#timer').val(getQueryVariable('timer')).change();
         $('#forecast').val(getQueryVariable('forecast')).change();
         
