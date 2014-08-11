@@ -95,7 +95,7 @@
         </div>
         
        
-        <b>EXTRA FEATURES (For backers only)</b><br><br>
+        <b>COMING SOON: EXTRA FEATURES (For backers only)</b><br><br>
 
         <b>If you donate 1€ or more, you unlock:</b>
         <div data-role="fieldcontain">
@@ -114,7 +114,22 @@
             <option value="15">15 seconds</option>
           </select>
         </div>
+        <div data-role="fieldcontain">
+          <label for="beaufort">Display Beaufort Wind Speed</label>
+          <select name="beaufort" id="beaufort" data-theme="c" data-role="slider" data-track-theme="d">
+            <option value="false">No</option>
+            <option value="true">Yes</option>
+          </select>
+        </div>
        <b>If you donate 3€ or more, you unlock:</b> 
+        <div data-role="fieldcontain">
+          <label for="accuracy">Weather Accuracy</label>
+          <select name="accuracy"  id="accuracy" data-theme="c" data-track-theme="d">
+            <option value="16">Neighborhood</option>
+            <option value="11">City</option>
+            <option value="6">Region</option>
+          </select>
+        </div>
         <div data-role="fieldcontain">
           <label for="timer">Weather updates every</label>
           <select name="timer"  id="timer" data-theme="c" data-track-theme="d">
@@ -165,8 +180,10 @@
           'units': $('input:radio[name=units]:checked').val(),
           'invert_color': $('#invert_color').val(),
           'vibes': $('#vibes').val(),
+          'accuracy': $('#accuracy').val(),
           'feelslike': $('#feelslike').val(),
           'ESDuration': $('#ESDuration').val(),
+          'beaufort': $('#beaufort').val(),
           'timer': $('#timer').val(),
           'forecast': $('#forecast').val(),
           'version' : "2.0.5"
@@ -175,10 +192,10 @@
       }
 
       $().ready(function() {
-        //Disable fields based on donation
+         //Disable fields based on donation
+        $('#accuracy').prop('disabled', "true");
         $('#timer').prop('disabled', "true");
         $('#forecast').prop('disabled', "true");
-        
         $('#b-cancel').click(function() {
           document.location = 'pebblejs://close#';
         });
@@ -196,12 +213,13 @@
         }
         $('#invert_color').val(getQueryVariable('invert_color')).change();
         $('#vibes').val(getQueryVariable('vibes')).change();
+        $('#accuracy').val(getQueryVariable('accuracy')).change();
         $('#feelslike').val(getQueryVariable('feelslike')).change();
         $('#ESDuration').val(getQueryVariable('ESDuration')).change();
+        $('#beaufort').val(getQueryVariable('beaufort')).change();
         $('#timer').val(getQueryVariable('timer')).change();
         $('#forecast').val(getQueryVariable('forecast')).change();
         
-
         // Disable location field based on GPS toggle
         $('#location').prop('disabled', $('#gps_switch').val() == "true");
         $('#gps_switch').change(function() {
