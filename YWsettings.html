@@ -98,6 +98,14 @@
         <b>COMING SOON: EXTRA FEATURES (For backers only)</b><br><br>
 
         <b>If you donate 1€ or more, you unlock:</b>
+          <div data-role="fieldcontain">
+          <label for="accuracy">Weather Accuracy</label>
+          <select name="accuracy"  id="accuracy" data-theme="c" data-track-theme="d">
+            <option value="16">Street</option>
+            <option value="11">City</option>
+            <option value="6">Region</option>
+          </select>
+        </div>
         <div data-role="fieldcontain">
           <label for="feelslike">Display Feels Like (instead of real temperature)</label>
           <select name="feelslike" id="feelslike" data-theme="c" data-role="slider" data-track-theme="d">
@@ -172,6 +180,7 @@
           'units': $('input:radio[name=units]:checked').val(),
           'invert_color': $('#invert_color').val(),
           'vibes': $('#vibes').val(),
+          'accuracy': $('#accuracy').val(),
           'feelslike': $('#feelslike').val(),
           'ESDuration': $('#ESDuration').val(),
           'beaufort': $('#beaufort').val(),
@@ -200,6 +209,7 @@
         }
         $('#invert_color').val(getQueryVariable('invert_color')).change();
         $('#vibes').val(getQueryVariable('vibes')).change();
+        $('#accuracy').val(getQueryVariable('accuracy')).change();
         $('#feelslike').val(getQueryVariable('feelslike')).change();
         $('#ESDuration').val(getQueryVariable('ESDuration')).change();
         $('#beaufort').val(getQueryVariable('beaufort')).change();
