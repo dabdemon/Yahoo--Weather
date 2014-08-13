@@ -215,14 +215,14 @@
         $('#UUID').prop('disabled', "true");
         $('#LT').prop('disabled', "true");
         //Disable all the Extra Features to enable them based on LT
-        $('#forecast').prop('disabled', "true");
+        $('#forecast').prop('disabled', true);
         
         //Enable LT 1 fields
         //Enable LT 2 fields
         //Enable LT 3 fields
-        //if (getQueryVariable('LT') == "3") {
-          $('#forecast').prop('disabled', "false");
-        //}
+        if (getQueryVariable('LT') == "3") {
+          $('#forecast').prop('disabled', false);
+        }
          
         $('#b-cancel').click(function() {
           document.location = 'pebblejs://close#';
