@@ -212,8 +212,9 @@
 
       $().ready(function() {
         //Disable the UUID. this is merely informational
-        $('#UUID').prop('disabled', "true");
-        $('#LT').prop('disabled', "true");
+        $('#UUID').prop('disabled', true);
+        $('#LT').prop('disabled', true);
+        $('#LT').prop('hidden', true);
         //Disable all the Extra Features to enable them based on LT
         $('#accuracy').prop('disabled', true);
         $('#feelslike').prop('disabled', true);
