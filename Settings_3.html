@@ -198,6 +198,9 @@
       }
 
       $().ready(function() {
+        //Disable the UUID. this is merely informational
+        $('#UUID').prop('disabled', "true");
+         
         $('#b-cancel').click(function() {
           document.location = 'pebblejs://close#';
         });
