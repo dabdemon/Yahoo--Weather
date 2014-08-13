@@ -230,11 +230,22 @@
         }
         //Enable LT 2 fields
         if (getQueryVariable('LT') == "2") {
+          $('#feelslike').prop('disabled', false);
+          $('#ESDuration').prop('disabled', false);
+          $('#beaufort').prop('disabled', false);
+          
           $('#accuracy').prop('disabled', false);
           $('#timer').prop('disabled', false);
         }
         //Enable LT 3 fields
         if (getQueryVariable('LT') == "3") {
+          $('#feelslike').prop('disabled', false);
+          $('#ESDuration').prop('disabled', false);
+          $('#beaufort').prop('disabled', false);
+          
+          $('#accuracy').prop('disabled', false);
+          $('#timer').prop('disabled', false);
+          
           $('#forecast').prop('disabled', false);
         }
          
