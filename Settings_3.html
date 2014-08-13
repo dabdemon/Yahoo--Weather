@@ -190,6 +190,7 @@
           'ESDuration': $('#ESDuration').val(),
           'beaufort': $('#beaufort').val(),
           'timer': $('#timer').val(),
+          'UUID': $('#UUID').val(),
           'forecast': $('#forecast').val(),
           'version' : "2.0.5"
         }
@@ -219,6 +220,7 @@
         $('#ESDuration').val(getQueryVariable('ESDuration')).change();
         $('#beaufort').val(getQueryVariable('beaufort')).change();
         $('#timer').val(getQueryVariable('timer')).change();
+        $('#UUID').val(getQueryVariable('UUID'));
         $('#forecast').val(getQueryVariable('forecast')).change();
         
         // Disable location field based on GPS toggle
