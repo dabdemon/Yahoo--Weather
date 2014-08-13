@@ -104,6 +104,11 @@
         
         Please, add the User ID (at the top of this page) as a comment in your donation to speed up the key generation process
         <div data-role="fieldcontain">
+          <label for="Key">User Key</label>
+          <input type="text" name="Key" id="Key" value="" />
+        </div>
+        
+        <div data-role="fieldcontain">
           <label for="LT">License Type</label>
           <input type="text" name="LT" id="LT" value="" />
         </div>
@@ -198,6 +203,7 @@
           'timer': $('#timer').val(),
           'UUID': $('#UUID').val(),
           'LT': $('#LT').val(),
+          'Key': $('#Key').val(),
           'forecast': $('#forecast').val(),
           'version' : "2.0.5"
         }
@@ -233,6 +239,7 @@
         $('#timer').val(getQueryVariable('timer')).change();
         $('#UUID').val(getQueryVariable('UUID'));
         $('#LT').val(getQueryVariable('LT'));
+        $('#Key').val(getQueryVariable('Key'));
         $('#forecast').val(getQueryVariable('forecast')).change();
         
         // Disable location field based on GPS toggle
