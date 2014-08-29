@@ -26,6 +26,14 @@
 <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=pebbleweather%40gmail%2ecom&lc=US&item_name=YWeather&currency_code=EUR&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted"><img src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif"></a>
 </div>
 
+<b>THIS VERSION IS OUTDATED. PLEASE DOWNLOAD THE LATEST VERSION (v2.1) FROM THE PEBBLE APPSTORE</b>
+To download the latest version, please follow these steps:
+
+1. Unload YWeather from your watch.
+2. REMOVE YWeather from your Pebble locker, to avoid reinstalling an old version.
+3. Go to the Pebble Appstore and "Add" YWeather v2.1
+
+ENJOY!!
           
         <div data-role="fieldcontain">
           <label for="language">Language</label>
@@ -132,6 +140,14 @@
       }
 
       $().ready(function() {
+        //Disable all the Feature. Outdated version
+        $('#language').prop('disabled', true);
+        $('#use_gps').prop('disabled', true);
+        $('#location').prop('disabled', true);
+        $('#units').prop('disabled', true);
+        $('#invert_color').prop('disabled', true);
+        $('#vibes').prop('disabled', true);
+        
         $('#b-cancel').click(function() {
           document.location = 'pebblejs://close#';
         });
