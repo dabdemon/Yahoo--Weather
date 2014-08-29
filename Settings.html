@@ -27,11 +27,12 @@
 </div>
 
 <b>THIS VERSION IS OUTDATED. PLEASE DOWNLOAD THE LATEST VERSION (v2.1) FROM THE PEBBLE APPSTORE</b>
+<br><br>
 To download the latest version, please follow these steps:
-
-1. Unload YWeather from your watch.
-2. REMOVE YWeather from your Pebble locker, to avoid reinstalling an old version.
-3. Go to the Pebble Appstore and "Add" YWeather v2.1
+<br>
+1. Unload YWeather from your watch. <br>
+2. REMOVE YWeather from your Pebble locker, to avoid reinstalling an old version.<br>
+3. Go to the Pebble Appstore and "Add" YWeather v2.1<br>
 
 ENJOY!!
           
@@ -166,10 +167,7 @@ ENJOY!!
         $('#invert_color').val(getQueryVariable('invert_color')).change();
         $('#vibes').val(getQueryVariable('vibes')).change();
 
-        // Disable location field based on GPS toggle
-        $('#location').prop('disabled', $('#gps_switch').val() == "true");
-        $('#gps_switch').change(function() {
-          $('#location').prop('disabled', $('#gps_switch').val() == "true");
+
         });
       });
     </script>
