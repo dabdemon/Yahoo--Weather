@@ -11,6 +11,7 @@ static const char CHINESE_DAYS[] = {
 	RESOURCE_ID_CHIN_SUNDAY,
 };
 
+
 static const char JAPANESE_DAYS[] = {
 	RESOURCE_ID_JAP_MON,
 	RESOURCE_ID_JAP_TUE,
@@ -19,6 +20,29 @@ static const char JAPANESE_DAYS[] = {
 	RESOURCE_ID_JAP_FRI,
 	RESOURCE_ID_JAP_SAT,
 	RESOURCE_ID_JAP_SUN,
+};
+
+
+//Testig Russian bitmaps
+static const char RUSSIAN_DAYS[] = {
+	RESOURCE_ID_MONDAY_RU,
+	RESOURCE_ID_TUESDAY_RU,
+	RESOURCE_ID_MONDAY_RU,
+	RESOURCE_ID_MONDAY_RU,
+	RESOURCE_ID_MONDAY_RU,
+	RESOURCE_ID_MONDAY_RU,
+	RESOURCE_ID_MONDAY_RU,
+};
+
+static const char *ENGLISH_DAYS[] = {
+	NULL,
+	"Monday",
+	"Tuesday",
+	"Wednesday",
+	"Thursday",
+	"Friday",
+	"Saturday",
+	"Sunday",
 };
 
 static const char *WEEKDAYS[] = {

@@ -6,7 +6,8 @@
 #define TIME_FRAME       (GRect(0, 15, 144, 168-16))
 #define DATE_FRAME       (GRect(1, 69, 139, 168-62))
 	
-#define CHIN_WEEKDAY_FRAME    (GRect(5, 2, 60, 168-145)) //,,95,
+//#define CHIN_WEEKDAY_FRAME    (GRect(5, 2, 60, 168-145)) //,,95,
+#define CHIN_WEEKDAY_FRAME    (GRect(5, 2, 110, 168-145)) //,,95,
 /*
 #define MAX_FRAME (GRect(65, 90, 40, 168-145))
 #define MIN_FRAME (GRect(105, 90, 40, 168-145))
@@ -37,3 +38,24 @@
         
 #define TOTAL_MOON_DIGITS 1
 #define MOON_ICON_FRAME (GRect(106, 138, 26, 26))
+
+//define 3 days forecast
+#define FORECAST_DAY1_FRAME (GRect(5, 93, 90, 23))
+#define FORECAST_DAY2_FRAME (GRect(5, 114, 90, 23))
+#define FORECAST_DAY3_FRAME (GRect(5, 135, 90, 23))	
+	
+#define FORECAST_CODE1_FRAME (GRect(95, 93, 22, 22))
+#define FORECAST_CODE2_FRAME (GRect(95, 114, 22, 22))
+#define FORECAST_CODE3_FRAME (GRect(95, 135, 22, 22))
+
+//#define FORECAST_HIGH1_FRAME (GRect(81, 93, 47, 60))
+//#define FORECAST_HIGH2_FRAME (GRect(81, 115, 47, 60))
+//#define FORECAST_HIGH3_FRAME (GRect(81, 135, 47, 60))
+#define FORECAST_HIGH1_FRAME (GRect(100, 103, 45, 60))
+#define FORECAST_HIGH2_FRAME (GRect(100, 125, 45, 60))
+#define FORECAST_HIGH3_FRAME (GRect(100, 145, 45, 60))	
+
+//#define FORECAST_LOW1_FRAME (GRect(100, 93, 47, 60))
+#define FORECAST_LOW1_FRAME (GRect(100, 93, 45, 60))
+#define FORECAST_LOW2_FRAME (GRect(100, 115, 45, 60))
+#define FORECAST_LOW3_FRAME (GRect(100, 135, 45, 60))

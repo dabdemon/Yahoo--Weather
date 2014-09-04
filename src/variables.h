@@ -16,6 +16,20 @@ enum WeatherKey {
 	SUNSET_KEY = 0x9, //TUPLE_CSTRING
 	WIND_KEY = 0xa, //TUPLE_CSTRING
 	WDIRECTION_KEY = 0xb, //TUPLE_INT
+//3 day forecast
+	FORECAST_CODE1_KEY = 0xc, //TUPLE_INT
+	FORECAST_HIGH1_KEY = 0xd, //TUPLE_CSTRING
+	FORECAST_LOW1_KEY = 0xe, //TUPLE_CSTRINT
+	FORECAST_CODE2_KEY = 0xf, //TUPLE_INT
+	FORECAST_HIGH2_KEY = 0x10, //TUPLE_CSTRING
+	FORECAST_LOW2_KEY = 0x11, //TUPLE_CSTRING
+	FORECAST_CODE3_KEY = 0x12, //TUPLE_INT
+	FORECAST_HIGH3_KEY = 0x13, //TUPLE_CSTRING
+	FORECAST_LOW3_KEY = 0x14, //TUPLE_CSTRING
+//Extra Features
+	EXTRA_ESDURATION_KEY = 0x15, //TUPLE_INT
+	EXTRA_TIMER_KEY = 0x16, //TUPLE_INT
+	EXTRA_FORECAST_KEY = 0x17, //TUPLE_INT
 };
 
 	#define TAP_TIME 2000
@@ -33,33 +47,37 @@ enum WeatherKey {
 	bool BTConnected = true;
 	
 	// Setup messaging
-	const int inbound_size = 256;
-	const int outbound_size = 256;
+	const int inbound_size = 512;
+	const int outbound_size = 512;
 	
 	//Time control for weather refresh
 	static AppTimer *timer;
-	const uint32_t timeout_ms = 1800000; //30min (1min = 60000)
+	uint32_t timeout_ms = 1800000; //30min (1min = 60000)
+	uint32_t ESDuration_ms = 5000; //5sec (1min = 60000)
+
+	int init_timeout_ms;
+	int init_ESDuration_ms;
 	
 	static AppTimer *weather;
-	static AppTimer *accelerometer;
+	//static AppTimer *accelerometer;
 	static AppTimer *initialize;
-	static AppTimer *tap_timer;
+	//static AppTimer *tap_timer;
 	
 	
 	InverterLayer *inv_layer;
 	
 	//Date & Time        
 	static char last_update[]="00:00 ";
-	static int initial_minute;
+	//static int initial_minute;
 	
 	static char weekday_text[] = "XXXXXXXXXXXX";
-	static char date_text[] = "XXX 00";
+	//static char date_text[] = "XXX 00";
 	static char month_text[] = "XXXXXXXXXXXXX";
-	static char day_text[] = "1";
+	//static char day_text[] = "1";
 	static char day_month[]= "31 SEPTEMBER";
 	static char time_text[] = "00:00";
-	static char inverted[]="B";
-	static char temperature[]="     ";
+	//static char inverted[]="B";
+	//static char temperature[]="     ";
 	static char high[]="     ";
 	static char low[]="    ";
 	static char sunrise[]="     ";
@@ -69,6 +87,28 @@ enum WeatherKey {
 	static char strwdirection[100];
 	static char city[100];
 	static char temp[]="     ";
+
+	static char version[]="2.0.5";
+
+	static char weekday1_text[] = "XXXXXXXXXXXXX";
+	static char weekday2_text[] = "XXXXXXXXXXXXX";
+	static char weekday3_text[] = "XXXXXXXXXXXXX";
+
+	static char day1H[] = "      ";
+	static char day1L[] = "      ";
+	static char day2H[] = "      ";
+	static char day2L[] = "      ";
+	static char day3H[] = "      ";
+	static char day3L[] = "      ";
+
+	int code1;
+	int code2;
+	int code3;
+
+	//static uint8_t *resized_data;
+	//static uint8_t *resized_data2;
+	//static uint8_t *resized_data3;
+
 
 	int iHours;
 	int iHours2;
@@ -93,3 +133,4 @@ enum WeatherKey {
 	bool blnvibes;
 	bool blninverted =  false;
 	bool blnForecast = false;
+	bool bln3daysForecast = false;

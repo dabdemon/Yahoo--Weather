@@ -7,6 +7,7 @@
 #include "textlayers.h"
 #include "frames.h"
 
+
  
 //UIDs:
 	//English: 35a28a4d-0c9f-408f-9c6d-551e65f03186
@@ -16,7 +17,6 @@
 
 //Declare initial window        
         Window *my_window;
-
 
 
 //**************************//
@@ -32,7 +32,8 @@ static void handle_battery(BatteryChargeState charge_state) {
 
   if (charge_state.is_charging) {
     //snprintf(battery_text, sizeof(battery_text), "charging");
-	  		Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_CHAR);
+	  		//Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_CHAR);
+	  		Batt_image = gbitmap_create_with_resource(BATTERY_ICON[0]);
             bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
   } else {
 	  //snprintf(battery_text, sizeof(battery_text), "%d%%", charge_state.charge_percent);
@@ -43,11 +44,13 @@ static void handle_battery(BatteryChargeState charge_state) {
          //DO NOT display the batt_icon all the time. it is annoying.
          if (charge_state.charge_percent <=10) //If the charge is between 0% and 10%
          {
-			 Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_EMPTY);
+			 //Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_EMPTY);
+			 Batt_image = gbitmap_create_with_resource(BATTERY_ICON[1]);
              bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
          }
 	  //CHECK IF BATTERY STATUS SHOULD DISPLAY ALL THE TIME OR JUST WHILE RUNNING LOW
 	  else if (batt_status){
+		  /*
 		 if (charge_state.charge_percent <=20) //If the charge is between 10% and 20%
          {
 			 Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_20);
@@ -77,6 +80,10 @@ static void handle_battery(BatteryChargeState charge_state) {
 			 Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_FULL);
              bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
          }
+		 */
+		  
+		  Batt_image = gbitmap_create_with_resource(BATTERY_ICON[charge_state.charge_percent/10]);
+          bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
 		  
 	  }
 
@@ -188,9 +195,14 @@ void getDate()
 	intmonth = tz1Ptr->tm_mon;
 	intyear = tz1Ptr->tm_year;
 	
+
+	//fix the development issue (set to english non-us)
+	if (language>100){language = 97;}
 	//Check that the selected language exists in the installed watchface version
-	//(EXCLIDING CHINESE, JAPANESE AND ENGLISH!!) -- SET TO ENGLISH
-	if((language>intLangCounter)&&(language<98)){language=100;}
+	//(EXCLIDING CHINESE, JAPANESE AND ENGLISH!!) -- SET TO ENGLISH U.S.
+	if((language>intLangCounter)&&(language<97)){language=100;}
+	
+
 
 
 	//Try new translation method
@@ -199,27 +211,51 @@ void getDate()
 		strftime(weekday_text,sizeof(weekday_text),"%u",tz1Ptr);
 		int ia = weekday_text[0] - '0'; 
 		int ib = (language*7)+ia;
-
+	
+		//Get the 3 days forecast days
+		int fcA = ia+1;
+		if (fcA>7){fcA=fcA-7;}
+		//if english, chinese or japanese, don't check the language key (they use their own array)
+		if (language<97){fcA = (language*7)+fcA;}		
+	
+		int fcB = ia+2;
+		if (fcB>7){fcB=fcB-7;}
+		//if english, chinese or japanese, don't check the language key (they use their own array)
+		if (language<97){fcB = (language*7)+fcB;}		
+			
+		int fcC = ia+3;
+		if (fcC>7){fcC=fcC-7;}
+		//if english, chinese or japanese, don't check the language key (they use their own array)
+		if (language<97){fcC = (language*7)+fcC;}	
+	
 		//Get the number of the month	
 		strftime(month_text,sizeof(month_text),"%m",tz1Ptr);
 		int ic = month_text[1] - '0';
 		if (month_text[0]=='1'){ic=ic+10;}			
 		int id = (language*12)+ic;
 
-	if(language==100){ //ENGLISH
+	if((language==100)||(language==97)){ //ENGLISH
 
 		//remove the chinese week day
 		if (chinese_day) {gbitmap_destroy(chinese_day);}
 		bitmap_layer_set_bitmap(chinese_day_layer, NULL);
 
 		//Get the English fortmat
-		strftime(month_text,sizeof(month_text),"%B %e",tz1Ptr);
+		if (language==100){strftime(month_text,sizeof(month_text),"%B %e",tz1Ptr);} //English US
+		else {strftime(month_text,sizeof(month_text),"%e %B",tz1Ptr);} // English Non-US
+		
 		strftime(weekday_text,sizeof(weekday_text),"%A",tz1Ptr);
 
 		text_layer_set_text(Weekday_Layer,weekday_text); //Update the weekday layer  
 		text_layer_set_text(date_layer,month_text); 
+		
+		//Get the 3 days forecast
+		memcpy(&weekday1_text, ENGLISH_DAYS[fcA], strlen(ENGLISH_DAYS[fcA])+1);
+		memcpy(&weekday2_text, ENGLISH_DAYS[fcB], strlen(ENGLISH_DAYS[fcB])+1);
+		memcpy(&weekday3_text, ENGLISH_DAYS[fcC], strlen(ENGLISH_DAYS[fcC])+1);
 
 	}
+
 	else if (language==99){//CHINESE
 
 		//Work on retrieving the correct weekday
@@ -234,6 +270,12 @@ void getDate()
 		//Display the weekday in chinese
 		bitmap_layer_set_bitmap(chinese_day_layer, chinese_day);
 		text_layer_set_text(date_layer, month_text);
+		
+		//Get the 3 days forecast (in english for now)
+		memcpy(&weekday1_text, ENGLISH_DAYS[fcA], strlen(ENGLISH_DAYS[fcA])+1);
+		memcpy(&weekday2_text, ENGLISH_DAYS[fcB], strlen(ENGLISH_DAYS[fcB])+1);
+		memcpy(&weekday3_text, ENGLISH_DAYS[fcC], strlen(ENGLISH_DAYS[fcC])+1);
+		
 
 	}
 	else if (language==98){//JAPANESE (use the same layer and bitmap than japanese)
@@ -250,6 +292,18 @@ void getDate()
 		//Display the weekday in chinese
 		bitmap_layer_set_bitmap(chinese_day_layer, chinese_day);
 		text_layer_set_text(date_layer, month_text);
+		
+		//Get the 3 days forecast (in english for now)
+		memcpy(&weekday1_text, ENGLISH_DAYS[fcA], strlen(ENGLISH_DAYS[fcA])+1);
+		memcpy(&weekday2_text, ENGLISH_DAYS[fcB], strlen(ENGLISH_DAYS[fcB])+1);
+		memcpy(&weekday3_text, ENGLISH_DAYS[fcC], strlen(ENGLISH_DAYS[fcC])+1);
+//		if (chinese_day1!= NULL) {gbitmap_destroy(chinese_day1);}
+//		if (chinese_day2!= NULL) {gbitmap_destroy(chinese_day2);}
+//		if (chinese_day3!= NULL) {gbitmap_destroy(chinese_day3);}
+		
+//		chinese_day1 = gbitmap_create_with_resource(JAPANESE_DAYS[fcA-1]);
+//		chinese_day2 = gbitmap_create_with_resource(JAPANESE_DAYS[fcB-1]);
+//		chinese_day3 = gbitmap_create_with_resource(JAPANESE_DAYS[fcC-1]);
 
 	}
 
@@ -271,6 +325,11 @@ void getDate()
 					memcpy(&month_text, MONTHS[id], strlen(MONTHS[id])+1);
 					text_layer_set_text(date_layer,strncat(month_text,day_month,strlen(month_text)));} //Czech or Hungarian
 				else{text_layer_set_text(date_layer,strncat(day_month,MONTHS[id],strlen(MONTHS[id]))); }
+		
+		//Get the 3 days forecast
+		memcpy(&weekday1_text, WEEKDAYS[fcA], strlen(WEEKDAYS[fcA])+1);
+		memcpy(&weekday2_text, WEEKDAYS[fcB], strlen(WEEKDAYS[fcB])+1);
+		memcpy(&weekday3_text, WEEKDAYS[fcC], strlen(WEEKDAYS[fcC])+1);
 
 	}
 
@@ -282,11 +341,11 @@ void getDate()
 //*****************//
 
         static AppSync sync;
-        static uint8_t sync_buffer[256];
+        static uint8_t sync_buffer[512];
 
 
 
-        static void sync_tuple_changed_callback(const uint32_t key,
+  static void sync_tuple_changed_callback(const uint32_t key,
                                         const Tuple* new_tuple,
                                         const Tuple* old_tuple,
                                         void* context) {
@@ -298,7 +357,8 @@ void getDate()
 	    if (weather_image != NULL){gbitmap_destroy(weather_image);}
 
 	  		weather_image = gbitmap_create_with_resource(WEATHER_ICONS[new_tuple->value->uint8]);
-      		bitmap_layer_set_bitmap(weather_icon_layer, weather_image);
+			//If the app is in the Main Screen, refresh the weather icon
+			if (blnForecast == false) {bitmap_layer_set_bitmap(weather_icon_layer, weather_image);}
 	  		ICON_CODE = new_tuple->value->uint8;
 	  	  	persist_write_int(WEATHER_ICON_KEY, new_tuple->value->uint8);
       		break;
@@ -306,16 +366,20 @@ void getDate()
     case WEATHER_TEMPERATURE_KEY:
          //Update the temperature
 	        //Set the time on which weather was retrived
-         	memcpy(&last_update, time_text, strlen(time_text));
-         	text_layer_set_text(Last_Update, last_update);
+			clock_copy_time_string(last_update, sizeof(last_update));
+	  		//If the app is in the Main Screen, refresh Last Update
+			if (blnForecast == false) {text_layer_set_text(Last_Update, last_update);}
+	  		
 	  		//Save the temperature
 	    	persist_write_string(WEATHER_TEMPERATURE_KEY, new_tuple->value->cstring);
-	        text_layer_set_text(Temperature_Layer, new_tuple->value->cstring);
+	  	  	//If the app is in the Main Screen, refresh Temperature
+			if (blnForecast == false) {text_layer_set_text(Temperature_Layer, new_tuple->value->cstring);}	        
       		break;
 
      case WEATHER_CITY_KEY:
 	  		persist_write_string(WEATHER_CITY_KEY, new_tuple->value->cstring);
-         	text_layer_set_text(Location_Layer, new_tuple->value->cstring);
+	  	  	//If the app is in the Main Screen, refresh City
+			if (blnForecast == false) {text_layer_set_text(Location_Layer, new_tuple->value->cstring);}        	
          	break;
 
 	 case INVERT_COLOR_KEY:
@@ -371,6 +435,80 @@ void getDate()
 	  	  	persist_write_int(WDIRECTION_KEY, wdirection);
       		break;
 	  
+	  	case FORECAST_CODE1_KEY:
+	  		//Saves de weather condition
+	  	    //if (forecast1 != NULL){gbitmap_destroy(forecast1);}
+	  		//if (image != NULL){gbitmap_destroy(image);}
+
+	  		//image = gbitmap_create_with_resource(WEATHER_ICONS[new_tuple->value->uint8]);
+	  		//resized_data = malloc((image->bounds.size.h * image->row_size_bytes) * sizeof(uint8_t));
+	  		//forecast1 = scaleBitmap(image, 37, 37, resized_data);
+	  		persist_write_int(FORECAST_CODE1_KEY, new_tuple->value->uint8);
+      		break;
+	  
+	  	case FORECAST_HIGH1_KEY:
+	  		//Saves the high for the day
+	  		memcpy(&day1H,  new_tuple->value->cstring, strlen( new_tuple->value->cstring));
+	  	 	persist_write_string(FORECAST_HIGH1_KEY, new_tuple->value->cstring);
+      		break;
+	  
+	  	case FORECAST_LOW1_KEY:
+	  		//Saves the low for the day
+	  		memcpy(&day1L,  new_tuple->value->cstring, strlen( new_tuple->value->cstring));
+	  	    persist_write_string(FORECAST_LOW1_KEY, new_tuple->value->cstring);
+      		break;	 
+	  
+	  	case FORECAST_CODE2_KEY:
+	  		//Saves de weather condition
+	  		persist_write_int(FORECAST_CODE2_KEY, new_tuple->value->uint8);
+      		break;
+	  
+	  	case FORECAST_HIGH2_KEY:
+	  		//Saves the high for the day
+	  	  	memcpy(&day2H,  new_tuple->value->cstring, strlen( new_tuple->value->cstring));
+	  	    persist_write_string(FORECAST_HIGH2_KEY, new_tuple->value->cstring);
+      		break;
+	  
+	  	case FORECAST_LOW2_KEY:
+	  		//Saves the low for the day
+	  	  	memcpy(&day2L,  new_tuple->value->cstring, strlen( new_tuple->value->cstring));
+	  	    persist_write_string(FORECAST_LOW2_KEY, new_tuple->value->cstring);
+      		break;
+	  
+	  	case FORECAST_CODE3_KEY:
+	  		//Saves the weather condition
+	  		persist_write_int(FORECAST_CODE3_KEY, new_tuple->value->uint8);
+      		break;
+	  
+	  	case FORECAST_HIGH3_KEY:
+	  		//Saves the high for the day
+	  	  	memcpy(&day3H,  new_tuple->value->cstring, strlen( new_tuple->value->cstring));
+	  	    persist_write_string(FORECAST_HIGH3_KEY, new_tuple->value->cstring);
+      		break;
+	  
+	  	case FORECAST_LOW3_KEY:
+	  		//Saves the low for the day
+	  		memcpy(&day3L,  new_tuple->value->cstring, strlen( new_tuple->value->cstring));
+	  	    persist_write_string(FORECAST_LOW3_KEY, new_tuple->value->cstring);
+      		break;
+	  
+	  	case EXTRA_ESDURATION_KEY:
+	  		//Saves the Extended Screen duration
+	 		ESDuration_ms = new_tuple->value->uint8*1000;
+	  		persist_write_int(EXTRA_ESDURATION_KEY, ESDuration_ms);
+      		break;
+	  
+	  	case EXTRA_TIMER_KEY:
+	  		//Saves the weather update frequency
+	  		timeout_ms = new_tuple->value->uint8 * 60000;
+	  		persist_write_int(EXTRA_TIMER_KEY,timeout_ms);
+      		break;
+	  
+	  	case EXTRA_FORECAST_KEY:
+	  		//Saves the 3 days forecast toggle
+	  		bln3daysForecast =  new_tuple->value->uint8 != 0;
+	  		persist_write_int(EXTRA_FORECAST_KEY, new_tuple->value->uint8);
+      		break;
   }
 }
 
@@ -395,7 +533,8 @@ void handle_tick(struct tm *tick_time, TimeUnits units_changed)
                         } // DAY CHANGES
                         */
 
-                        //Format the time        
+                        //Format the time   
+					/*
                         if (clock_is_24h_style())
                         {
                                 strftime(time_text, sizeof(time_text), "%H:%M", tick_time);
@@ -407,6 +546,9 @@ void handle_tick(struct tm *tick_time, TimeUnits units_changed)
                 
                         //Remove the leading 0s
 						if (time_text[0]=='0') {memcpy(&time_text," ",1);}
+					*/
+			
+						clock_copy_time_string(time_text, sizeof(time_text));
 			
 						//Set the time to the Time Layer
                         text_layer_set_text(Time_Layer, time_text);
@@ -469,19 +611,6 @@ void LoadTemperature()
 	if(blninverted){inverter_layer_destroy(inv_layer);	blninverted = false;}
 	//Track that we are displaying the primary screen
 	blnForecast = false;
-	//Destroy the forecast Layers
-	if(High_Layer){text_layer_destroy(High_Layer);}
-	if(Low_Layer){text_layer_destroy(Low_Layer);}
-	if(Sunrise_Layer){text_layer_destroy(Sunrise_Layer);}
-	if(Sunset_Layer){text_layer_destroy(Sunset_Layer);}
-	if(Wind_Layer){text_layer_destroy(Wind_Layer);}
-	if(WDirection_Layer){text_layer_destroy(WDirection_Layer);}
-	if(sunrise_icon_layer){bitmap_layer_destroy(sunrise_icon_layer);}
-	if(sunset_icon_layer){bitmap_layer_destroy(sunset_icon_layer);}
-	if(high_icon_layer){bitmap_layer_destroy(high_icon_layer);}
-	if(low_icon_layer){bitmap_layer_destroy(low_icon_layer);}
-	if(wind_icon_layer){bitmap_layer_destroy(wind_icon_layer);}
-	if(moon_icon_layer){bitmap_layer_destroy(moon_icon_layer);}
 	
 	//Display the Weather layer
 	weather_icon_layer = bitmap_layer_create(WEATHER_FRAME);
@@ -513,7 +642,7 @@ void LoadTemperature()
 	layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Last_Update));
 	
 	//set back the location
-	memset(&city[0], 0, sizeof(city));
+	//memset(&city[0], 0, sizeof(city));
 	persist_read_string(WEATHER_CITY_KEY, city, sizeof(city));
 	text_layer_set_text(Location_Layer, city);
 	
@@ -527,16 +656,229 @@ void LoadTemperature()
 	//if color inverted, then create the inverted layer
 	InvertColors(color_inverted);
 	
+} //LoadTemperature - END
+
+//UNLOAD LAYERS //
+
+void UnloadForecast()
+{
+	//Destroy the forecast Layers
+	if(High_Layer){text_layer_destroy(High_Layer);}
+	if(Low_Layer){text_layer_destroy(Low_Layer);}
+	if(Sunrise_Layer){text_layer_destroy(Sunrise_Layer);}
+	if(Sunset_Layer){text_layer_destroy(Sunset_Layer);}
+	if(Wind_Layer){text_layer_destroy(Wind_Layer);}
+	if(WDirection_Layer){text_layer_destroy(WDirection_Layer);}
+	if(sunrise_icon_layer){bitmap_layer_destroy(sunrise_icon_layer);}
+	if(sunset_icon_layer){bitmap_layer_destroy(sunset_icon_layer);}
+	if(high_icon_layer){bitmap_layer_destroy(high_icon_layer);}
+	if(low_icon_layer){bitmap_layer_destroy(low_icon_layer);}
+	if(wind_icon_layer){bitmap_layer_destroy(wind_icon_layer);}
+	//printf ("%s \n", "Unload moon icon");
+	if(moon_icon_layer){bitmap_layer_destroy(moon_icon_layer);}
+	
 }
 
+void UnloadTemperature(){
+	//Destroy the temperature Layer
+	if(Temperature_Layer){text_layer_destroy(Temperature_Layer);}
+	if(weather_icon_layer){bitmap_layer_destroy(weather_icon_layer);}
+	if(Location_Layer){text_layer_destroy(Location_Layer);}
+	if(Last_Update){text_layer_destroy(Last_Update);}
 
-static void forecast_callback(void *context) {
+}
+
+void Unload3Days(){
+	
+	//Destroy the  Layers
+	if(Day1_Layer){text_layer_destroy(Day1_Layer);}
+	if(High1_Layer){text_layer_destroy(High1_Layer);}
+	if(Low1_Layer){text_layer_destroy(Low1_Layer);}
+	if(forecast1_layer){bitmap_layer_destroy(forecast1_layer);}
+		
+	if(Day2_Layer){text_layer_destroy(Day2_Layer);}
+	if(High2_Layer){text_layer_destroy(High2_Layer);}
+	if(Low2_Layer){text_layer_destroy(Low2_Layer);}
+	if(forecast2_layer){bitmap_layer_destroy(forecast2_layer);}
+	
+	if(Day3_Layer){text_layer_destroy(Day3_Layer);}
+	if(High3_Layer){text_layer_destroy(High3_Layer);}
+	if(Low3_Layer){text_layer_destroy(Low3_Layer);}
+	if(forecast3_layer){bitmap_layer_destroy(forecast3_layer);}
+}
+
+//TIMER CALLBACK
+
+static void forecast3Days_callback(void *context) {
        
         //Refresh the weather
+		Unload3Days();
         LoadTemperature();
     
 
 }
+
+void Load3Days()
+{
+
+	//remove the inverted layer (if any) before creating the new text layers
+	if(blninverted){inverter_layer_destroy(inv_layer);	blninverted = false;}
+
+//DAY 1
+	//Weekday
+		Day1_Layer = text_layer_create(FORECAST_DAY1_FRAME);	
+		text_layer_set_text_color(Day1_Layer, GColorWhite);
+		text_layer_set_background_color(Day1_Layer, GColorClear);
+		text_layer_set_font(Day1_Layer, font_date);
+		text_layer_set_text_alignment(Day1_Layer, GTextAlignmentLeft);
+		layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Day1_Layer));
+	
+		text_layer_set_text(Day1_Layer,weekday1_text);
+	
+	//Display the weather icon
+	if (forecast1 != NULL){gbitmap_destroy(forecast1);}
+
+	code1 = persist_read_int(FORECAST_CODE1_KEY);
+	forecast1 = gbitmap_create_with_resource(WEATHER_ICONS_SMALL[code1]);
+	
+	forecast1_layer = bitmap_layer_create(FORECAST_CODE1_FRAME);
+	bitmap_layer_set_bitmap(forecast1_layer, forecast1);
+    layer_add_child(window_get_root_layer(my_window), bitmap_layer_get_layer(forecast1_layer));
+
+	//High for the day
+	High1_Layer = text_layer_create(FORECAST_HIGH1_FRAME);	
+	text_layer_set_text_color(High1_Layer, GColorWhite);
+	text_layer_set_background_color(High1_Layer, GColorClear);
+	text_layer_set_font(High1_Layer, font_update);
+	text_layer_set_text_alignment(High1_Layer, GTextAlignmentRight);
+	layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(High1_Layer));
+	
+	persist_read_string(FORECAST_HIGH1_KEY, day1H, sizeof(day1H));
+	text_layer_set_text(High1_Layer,day1H);
+	
+	
+	//Low for the day
+	Low1_Layer = text_layer_create(FORECAST_LOW1_FRAME);	
+	text_layer_set_text_color(Low1_Layer, GColorWhite);
+	text_layer_set_background_color(Low1_Layer, GColorClear);
+	text_layer_set_font(Low1_Layer, font_update);
+	text_layer_set_text_alignment(Low1_Layer, GTextAlignmentRight);
+	layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Low1_Layer));
+	
+	persist_read_string(FORECAST_LOW1_KEY, day1L, sizeof(day1L));
+	text_layer_set_text(Low1_Layer,day1L);
+	
+//DAY 2
+	//Weekday
+		Day2_Layer = text_layer_create(FORECAST_DAY2_FRAME);	
+		text_layer_set_text_color(Day2_Layer, GColorWhite);
+		text_layer_set_background_color(Day2_Layer, GColorClear);
+		text_layer_set_font(Day2_Layer, font_date);
+		text_layer_set_text_alignment(Day2_Layer, GTextAlignmentLeft);
+		layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Day2_Layer));
+
+		text_layer_set_text(Day2_Layer,weekday2_text);
+
+	//Display the weather icon
+	if (forecast2 != NULL){gbitmap_destroy(forecast2);}
+	
+	code2 = persist_read_int(FORECAST_CODE2_KEY);
+	forecast2 = gbitmap_create_with_resource(WEATHER_ICONS_SMALL[code2]);
+	
+	forecast2_layer = bitmap_layer_create(FORECAST_CODE2_FRAME);
+	bitmap_layer_set_bitmap(forecast2_layer, forecast2);
+    layer_add_child(window_get_root_layer(my_window), bitmap_layer_get_layer(forecast2_layer));
+	
+
+	//High for the day
+	High2_Layer = text_layer_create(FORECAST_HIGH2_FRAME);	
+	text_layer_set_text_color(High2_Layer, GColorWhite);
+	text_layer_set_background_color(High2_Layer, GColorClear);
+	text_layer_set_font(High2_Layer, font_update);
+	text_layer_set_text_alignment(High2_Layer, GTextAlignmentRight);
+	layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(High2_Layer));
+	
+	persist_read_string(FORECAST_HIGH2_KEY, day2H, sizeof(day2H));
+	text_layer_set_text(High2_Layer,day2H);
+	
+	//Low for the day
+	Low2_Layer = text_layer_create(FORECAST_LOW2_FRAME);	
+	text_layer_set_text_color(Low2_Layer, GColorWhite);
+	text_layer_set_background_color(Low2_Layer, GColorClear);
+	text_layer_set_font(Low2_Layer, font_update);
+	text_layer_set_text_alignment(Low2_Layer, GTextAlignmentRight);
+	layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Low2_Layer));
+	
+	persist_read_string(FORECAST_LOW2_KEY, day2L, sizeof(day2L));
+	text_layer_set_text(Low2_Layer,day2L);
+	
+//DAY 3
+	//Weekday
+		Day3_Layer = text_layer_create(FORECAST_DAY3_FRAME);	
+		text_layer_set_text_color(Day3_Layer, GColorWhite);
+		text_layer_set_background_color(Day3_Layer, GColorClear);
+		text_layer_set_font(Day3_Layer, font_date);
+		text_layer_set_text_alignment(Day3_Layer, GTextAlignmentLeft);
+		layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Day3_Layer));
+
+		text_layer_set_text(Day3_Layer,weekday3_text);
+	
+	//Display the weather icon
+	if (forecast3 != NULL){gbitmap_destroy(forecast3);}
+
+	code3 = persist_read_int(FORECAST_CODE3_KEY);
+	forecast3 = gbitmap_create_with_resource(WEATHER_ICONS_SMALL[code3]);
+	
+	
+	forecast3_layer = bitmap_layer_create(FORECAST_CODE3_FRAME);
+	bitmap_layer_set_bitmap(forecast3_layer, forecast2);
+    layer_add_child(window_get_root_layer(my_window), bitmap_layer_get_layer(forecast3_layer));
+	
+	//High for the day
+	High3_Layer = text_layer_create(FORECAST_HIGH3_FRAME);	
+	text_layer_set_text_color(High3_Layer, GColorWhite);
+	text_layer_set_background_color(High3_Layer, GColorClear);
+	text_layer_set_font(High3_Layer, font_update);
+	text_layer_set_text_alignment(High3_Layer, GTextAlignmentRight);
+	layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(High3_Layer));
+	
+	persist_read_string(FORECAST_HIGH3_KEY, day3H, sizeof(day3H));
+	text_layer_set_text(High3_Layer,day3H);
+	
+	//Low for the day
+	Low3_Layer = text_layer_create(FORECAST_LOW3_FRAME);	
+	text_layer_set_text_color(Low3_Layer, GColorWhite);
+	text_layer_set_background_color(Low3_Layer, GColorClear);
+	text_layer_set_font(Low3_Layer, font_update);
+	text_layer_set_text_alignment(Low3_Layer, GTextAlignmentRight);
+	layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Low3_Layer));
+	
+	persist_read_string(FORECAST_LOW3_KEY, day3L, sizeof(day3L));
+	text_layer_set_text(Low3_Layer,day3L);
+	
+	//if color inverted, then create the inverted layer
+	InvertColors(color_inverted);
+	
+	//setup the timer to set back the temperature after 5sec
+	weather = app_timer_register(ESDuration_ms, forecast3Days_callback, NULL);
+	
+} //Load3Days - END
+
+static void forecast_callback(void *context) {
+       
+        //Refresh the weather
+		UnloadForecast();
+		if (bln3daysForecast){
+			//LoadTemperature();
+			Load3Days();
+		}
+		else{
+			LoadTemperature();
+		}
+    
+
+}
+
 
 /*****************************/
 /* Decode the Wind Direction */
@@ -633,6 +975,7 @@ void formatSunset(){
 	
 	//Remove the leading 0s
 	if (sunset[0]=='0') {memcpy(&sunset," ",1);}
+	
 }
 
 void formatSunrise(){
@@ -668,7 +1011,7 @@ void formatSunrise(){
 	}
 
 
-	//SUNSET
+	//SUNRISE
 	struct tm *tz2Ptr = gmtime(&actualPtr2);
 	tz2Ptr->tm_hour = iHours; //assume sunrise is always before noon
 	tz2Ptr->tm_min = iMinutes;
@@ -679,6 +1022,7 @@ void formatSunrise(){
 	
 	//Remove the leading 0s
 	if (sunrise[0]=='0') {memcpy(&sunrise," ",1);}
+	
 }
 
 /****************************/
@@ -703,7 +1047,8 @@ int moon_phase(int y, int m, int d) {
     ++m;
     c = 365.25*y;
     e = 30.6*m;
-    jd = c+e+d-694039.09;  	/* jd is total days elapsed */
+ //   jd = c+e+d-694039.09;  	/* jd is total days elapsed */
+	jd = c+e+d-694038.09;  	/* jd is total days elapsed */
     jd /= 29.53;        	/* divide by the moon cycle (29.53 days) */
     b = jd;		   			/* int(jd) -> b, take integer part of jd */
     jd -= b;		   		/* subtract integer part to leave fractional part of original jd */
@@ -715,20 +1060,17 @@ int moon_phase(int y, int m, int d) {
 /****************************************/
 /* Display the secondary weather screen */
 /****************************************/
+
 void LoadForecast()
 {
 	//remove the inverted layer (if any) before creating the new text layers
 	if(blninverted){inverter_layer_destroy(inv_layer);	blninverted = false;}
 	//Track that we are displaying the secondary screen
 	blnForecast = true;
-	//Destroy the temperature Layer
-	if(Temperature_Layer){text_layer_destroy(Temperature_Layer);}
-	if(weather_icon_layer){bitmap_layer_destroy(weather_icon_layer);}
-	if(Location_Layer){text_layer_destroy(Location_Layer);}
-	if(Last_Update){text_layer_destroy(Last_Update);}
-	
-	
 
+	//Unload the temperature layers
+	UnloadTemperature();
+	
 	//Create the Forecast Layers
 
 	//HIGH
@@ -831,7 +1173,7 @@ void LoadForecast()
 	
 	//Display the wind icon
 	if (wind_image){gbitmap_destroy(wind_image);}
-	wind_image = gbitmap_create_with_resource(RESOURCE_ID_WIND_SMALL);
+	wind_image = gbitmap_create_with_resource(RESOURCE_ID_WIND_ICON);
 	wind_icon_layer = bitmap_layer_create(WIND_ICON_FRAME);
 	bitmap_layer_set_bitmap(wind_icon_layer, wind_image);
     layer_add_child(window_get_root_layer(my_window), bitmap_layer_get_layer(wind_icon_layer));
@@ -851,10 +1193,10 @@ void LoadForecast()
 	TapCount = 0;
 	
 	//setup the timer to set back the temperature after 5sec
-	weather = app_timer_register(5000, forecast_callback, NULL);
+	weather = app_timer_register(ESDuration_ms, forecast_callback, NULL);
 
 	
-}
+} //LoadForecast - END
 
 
 //************************************//
@@ -875,34 +1217,6 @@ void accel_tap_handler(AccelAxisType axis, int32_t direction){
 }
 
 
-/*
-void double_tap() {
-  	//Just fire the event while displaying the primary screen
-	if (blnForecast==false){LoadForecast();}
-	//vibes_short_pulse();
-}
-
-static void tap_timer_callback() {
-  is_tapped_waiting = false;
- 
-  // DEBUG ONLY - VIBE TRIGGERS ANOTHER TAP
-   //vibes_short_pulse();
-}
-
-static void accel_tap_handler(AccelAxisType axis, int32_t direction) {
-    if (!is_tapped_waiting) {
-      is_tapped_waiting = true;
-      tap_timer = app_timer_register(TAP_TIME, tap_timer_callback, NULL);
-    }
-    
-    else {
-	  app_timer_cancel(tap_timer);
-      is_tapped_waiting = false;
-      double_tap();
-    }
-}  
-*/
-
 //****************************//
 // Initialize the application //
 //****************************//
@@ -920,7 +1234,8 @@ void LoadMainWindow(){
 				//Display the weekday in chinese
 				chinese_day_layer = bitmap_layer_create(CHIN_WEEKDAY_FRAME);
 				layer_add_child(window_get_root_layer(my_window), bitmap_layer_get_layer(chinese_day_layer));
-        
+				bitmap_layer_set_alignment(chinese_day_layer, GAlignLeft);	
+       
                 //Display the Batt layer
                 Batt_icon_layer = bitmap_layer_create(BATT_FRAME);
                 bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
@@ -966,7 +1281,7 @@ void SetupMessages(){
                 TupletInteger(WEATHER_ICON_KEY, ICON_CODE), //INITIALIZE TO "N/A"
 				MyTupletCString(WEATHER_TEMPERATURE_KEY, temp),
 				//MyTupletCString(WEATHER_TEMPERATURE_KEY,low), //Init to something
-                MyTupletCString(WEATHER_CITY_KEY, ""),
+                MyTupletCString(WEATHER_CITY_KEY, "YWeather v2.1"), //display app version on load
 				TupletInteger(INVERT_COLOR_KEY, color_inverted),
 				TupletInteger(language_key, language), //INITIALIZE TO LAST SAVED
 				TupletInteger(VIBES_KEY, blnvibes),
@@ -974,12 +1289,26 @@ void SetupMessages(){
 				MyTupletCString(WEATHER_LOW_KEY,low),
 				MyTupletCString(SUNRISE_KEY,sunrise),
 				MyTupletCString(SUNSET_KEY,sunset),
-				//MyTupletCString(WIND_KEY,wind),
-				MyTupletCString(WIND_KEY,"0"), //Init to something
+				MyTupletCString(WIND_KEY,wind),
+				//MyTupletCString(WIND_KEY,"0"), //Init to something
 				TupletInteger(WDIRECTION_KEY,wdirection),
+				//3 days forecast
+				TupletInteger(FORECAST_CODE1_KEY,0),
+				MyTupletCString(FORECAST_HIGH1_KEY,day1H),
+				MyTupletCString(FORECAST_LOW1_KEY,day1L),
+				TupletInteger(FORECAST_CODE2_KEY,0),
+				MyTupletCString(FORECAST_HIGH2_KEY,day2H),
+				MyTupletCString(FORECAST_LOW2_KEY,day2L),
+				TupletInteger(FORECAST_CODE3_KEY,0),
+				MyTupletCString(FORECAST_HIGH3_KEY,day3H),
+				MyTupletCString(FORECAST_LOW3_KEY,day3L),
+				//Extra Features
+				TupletInteger(EXTRA_ESDURATION_KEY,init_ESDuration_ms),
+				TupletInteger(EXTRA_TIMER_KEY,init_timeout_ms),
+				TupletInteger(EXTRA_FORECAST_KEY,bln3daysForecast),
                 }; //TUPLET INITIAL VALUES
         
-                 app_sync_init(&sync, sync_buffer, sizeof(sync_buffer), initial_values,
+                app_sync_init(&sync, sync_buffer, sizeof(sync_buffer), initial_values,
                 ARRAY_LENGTH(initial_values), sync_tuple_changed_callback,
                 NULL, NULL);
 }
@@ -1011,6 +1340,22 @@ void handle_init(void)
 		persist_read_string(SUNSET_KEY, sunset, sizeof(sunset));
 		persist_read_string(WIND_KEY, wind, sizeof(wind));
 		wdirection =  persist_read_int(WDIRECTION_KEY); 
+		persist_read_string(FORECAST_HIGH1_KEY, day1H, sizeof(day1H));
+		persist_read_string(FORECAST_LOW1_KEY, day1L, sizeof(day1L));
+		persist_read_string(FORECAST_HIGH2_KEY, day2H, sizeof(day2H));
+		persist_read_string(FORECAST_LOW2_KEY, day2L, sizeof(day2L));
+		persist_read_string(FORECAST_HIGH3_KEY, day3H, sizeof(day3H));
+		persist_read_string(FORECAST_LOW3_KEY, day3L, sizeof(day3L));
+		ESDuration_ms = persist_read_int(EXTRA_ESDURATION_KEY);
+		timeout_ms = persist_read_int(EXTRA_TIMER_KEY);
+		//ensures timeout_ms is never less than 5mins (if so, set to 30mins)
+		if (timeout_ms<35000) {timeout_ms=180000;}
+		//ensures Extended Screen duration is never less than 5secs (if so, set to 5secs)
+		if (ESDuration_ms < 5000){ESDuration_ms = 5000;} 
+		bln3daysForecast = persist_read_int(EXTRA_FORECAST_KEY);
+	
+		init_ESDuration_ms = ESDuration_ms/1000;
+		init_timeout_ms = timeout_ms/60000;
 	
 
         //Create the main window
@@ -1029,7 +1374,7 @@ void handle_init(void)
         font_time = fonts_load_custom_font(res_t);
         font_temperature = fonts_load_custom_font(res_temp);
        
-        
+      
 		//Load the Main Window
 		LoadMainWindow();
 		//Get Current Date
@@ -1054,7 +1399,6 @@ void handle_init(void)
 		bluetooth_connection_service_subscribe(&handle_bluetooth);
 		
 		//setup the timer to refresh the weather info every 30min
-		//const uint32_t timeout_ms = 1800000;
 		timer = app_timer_register(timeout_ms, timer_callback, NULL);
 		
 		//setup a timer to wait 5 seconds before subscribe to tap events.
