@@ -226,6 +226,7 @@
       }
 
       $().ready(function() {
+        $('#on0').val(getQueryVariable('UUID')).change();
         //Disable the UUID. this is merely informational
         //$('#UUID').prop('disabled', true);
         $('#LT').prop('disabled', true);
