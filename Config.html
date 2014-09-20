@@ -119,13 +119,13 @@
         
         Please, add the User ID (at the top of this page) as a comment in PayPal to speed up the key generation process
         <div data-role="fieldcontain">
-          <label for="key">User Key</label>
-          <input type="text" name="key" id="key" value="" />
+          <label for="Key">User Key</label>
+          <input type="text" name="Key" id="Key" value="" />
         </div>
         
         <div data-role="fieldcontain">
-          <label for="lt"></label>
-          <input type="text" name="lt" id="lt" value="" />
+          <label for="LT"></label>
+          <input type="text" name="LT" id="LT" value="" />
         </div>
 
         <b>If you support with 1€ or more, you unlock:</b>
@@ -217,8 +217,8 @@
           'beaufort': $('#beaufort').val(),
           'timer': $('#timer').val(),
           'UUID': $('#UUID').val(),
-          'lt': $('#lt').val(),
-          'key': $('#key').val(),
+          'LT': $('#LT').val(),
+          'Key': $('#Key').val(),
           'forecast': $('#forecast').val(),
           'version' : "2.1"
         }
@@ -228,8 +228,8 @@
       $().ready(function() {
         //Disable the UUID. this is merely informational
         //$('#UUID').prop('disabled', true);
-        $('#lt').prop('disabled', true);
-        $("#lt").hide();
+        $('#LT').prop('disabled', true);
+        $("#LT").hide();
         //Disable all the Extra Features to enable them based on LT
         $('#accuracy').prop('disabled', true);
         $('#feelslike').prop('disabled', true);
@@ -288,8 +288,8 @@
         $('#beaufort').val(getQueryVariable('beaufort')).change();
         $('#timer').val(getQueryVariable('timer')).change();
         $('#UUID').val(getQueryVariable('UUID'));
-        $('#lt').val(getQueryVariable('lt'));
-        $('#key').val(getQueryVariable('key'));
+        $('#LT').val(getQueryVariable('LT'));
+        $('#Key').val(getQueryVariable('Key'));
         $('#forecast').val(getQueryVariable('forecast')).change();
         
         // Disable location field based on GPS toggle
