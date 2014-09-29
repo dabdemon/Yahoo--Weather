@@ -509,8 +509,43 @@ void getDate()
 	  		bln3daysForecast =  new_tuple->value->uint8 != 0;
 	  		persist_write_int(EXTRA_FORECAST_KEY, new_tuple->value->uint8);
       		break;
+	  	//YWeather 2.3 - REQ01. Display Seconds - START
+	  	  	case DISPLAY_SECONDS_KEY:
+	  		//Saves the display seconds toggle
+	  		blnseconds =  new_tuple->value->uint8 != 0;
+	  		persist_write_int(DISPLAY_SECONDS_KEY, new_tuple->value->uint8);
+      		break;
+	  	//YWeather 2.3 - REQ01. Display Seconds - END
+	  	//YWeather 2.3 - REQ02. Hourly Vibe - START
+	  	  	case HOURLY_VIBE_KEY:
+	  		//Saves the hourly vibe toggle
+	  		blnhourly_vibe =  new_tuple->value->uint8 != 0;
+	  		persist_write_int(HOURLY_VIBE_KEY, new_tuple->value->uint8);
+	  
+	  		if (blnhourly_vibe){bitmap_layer_set_bitmap(hourly_vibe_layer, hourly_vibe);}
+			else {bitmap_layer_set_bitmap(hourly_vibe_layer, NULL);}
+	  
+      		break;
+	  	//YWeather 2.3 - REQ02. Hourly Vibe - END
   }
 }
+
+//YWeather 2.3 - REQ01. Display Seconds - START
+void getTime()
+	{
+		clock_copy_time_string(time_text, sizeof(time_text));
+			
+		//Set the time to the Time Layer
+        text_layer_set_text(Time_Layer, time_text);
+                
+        //Check Battery Status
+        handle_battery(battery_state_service_peek());
+                
+        //Check BT Status
+        handle_bluetooth(bluetooth_connection_service_peek());
+	
+}
+//YWeather 2.3 - REQ01. Display Seconds - END
 
 //************************//
 // Capture the Tick event //
@@ -520,46 +555,33 @@ void handle_tick(struct tm *tick_time, TimeUnits units_changed)
      
 	    if (units_changed & SECOND_UNIT)
 		{
+			//YWeather 2.3 - REQ01. Display Seconds - START
 			//refresh the tap counter every second
-			TapCount = 0;
+			//TapCount = 0;
+			//Set the seconds
+			strftime(seconds_text, sizeof(seconds_text), "%S", tick_time);
+			if (blnseconds){text_layer_set_text(seconds_layer, seconds_text);}
+			else {text_layer_set_text(seconds_layer, "");}
+			//Set the AM/PM indicator
+			if(clock_is_24h_style()){memcpy(&ampm_text,  "24H", strlen("24H"));}
+			else {strftime(ampm_text, sizeof(ampm_text), "%p", tick_time);}
+			text_layer_set_text(ampm_layer, ampm_text); //Update the weekday layer  
+			//YWeather 2.3 - REQ01. Display Seconds - END
 			
 		}
-        if (units_changed & MINUTE_UNIT)
-        {
+       if (units_changed & MINUTE_UNIT)
+       {
+//YWeather 2.3 - REQ01. Display Seconds - START
+			getTime();
+//YWeather 2.3 - REQ01. Display Seconds - END
+	//YWeather 2.3 - REQ02. Hourly Vibe - START
+		   //Vibes on O'Clock
+		   if (blnhourly_vibe){
+		   		if (tick_time->tm_min == 0) {vibes_double_pulse();}
+		   }
+	//YWeather 2.3 - REQ02. Hourly Vibe - END
 
-                        /*
-                        if (units_changed & DAY_UNIT)
-                        {        
-                        } // DAY CHANGES
-                        */
-
-                        //Format the time   
-					/*
-                        if (clock_is_24h_style())
-                        {
-                                strftime(time_text, sizeof(time_text), "%H:%M", tick_time);
-                        }
-                        else
-                        {
-                                strftime(time_text, sizeof(time_text), "%I:%M", tick_time);
-                        }
-                
-                        //Remove the leading 0s
-						if (time_text[0]=='0') {memcpy(&time_text," ",1);}
-					*/
-			
-						clock_copy_time_string(time_text, sizeof(time_text));
-			
-						//Set the time to the Time Layer
-                        text_layer_set_text(Time_Layer, time_text);
-                
-                        //Check Battery Status
-                        handle_battery(battery_state_service_peek());
-                
-                        //Check BT Status
-                        handle_bluetooth(bluetooth_connection_service_peek());
-
-        } //MINUTE CHANGES
+       } //MINUTE CHANGES
 	     if (units_changed & DAY_UNIT){
 			 	//Update the date
 			 	getDate();}
@@ -1247,12 +1269,47 @@ void LoadMainWindow(){
                 layer_add_child(window_get_root_layer(my_window), bitmap_layer_get_layer(BT_icon_layer));
         
                 //Display the Time layer
-                Time_Layer = text_layer_create(TIME_FRAME);
+			//YWeather 2.3 - REQ01. Display Seconds - START
+                //Time_Layer = text_layer_create(TIME_FRAME);
+				Time_Layer = text_layer_create(TIME_FRAME2);	
+			//YWeather 2.3 - REQ01. Display Seconds - END
 				text_layer_set_text_color(Time_Layer, GColorWhite);
 	            text_layer_set_background_color(Time_Layer, GColorClear);
                 text_layer_set_font(Time_Layer, font_time);
-                text_layer_set_text_alignment(Time_Layer, GTextAlignmentCenter);
+		//YWeather 2.3 - REQ01. Display Seconds - START
+                //text_layer_set_text_alignment(Time_Layer, GTextAlignmentCenter);
+				text_layer_set_text_alignment(Time_Layer, GTextAlignmentRight);
+		//YWeather 2.3 - REQ01. Display Seconds - END
                 layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Time_Layer));
+	
+	//YWeather 2.3 - REQ02. Hourly Vibe - START
+				//Temporary set the hourly vibe icon by default
+				if (hourly_vibe){gbitmap_destroy(hourly_vibe);}
+				hourly_vibe = gbitmap_create_with_resource(RESOURCE_ID_hourly_vibe);
+	
+	            hourly_vibe_layer = bitmap_layer_create(HourlyVibe_FRAME);
+				if (blnhourly_vibe){bitmap_layer_set_bitmap(hourly_vibe_layer, hourly_vibe);}
+				else {bitmap_layer_set_bitmap(hourly_vibe_layer, NULL);}
+                layer_add_child(window_get_root_layer(my_window), bitmap_layer_get_layer(hourly_vibe_layer));
+					
+	//YWeather 2.3 - REQ02. Hourly Vibe - END
+	
+	//YWeather 2.3 - REQ01. Display Seconds - START
+	            //Display the Second layer
+                seconds_layer = text_layer_create(SECONDS_FRAME);
+				text_layer_set_text_color(seconds_layer, GColorWhite);
+	            text_layer_set_background_color(seconds_layer, GColorClear);
+                text_layer_set_font(seconds_layer, font_date);
+                text_layer_set_text_alignment(seconds_layer, GTextAlignmentLeft);
+                layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(seconds_layer));
+	
+	            ampm_layer = text_layer_create(AMPM_FRAME);
+				text_layer_set_text_color(ampm_layer, GColorWhite);
+	            text_layer_set_background_color(ampm_layer, GColorClear);
+                text_layer_set_font(ampm_layer, font_update);
+                text_layer_set_text_alignment(ampm_layer, GTextAlignmentLeft);
+                layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(ampm_layer));
+	//YWeather 2.3 - REQ01. Display Seconds - END
         
                 //Display the Date layer
                 date_layer = text_layer_create(DATE_FRAME);	
@@ -1281,7 +1338,7 @@ void SetupMessages(){
                 TupletInteger(WEATHER_ICON_KEY, ICON_CODE), //INITIALIZE TO "N/A"
 				MyTupletCString(WEATHER_TEMPERATURE_KEY, temp),
 				//MyTupletCString(WEATHER_TEMPERATURE_KEY,low), //Init to something
-                MyTupletCString(WEATHER_CITY_KEY, "YWeather v2.1"), //display app version on load
+                MyTupletCString(WEATHER_CITY_KEY, "YWeather v2.3"), //display app version on load
 				TupletInteger(INVERT_COLOR_KEY, color_inverted),
 				TupletInteger(language_key, language), //INITIALIZE TO LAST SAVED
 				TupletInteger(VIBES_KEY, blnvibes),
@@ -1306,6 +1363,12 @@ void SetupMessages(){
 				TupletInteger(EXTRA_ESDURATION_KEY,init_ESDuration_ms),
 				TupletInteger(EXTRA_TIMER_KEY,init_timeout_ms),
 				TupletInteger(EXTRA_FORECAST_KEY,bln3daysForecast),
+			//YWeather 2.3 - REQ01. Display Seconds - START
+				TupletInteger(DISPLAY_SECONDS_KEY,blnseconds),
+			//YWeather 2.3 - REQ01. Display Seconds - END
+			//YWeather 2.3 - REQ02. Hourly Vibe - START
+				TupletInteger(HOURLY_VIBE_KEY,blnhourly_vibe),
+			//YWeather 2.3 - REQ02. Hourly Vibe - END
                 }; //TUPLET INITIAL VALUES
         
                 app_sync_init(&sync, sync_buffer, sizeof(sync_buffer), initial_values,
@@ -1353,6 +1416,13 @@ void handle_init(void)
 		//ensures Extended Screen duration is never less than 5secs (if so, set to 5secs)
 		if (ESDuration_ms < 5000){ESDuration_ms = 5000;} 
 		bln3daysForecast = persist_read_int(EXTRA_FORECAST_KEY);
+	//YWeather 2.3 - REQ01. Display Seconds - START
+		blnseconds = persist_read_int(DISPLAY_SECONDS_KEY);
+	//YWeather 2.3 - REQ01. Display Seconds - END
+	//YWeather 2.3 - REQ02. Hourly Vibe - START
+		blnhourly_vibe = persist_read_int(HOURLY_VIBE_KEY);
+	//YWeather 2.3 - REQ02. Hourly Vibe - END
+
 	
 		init_ESDuration_ms = ESDuration_ms/1000;
 		init_timeout_ms = timeout_ms/60000;
@@ -1379,6 +1449,9 @@ void handle_init(void)
 		LoadMainWindow();
 		//Get Current Date
 		getDate();
+	//YWeather 2.3 - REQ01. Display Seconds - START
+		getTime();
+	//YWeather 2.3 - REQ01. Display Seconds - END
 	
         // Ensures time is displayed immediately (will break if NULL tick event accessed).
          // (This is why it's a good idea to have a separate routine to do the update itself.)
@@ -1390,8 +1463,12 @@ void handle_init(void)
 	
 		time_t now = time(NULL);
 		struct tm *current_time = localtime(&now);
-		handle_tick(current_time, MINUTE_UNIT);
-		tick_timer_service_subscribe(MINUTE_UNIT, &handle_tick);
+	//YWeather 2.3 - REQ01. Display Seconds - START
+		//handle_tick(current_time, MINUTE_UNIT);
+		//tick_timer_service_subscribe(MINUTE_UNIT, &handle_tick);
+		handle_tick(current_time, SECOND_UNIT);
+		tick_timer_service_subscribe(SECOND_UNIT, &handle_tick);
+	//YWeather 2.3 - REQ01. Display Seconds - END
 		
 		//Enable the Battery check event
 		battery_state_service_subscribe(&handle_battery);

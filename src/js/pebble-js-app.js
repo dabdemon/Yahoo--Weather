@@ -90,6 +90,8 @@ if (options === null) options = { "language" : 100, //default to "English"
 								  "ESDuration" : 5,
 								  "beaufort" : "false",
 								  "timer" : 30,
+								  "hourly_vibe" : "false",
+								  "seconds" : "false",
 								  "forecast" : "false"};
 
 
@@ -123,6 +125,7 @@ function getWeatherFromLatLong(latitude, longitude) {
         }
       } else {
         console.log("unable to get woeidd from Flickr API");
+		Pebble.showSimpleNotificationOnPebble("YWeather", "I cannot access the geolocation service. Do you mind to set the 'Use GPS' option to No in the meantime?");
       }
     }
   }
@@ -150,6 +153,7 @@ function getWeatherFromLocation(location_name) {
         }
       } else {
         console.log("unable to get woeid from Yahoo! API");
+		Pebble.showSimpleNotificationOnPebble("YWeather", "Yahoo! Weather seems to be down... is this the end of the world?");
       }
     }
   }
@@ -264,11 +268,18 @@ function getWeatherFromWoeid(woeid, city) {
 				//Extra Features
 				"ESDuration":parseInt(options['ESDuration']),
 				"timer":parseInt(options['timer']),
+			//YWeather 2.3 - REQ01. Display Seconds - START
+				"seconds":(options["seconds"] == "true" ? 1 : 0),
+			//YWeather 2.3 - REQ01. Display Seconds - END
+			//YWeather 2.3 - REQ02. Hourly Vibe - START
+				"hourly_vibe":(options["hourly_vibe"] == "true" ? 1 : 0),
+			//YWeather 2.3 - REQ02. Hourly Vibe - END
 				"forecast":(options["forecast"] == "true" ? 1 : 0),
           });
         }
       } else {
         console.log("Error WFW");
+		Pebble.showSimpleNotificationOnPebble("YWeather", "I cannot fetch the weather data. Are you online?");
       }
     }
   }
@@ -299,11 +310,16 @@ function locationSuccess(pos) {
 function locationError(err) {
   console.warn('location error (' + err.code + '): ' + err.message);
   Pebble.sendAppMessage({
-    "icon":16,
-    "temperature":"",
+//YWeather 2.3 - FIX01. Never blank out a location on disconect - START
+   // "icon":16,
+   // "temperature":"",
 	"city":"location error",
+//YWeather 2.3 - FIX01. Never blank out a location on disconect - END
 	    //Put here the output parameters to "Main.C"
   });
+//YWeather 2.3 - FIX01. Never blank out a location on disconect - START
+	Pebble.showSimpleNotificationOnPebble("YWeather", "I cannot locate you. Are you inside a building?");
+//YWeather 2.3 - FIX01. Never blank out a location on disconect - END
 }
 
 
@@ -385,27 +401,34 @@ function Beaufort(speed, unit){
 
 function CheckUserKey()
 {
-	var LT = 0;
-	var Key = options['Key'];
-	var Token = Pebble.getAccountToken();
-	var Decrypt;
+	var lt = 0;
+	var key = options['key'];
+	var token = Pebble.getAccountToken();
+	var decrypt;
 	
 	//if there is not user key, then license is 0
-	if (Key==undefined){Key="00000000000"}
+	if (key==undefined){key="00000000000"}
 	//check the user key
 
 	//extract the key from the Account token
-	Decrypt = Token.substring(1,1) + Token.substring(1,1) + Token.substring(1,1) + Token.substring(1,11) + Token.substring(1,1);
-	Decrypt = Decrypt + Key.substring(1,1);
-	Decrypt = Decrypt + Token.substring(1,1) + Token.substring(1,1) + Token.substring(1,1) + Token.substring(1,1) + Token.substring(1,1)
+	decrypt = token.substring(1,1) + token.substring(1,1) + token.substring(1,1) + token.substring(1,1) + token.substring(1,1);
+	decrypt = decrypt + key.substring(1,1);
+	decrypt = decrypt + token.substring(1,1) + token.substring(1,1) + token.substring(1,1) + token.substring(1,1) + token.substring(1,1)
 
-	if (Decrypt == Key) {LT = Key.substring(1,1);}
-	else {LT = 0;}
+	if (decrypt == key) {lt = key.substring(1,1);}
+	else {lt = 0;
+		 //YWeather 2.3 - FIX02. Warns user about a wrong User Key - START
+		  Pebble.showSimpleNotificationOnPebble("YWeather", "Your User Key doesn't seem to be valid. Is the one my Master sent to you?");
+		 //YWeather 2.3 - FIX02. Warns user about a wrong User Key - END
+		 }
+	
+	//confirm that the javascript code works fine
+	//options['key']=decrypt;
 
 	
-	console.log("Key: " + Key + " Decrypt: " + Decrypt + " LT: " + LT);
+	console.log("Key: " + key + " Decrypt: " + decrypt + " LT: " + lt);
 	
-	return LT;
+	return lt;
 }
 ///////////////////////////////////////
 //Setup the connection with the watch//
@@ -413,7 +436,7 @@ function CheckUserKey()
 
 //Displays the configuration page in the phone
 Pebble.addEventListener('showConfiguration', function(e) {
-  var uri = 'http://dabdemon.github.io/Yahoo--Weather/Config.html?' + //Here you need to enter your configuration webservice
+  var uri = 'http://dabdemon.github.io/Yahoo--Weather/development.html?' + //Here you need to enter your configuration webservice
     'language=' + encodeURIComponent(options['language']) +
 	'&use_gps=' + encodeURIComponent(options['use_gps']) +
     '&location=' + encodeURIComponent(options['location']) +
@@ -426,8 +449,14 @@ Pebble.addEventListener('showConfiguration', function(e) {
 	'&beaufort=' + encodeURIComponent(options['beaufort']) +	  
 	'&timer=' + encodeURIComponent(options['timer']) +
 	'&UUID=' + encodeURIComponent(Pebble.getAccountToken()) +
-	'&LT=' + encodeURIComponent(CheckUserKey()) +
-	'&Key=' + encodeURIComponent(options['Key']) +
+	'&lt=' + encodeURIComponent(CheckUserKey()) +
+	'&key=' + encodeURIComponent(options['key']) +
+//YWeather 2.3 - REQ02. Hourly Vibe - START
+	'&hourly_vibe=' + encodeURIComponent(options['hourly_vibe']) +
+//YWeather 2.3 - REQ02. Hourly Vibe - END
+//YWeather 2.3 - REQ01. Display Seconds - START
+	'&seconds=' + encodeURIComponent(options['seconds']) +
+//YWeather 2.3 - REQ01. Display Seconds - END
 	'&forecast=' + encodeURIComponent(options['forecast']);
 
 	//console.log('showing configuration at uri: ' + uri);

@@ -7,6 +7,10 @@ TextLayer *Location_Layer;                 // Layer for the last update
 TextLayer *Batt_Layer;                        //Layer for the BT connection
 TextLayer *BT_Layer;                        //Layer for the BT connection
 TextLayer *Temperature_Layer;        //Layer for the Temperature
+//YWeather 2.3 - REQ01. Display Seconds - START
+TextLayer *seconds_layer;                 // Layer for the seconds
+TextLayer *ampm_layer;  
+//YWeather 2.3 - REQ01. Display Seconds - END
 
 TextLayer *High_Layer;        //Layer for the High Temperature
 TextLayer *Low_Layer;        //Layer for the Low Temperature

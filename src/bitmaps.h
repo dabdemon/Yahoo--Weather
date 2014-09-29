@@ -97,6 +97,10 @@ static const uint32_t BATTERY_ICON[] = {
 
         static GBitmap *chinese_day;
         static BitmapLayer *chinese_day_layer; //Layer for the weather info
+	//YWeather 2.3 - REQ02. Hourly Vibe - START
+        static GBitmap *hourly_vibe;
+        static BitmapLayer *hourly_vibe_layer; //Layer for the hourly vibe display
+	//YWeather 2.3 - REQ02. Hourly Vibe - END
 
 		//static GBitmap *image;
 		//static GBitmap *image1;

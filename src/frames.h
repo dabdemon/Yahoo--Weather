@@ -4,7 +4,16 @@
 #define BATT_FRAME       (GRect(103, 3, 40, 168-146)) //98,,
 #define BT_FRAME         (GRect(127, 4, 23, 168-146))
 #define TIME_FRAME       (GRect(0, 15, 144, 168-16))
-#define DATE_FRAME       (GRect(1, 69, 139, 168-62))
+#define DATE_FRAME       (GRect(1, 70, 139, 168-62))
+	//YWeather 2.3 - REQ01. Display Seconds - START
+#define TIME_FRAME2      (GRect(0, 15, 116, 168-16))
+#define SECONDS_FRAME    (GRect(116, 50, 36, 22))
+#define AMPM_FRAME    (GRect(118, 40, 36, 22))
+	//YWeather 2.3 - REQ01. Display Seconds - END
+	//YWeather 2.3 - REQ02. Hourly Vibe - START
+#define HourlyVibe_FRAME    (GRect(120, 30, 15, 9))
+	//YWeather 2.3 - REQ02. Hourly Vibe - END
+
 	
 //#define CHIN_WEEKDAY_FRAME    (GRect(5, 2, 60, 168-145)) //,,95,
 #define CHIN_WEEKDAY_FRAME    (GRect(5, 2, 110, 168-145)) //,,95,

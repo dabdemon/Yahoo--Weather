@@ -30,6 +30,12 @@ enum WeatherKey {
 	EXTRA_ESDURATION_KEY = 0x15, //TUPLE_INT
 	EXTRA_TIMER_KEY = 0x16, //TUPLE_INT
 	EXTRA_FORECAST_KEY = 0x17, //TUPLE_INT
+	//YWeather 2.3 - REQ01. Display Seconds - START
+	DISPLAY_SECONDS_KEY = 0x18, //TUPLE_INT
+	//YWeather 2.3 - REQ01. Display Seconds - START
+	//YWeather 2.3 - REQ02. Hourly Vibe - START
+	HOURLY_VIBE_KEY = 0x19, //TUPLE_INT
+	//YWeather 2.3 - REQ02. Hourly Vibe - END
 };
 
 	#define TAP_TIME 2000
@@ -76,6 +82,10 @@ enum WeatherKey {
 	//static char day_text[] = "1";
 	static char day_month[]= "31 SEPTEMBER";
 	static char time_text[] = "00:00";
+//YWeather 2.3 - REQ01. Display Seconds - START
+	static char seconds_text[] = "00";
+	static char ampm_text[] = "24H";
+//YWeather 2.3 - REQ01. Display Seconds - END
 	//static char inverted[]="B";
 	//static char temperature[]="     ";
 	static char high[]="     ";
@@ -88,7 +98,7 @@ enum WeatherKey {
 	static char city[100];
 	static char temp[]="     ";
 
-	static char version[]="2.0.5";
+	static char version[]="2.3";
 
 	static char weekday1_text[] = "XXXXXXXXXXXXX";
 	static char weekday2_text[] = "XXXXXXXXXXXXX";
@@ -134,3 +144,9 @@ enum WeatherKey {
 	bool blninverted =  false;
 	bool blnForecast = false;
 	bool bln3daysForecast = false;
+	//YWeather 2.3 - REQ01. Display Seconds - START
+	bool blnseconds = false;
+	//YWeather 2.3 - REQ01. Display Seconds - END
+	//YWeather 2.3 - REQ02. Hourly Vibe - START
+	bool blnhourly_vibe = false;
+	//YWeather 2.3 - REQ02. Hourly Vibe - END
