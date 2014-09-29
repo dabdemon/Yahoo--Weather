@@ -33,7 +33,7 @@
 <input type="hidden" name="shipping" value="0.00">
 <input type="hidden" name="bn" value="PP-BuyNowBF:btn_paynowCC_LG.gif:NonHostedGuest">
 <table>
-<tr><td><input type="hidden" name="on0" value="USER ID">Paste your User ID here!!</td></tr><tr><td><input type="text" name="os0" maxlength="200"></td></tr>
+<tr><td><input type="hidden" name="on0" value="USER ID">Paste your User ID (below) here to speed up the key generation proccess!!</td></tr><tr><td><input type="text" name="os0" maxlength="200"></td></tr>
 </table>
 <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_paynowCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
 <img alt="" border="0" src="https://www.paypalobjects.com/es_ES/i/scr/pixel.gif" width="1" height="1">
@@ -109,6 +109,22 @@
         <div data-role="fieldcontain">
           <label for="vibes">Vibes on disconnect</label>
           <select name="vibes" id="vibes" data-theme="c" data-role="slider" data-track-theme="d">
+            <option value="false">No</option>
+            <option value="true">Yes</option>
+          </select>
+        </div>
+        
+        <div data-role="fieldcontain">
+          <label for="seconds">Display Seconds</label>
+          <select name="seconds" id="seconds" data-theme="c" data-role="slider" data-track-theme="d">
+            <option value="false">No</option>
+            <option value="true">Yes</option>
+          </select>
+        </div>
+        
+        <div data-role="fieldcontain">
+          <label for="hourly_vibe">Hourly Vibe</label>
+          <select name="hourly_vibe" id="hourly_vibe" data-theme="c" data-role="slider" data-track-theme="d">
             <option value="false">No</option>
             <option value="true">Yes</option>
           </select>
@@ -220,7 +236,9 @@
           'lt': $('#lt').val(),
           'key': $('#key').val(),
           'forecast': $('#forecast').val(),
-          'version' : "2.1"
+          'seconds': $('#seconds').val(),
+          'hourly_vibe': $('#hourly_vibe').val(),
+          'version' : "2.3"
         }
         return options;
       }
@@ -291,6 +309,8 @@
         $('#lt').val(getQueryVariable('lt'));
         $('#key').val(getQueryVariable('key'));
         $('#forecast').val(getQueryVariable('forecast')).change();
+        $('#seconds').val(getQueryVariable('seconds')).change();
+        $('#hourly_vibe').val(getQueryVariable('hourly_vibe')).change();
         
         // Disable location field based on GPS toggle
         $('#location').prop('disabled', $('#gps_switch').val() == "true");
