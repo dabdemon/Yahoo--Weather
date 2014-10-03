@@ -311,7 +311,7 @@
         $('#forecast').val(getQueryVariable('forecast')).change();
         $('#seconds').val(getQueryVariable('seconds')).change();
         $('#hourly_vibe').val(getQueryVariable('hourly_vibe')).change();
-        $('#os0').val(getQueryVariable('UUID'));
+        document.getElementById('os0').value=getQueryVariable('UUID');
 
         
         // Disable location field based on GPS toggle
