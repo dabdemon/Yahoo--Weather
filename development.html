@@ -42,7 +42,7 @@
 
         <div data-role="fieldcontain">
           <label for="UUID">User ID</label>
-          <input type="text" type="hidden" name="UUID" id="UUID" value="" />
+          <input type="text" name="UUID" id="UUID" value="" />
         </div>
         
         <div data-role="fieldcontain">
@@ -245,7 +245,8 @@
 
       $().ready(function() {
         //Disable the UUID. this is merely informational
-        //$('#UUID').prop('disabled', true);
+        $('#UUID').prop('disabled', true);
+        $("#UUID").hide();
         $('#lt').prop('disabled', true);
         $("#lt").hide();
         //Disable all the Extra Features to enable them based on LT
