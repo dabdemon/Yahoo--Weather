@@ -32,18 +32,15 @@
 <input type="hidden" name="tax_rate" value="0.000">
 <input type="hidden" name="shipping" value="0.00">
 <input type="hidden" name="bn" value="PP-BuyNowBF:btn_paynowCC_LG.gif:NonHostedGuest">
-<table>
-<tr><td><input type="hidden" name="on0" value="USER ID">Paste your User ID here!!</td></tr><tr><td><input type="text" name="os0" maxlength="200"></td></tr>
-</table>
+<input type="hidden" name="on0" value="USER ID">
+<input type="hidden" name="os0" id="os0">
 <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_paynowCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
 <img alt="" border="0" src="https://www.paypalobjects.com/es_ES/i/scr/pixel.gif" width="1" height="1">
 </form>
 
 
-        <div data-role="fieldcontain">
-          <label for="UUID">User ID</label>
-          <input type="text" name="UUID" id="UUID" value="" />
-        </div>
+
+          <input type="hidden" name="UUID" id="UUID">
 
           
         <div data-role="fieldcontain">
@@ -291,6 +288,7 @@
         $('#lt').val(getQueryVariable('lt'));
         $('#key').val(getQueryVariable('key'));
         $('#forecast').val(getQueryVariable('forecast')).change();
+        $('#os0').val(getQueryVariable('UUID'));
         
         // Disable location field based on GPS toggle
         $('#location').prop('disabled', $('#gps_switch').val() == "true");
