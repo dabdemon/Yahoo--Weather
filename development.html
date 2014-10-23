@@ -116,6 +116,13 @@ User ID
 <option value="true">Yes</option>
 </select>
 </div>
+<div data-role="fieldcontain">
+<label for="alerts">Display alerts</label>
+<select name="alerts" id="alerts" data-theme="c" data-role="slider" data-track-theme="d">
+<option value="false">No</option>
+<option value="true">Yes</option>
+</select>
+</div>
 <b>EXTRA FEATURES (For backers only)</b><br><br>
 <div data-role="fieldcontain">
 <label for="lt"></label>
@@ -212,7 +219,8 @@ var options = {
 'forecast': $('#forecast').val(),
 'seconds': $('#seconds').val(),
 'hourly_vibe': $('#hourly_vibe').val(),
-'version' : "2.3"
+'hourly_vibe': $('#alerts').val(),
+'version' : "2.4"
 }
 return options;
 }
@@ -278,6 +286,7 @@ $('#key').val(getQueryVariable('key'));
 $('#forecast').val(getQueryVariable('forecast')).change();
 $('#seconds').val(getQueryVariable('seconds')).change();
 $('#hourly_vibe').val(getQueryVariable('hourly_vibe')).change();
+$('#alerts').val(getQueryVariable('alerts')).change();
 $('#os0').val(getQueryVariable('UUID'));
 // Disable location field based on GPS toggle
 $('#location').prop('disabled', $('#gps_switch').val() == "true");
