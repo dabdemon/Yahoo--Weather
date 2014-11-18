@@ -89,10 +89,14 @@ if (options === null) options = { "language" : 100, //default to "English"
 								  "feelslike" : "false",
 								  "ESDuration" : 5,
 								  "beaufort" : "false",
+								  "start" : "0",
+								  "end" : "0",
 								  "timer" : 30,
 								  "hourly_vibe" : "false",
+								  "alerts" : "true",
 								  "seconds" : "false",
-								  "forecast" : "false"};
+								  "forecast" : "false",
+								  "key" : ""};
 
 
 /////////////////////////
@@ -237,6 +241,7 @@ function getWeatherFromWoeid(woeid, city) {
 			console.log("icon1: " + code1 + " high1: " + high1 + " low1: " + low1);
 			console.log("icon2: " + code2 + " high2: " + high2 + " low2: " + low2);
 			console.log("icon3: " + code3 + " high3: " + high3 + " low3: " + low3);
+			console.log("start: " + parseInt(options["start"]) + " end: " + parseInt(options["end"]));
 			
 			//send the values to the Pebble!!
 			Pebble.sendAppMessage({
@@ -268,18 +273,22 @@ function getWeatherFromWoeid(woeid, city) {
 				//Extra Features
 				"ESDuration":parseInt(options['ESDuration']),
 				"timer":parseInt(options['timer']),
-			//YWeather 2.3 - REQ01. Display Seconds - START
 				"seconds":(options["seconds"] == "true" ? 1 : 0),
-			//YWeather 2.3 - REQ01. Display Seconds - END
-			//YWeather 2.3 - REQ02. Hourly Vibe - START
 				"hourly_vibe":(options["hourly_vibe"] == "true" ? 1 : 0),
-			//YWeather 2.3 - REQ02. Hourly Vibe - END
+				//YWeather v2.4 - Hourly Vibe Quiet Hours - START
+				"quietstart":parseInt(options["start"]),
+				"quietend":parseInt(options["end"]),
+				//YWeather v2.4 - Hourly Vibe Quiet Hours - END
 				"forecast":(options["forecast"] == "true" ? 1 : 0),
           });
         }
       } else {
         console.log("Error WFW");
+	//YWeather 2.4 - Enable/Disable Alerts - START
+	if(options['alerts']== "true"){
 		Pebble.showSimpleNotificationOnPebble("YWeather", "I cannot fetch the weather data. Are you online?");
+	}
+	//YWeather 2.4 - Enable/Disable Alerts - END
       }
     }
   }
@@ -299,7 +308,7 @@ function updateWeather() {
   }
 }
 
-var locationOptions = { "timeout": 15000, "maximumAge": 60000 };
+var locationOptions = { "timeout": 15000, "maximumAge": 60000, "enableHighAccuracy": true};
 
 function locationSuccess(pos) {
   var coordinates = pos.coords;
@@ -317,9 +326,13 @@ function locationError(err) {
 //YWeather 2.3 - FIX01. Never blank out a location on disconect - END
 	    //Put here the output parameters to "Main.C"
   });
+//YWeather 2.4 - Enable/Disable Alerts - START
+	if(options['alerts']== "true"){
 //YWeather 2.3 - FIX01. Never blank out a location on disconect - START
 	Pebble.showSimpleNotificationOnPebble("YWeather", "I cannot locate you. Are you inside a building?");
 //YWeather 2.3 - FIX01. Never blank out a location on disconect - END
+	}
+//YWeather 2.4 - Enable/Disable Alerts - END
 }
 
 
@@ -407,19 +420,22 @@ function CheckUserKey()
 	var decrypt;
 	
 	//if there is not user key, then license is 0
-	if (key==undefined){key="00000000000"}
+	if ((key==undefined)||(key==null)||(key=="")||(key=="undefined")){key="00000000000"}
 	//check the user key
 
 	//extract the key from the Account token
 	decrypt = token.substring(1,1) + token.substring(1,1) + token.substring(1,1) + token.substring(1,1) + token.substring(1,1);
-	decrypt = decrypt + key.substring(1,1);
-	decrypt = decrypt + token.substring(1,1) + token.substring(1,1) + token.substring(1,1) + token.substring(1,1) + token.substring(1,1)
 
 	if (decrypt == key) {lt = key.substring(1,1);}
 	else {lt = 0;
+		  
+	//YWeather 2.4 - Enable/Disable Alerts - START
+		if(options['alerts']== "true"){
 		 //YWeather 2.3 - FIX02. Warns user about a wrong User Key - START
-		  Pebble.showSimpleNotificationOnPebble("YWeather", "Your User Key doesn't seem to be valid. Is the one my Master sent to you?");
+		  if(key!="00000000000"){Pebble.showSimpleNotificationOnPebble("YWeather", "Your User Key doesn't seem to be valid. Please double check it.");}
 		 //YWeather 2.3 - FIX02. Warns user about a wrong User Key - END
+		}
+	//YWeather 2.4 - Enable/Disable Alerts - END
 		 }
 	
 	//confirm that the javascript code works fine
@@ -446,7 +462,9 @@ Pebble.addEventListener('showConfiguration', function(e) {
 	'&accuracy=' + encodeURIComponent(options['accuracy']) +
 	'&feelslike=' + encodeURIComponent(options['feelslike']) +
 	'&ESDuration=' + encodeURIComponent(options['ESDuration']) +
-	'&beaufort=' + encodeURIComponent(options['beaufort']) +	  
+	'&beaufort=' + encodeURIComponent(options['beaufort']) +	
+	'&start=' + encodeURIComponent(options['start']) +	
+	'&end=' + encodeURIComponent(options['end']) +	
 	'&timer=' + encodeURIComponent(options['timer']) +
 	'&UUID=' + encodeURIComponent(Pebble.getAccountToken()) +
 	'&lt=' + encodeURIComponent(CheckUserKey()) +
@@ -454,6 +472,9 @@ Pebble.addEventListener('showConfiguration', function(e) {
 //YWeather 2.3 - REQ02. Hourly Vibe - START
 	'&hourly_vibe=' + encodeURIComponent(options['hourly_vibe']) +
 //YWeather 2.3 - REQ02. Hourly Vibe - END
+//YWeather 2.4 - Enable/Disable Alerts - START
+	'&alerts=' + encodeURIComponent(options['alerts']) +
+//YWeather 2.4 - Enable/Disable Alerts - END
 //YWeather 2.3 - REQ01. Display Seconds - START
 	'&seconds=' + encodeURIComponent(options['seconds']) +
 //YWeather 2.3 - REQ01. Display Seconds - END
@@ -488,5 +509,7 @@ Pebble.addEventListener("ready", function(e) {
   console.log("Pebble Account Token: " + Pebble.getAccountToken());
 	
   updateWeather();
+	
+
 
 });

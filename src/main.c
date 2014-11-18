@@ -527,7 +527,38 @@ void getDate()
 	  
       		break;
 	  	//YWeather 2.3 - REQ02. Hourly Vibe - END
+	  case HOURLY_VIBE_START_KEY:
+	  		//Saves the hourly vibe quiet hours start
+	  		persist_write_int(HOURLY_VIBE_START_KEY, new_tuple->value->uint8);
+      		break;
+	  case HOURLY_VIBE_END_KEY:
+	  		//Saves the hourly vibe quiet hours end
+	  		persist_write_int(HOURLY_VIBE_END_KEY, new_tuple->value->uint8);
+      		break;
   }
+}
+
+bool DoNotDisturb(int Hour, int Minutes){
+	//Define the variables
+	bool blnNextDay = 0;
+	//Read the Hourly Vibe Quiet Hours setup
+	intDNDStart = persist_read_int(HOURLY_VIBE_START_KEY);
+	intDNDEnd = persist_read_int(HOURLY_VIBE_END_KEY);
+	
+	//Determine if the DND End is the next day
+	if(intDNDStart>intDNDEnd){blnNextDay = 1;}
+	
+	if (blnNextDay){
+	//if the DND End is next day, DND period is when the Current Hour is greater than Start Hour
+		if ((Hour>=intDNDStart)||(Hour<intDNDEnd)){return 1; } //DND period
+		else {return 0;} //Not DND period
+	}
+	else{
+	//if the DND End is the same day, DND period is when the Current Hour is between Start and End Hours
+		if ((Hour>=intDNDStart)&&(Hour<intDNDEnd)){return 1;} //DND period
+		else {return 0;} //Not DND period
+	}
+	
 }
 
 //YWeather 2.3 - REQ01. Display Seconds - START
@@ -576,12 +607,17 @@ void handle_tick(struct tm *tick_time, TimeUnits units_changed)
 //YWeather 2.3 - REQ01. Display Seconds - END
 	//YWeather 2.3 - REQ02. Hourly Vibe - START
 		   //Vibes on O'Clock
-		   if (blnhourly_vibe){
-		   		if (tick_time->tm_min == 0) {vibes_double_pulse();}
-		   }
+//		   if (blnhourly_vibe){
+//		   		if (tick_time->tm_min == 0) {vibes_double_pulse();}
+//		   }
 	//YWeather 2.3 - REQ02. Hourly Vibe - END
-
        } //MINUTE CHANGES
+	  if (units_changed & HOUR_UNIT)
+       {
+		  	if (blnhourly_vibe){
+				if(!DoNotDisturb(tick_time->tm_hour,tick_time->tm_min)){vibes_double_pulse();}
+		   }
+	  }
 	     if (units_changed & DAY_UNIT){
 			 	//Update the date
 			 	getDate();}
@@ -1369,6 +1405,8 @@ void SetupMessages(){
 			//YWeather 2.3 - REQ02. Hourly Vibe - START
 				TupletInteger(HOURLY_VIBE_KEY,blnhourly_vibe),
 			//YWeather 2.3 - REQ02. Hourly Vibe - END
+				TupletInteger(HOURLY_VIBE_START_KEY,0),
+				TupletInteger(HOURLY_VIBE_END_KEY,0),
                 }; //TUPLET INITIAL VALUES
         
                 app_sync_init(&sync, sync_buffer, sizeof(sync_buffer), initial_values,
