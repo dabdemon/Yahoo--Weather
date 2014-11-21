@@ -220,7 +220,8 @@ var options = {
 'forecast': $('#forecast').val(),
 'seconds': $('#seconds').val(),
 'hourly_vibe': $('#hourly_vibe').val(),
-'version' : "2.3"
+                        'alerts': $('#alerts').val(),
+'version' : "2.4"
 }
 return options;
 }
@@ -286,6 +287,7 @@ $('#key').val(getQueryVariable('key'));
 $('#forecast').val(getQueryVariable('forecast')).change();
 $('#seconds').val(getQueryVariable('seconds')).change();
 $('#hourly_vibe').val(getQueryVariable('hourly_vibe')).change();
+                    $('#alerts').val(getQueryVariable('alerts')).change();
 $('#os0').val(getQueryVariable('UUID'));
 // Disable location field based on GPS toggle
 $('#location').prop('disabled', $('#gps_switch').val() == "true");
