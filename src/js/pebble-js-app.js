@@ -103,38 +103,39 @@ if (options === null) options = { "language" : 100, //default to "English"
 //Retreive Weather data//
 /////////////////////////
 
-//Get the WOEID & City name from Flickr when the GPS is ON
-// accuracy =  World level is 1, Country is ~3, Region ~6, City ~11, Street ~16 
+//Retrieve the WOEID & City name from Yahoo! when GPS is OFF
 function getWeatherFromLatLong(latitude, longitude) {
   var response;
   var woeid = -1;
   var accuracy = options['accuracy']; 
-	if (accuracy == undefined){accuracy = 16;}//init to "Street"
-  var key = "b732076fc242bf05e5f0637eaa439d62"; //my Flickr API key. If you want to reuse this code, please use your own key.
+  var query = encodeURI("select woeid, county, city, street from geo.placefinder where text=\"" + latitude + "," + longitude +"\" and gflags=\"R\"");
+	console.log("geo query: " + query);
+  var url = "http://query.yahooapis.com/v1/public/yql?q=" + query + "&format=json";
   var req = new XMLHttpRequest();
-  //var url = "https://api.flickr.com/services/rest/?method=flickr.places.findByLatLon&api_key=" + key + "&lat=" + latitude + "&lon=" + longitude + "&accuracy=16&format=json&nojsoncallback=1";
-  var url = "https://api.flickr.com/services/rest/?method=flickr.places.findByLatLon&api_key=" + key + "&lat=" + latitude + "&lon=" + longitude + "&accuracy=" + accuracy + "&format=json&nojsoncallback=1";
-  console.log(url);
   req.open('GET', url, true);
   req.onload = function(e) {
     if (req.readyState == 4) {
       if (req.status == 200) {
-         console.log(req.responseText);
+        console.log(req.responseText);
         response = JSON.parse(req.responseText);
         if (response) {
-			woeid = response.places.place[0].woeid;
-			city = response.places.place[0].woe_name;
-			console.log("woeid: " + woeid + " city: " + city);
+			woeid = response.query.results.Result.woeid;
+			
+			if (accuracy==6){city = response.query.results.Result.county;}
+			if (accuracy==11){city = response.query.results.Result.city;}
+			if (accuracy==16){city = response.query.results.Result.street;}
+			
 			getWeatherFromWoeid(woeid, city);
         }
       } else {
-        console.log("unable to get woeidd from Flickr API");
-		Pebble.showSimpleNotificationOnPebble("YWeather", "I cannot access the geolocation service. Do you mind to set the 'Use GPS' option to No in the meantime?");
+        console.log("unable to get woeid from Yahoo! API");
+		Pebble.showSimpleNotificationOnPebble("YWeather", "Yahoo! Weather seems to be down... is this the end of the world?");
       }
     }
   }
   req.send(null);
 }
+
 
 
 //Retrieve the WOEID & City name from Yahoo! when GPS is OFF
@@ -169,6 +170,9 @@ function getWeatherFromWoeid(woeid, city) {
 	
 	/*if Hong Kong then override the woeid with a valid one*/
 	if (woeid ==24865698){woeid=12467924};
+	/*if Ottawa the override the woeid with a valid one*/
+	if (woeid ==91982014){woeid=29375164};
+	
   var celsius = options['units'] == 'celsius';
 	
 	
@@ -276,8 +280,8 @@ function getWeatherFromWoeid(woeid, city) {
 				"seconds":(options["seconds"] == "true" ? 1 : 0),
 				"hourly_vibe":(options["hourly_vibe"] == "true" ? 1 : 0),
 				//YWeather v2.4 - Hourly Vibe Quiet Hours - START
-				"quietstart":parseInt(options["start"]),
-				"quietend":parseInt(options["end"]),
+				//"quietstart":parseInt(options["start"]),
+				//"quietend":parseInt(options["end"]),
 				//YWeather v2.4 - Hourly Vibe Quiet Hours - END
 				"forecast":(options["forecast"] == "true" ? 1 : 0),
           });
@@ -412,47 +416,14 @@ function Beaufort(speed, unit){
 }
 
 
-function CheckUserKey()
-{
-	var lt = 0;
-	var key = options['key'];
-	var token = Pebble.getAccountToken();
-	var decrypt;
-	
-	//if there is not user key, then license is 0
-	if ((key==undefined)||(key==null)||(key=="")||(key=="undefined")){key="00000000000"}
-	//check the user key
 
-	//extract the key from the Account token
-	decrypt = token.substring(1,1) + token.substring(1,1) + token.substring(1,1) + token.substring(1,1) + token.substring(1,1);
-
-	if (decrypt == key) {lt = key.substring(1,1);}
-	else {lt = 0;
-		  
-	//YWeather 2.4 - Enable/Disable Alerts - START
-		if(options['alerts']== "true"){
-		 //YWeather 2.3 - FIX02. Warns user about a wrong User Key - START
-		  if(key!="00000000000"){Pebble.showSimpleNotificationOnPebble("YWeather", "Your User Key doesn't seem to be valid. Please double check it.");}
-		 //YWeather 2.3 - FIX02. Warns user about a wrong User Key - END
-		}
-	//YWeather 2.4 - Enable/Disable Alerts - END
-		 }
-	
-	//confirm that the javascript code works fine
-	//options['key']=decrypt;
-
-	
-	console.log("Key: " + key + " Decrypt: " + decrypt + " LT: " + lt);
-	
-	return lt;
-}
 ///////////////////////////////////////
 //Setup the connection with the watch//
 ///////////////////////////////////////
 
 //Displays the configuration page in the phone
 Pebble.addEventListener('showConfiguration', function(e) {
-  var uri = 'http://dabdemon.github.io/Yahoo--Weather/development.html?' + //Here you need to enter your configuration webservice
+  var uri = 'http://dabdemon.github.io/Yahoo--Weather/settings.html?' + //Here you need to enter your configuration webservice
     'language=' + encodeURIComponent(options['language']) +
 	'&use_gps=' + encodeURIComponent(options['use_gps']) +
     '&location=' + encodeURIComponent(options['location']) +

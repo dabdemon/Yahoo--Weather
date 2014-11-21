@@ -615,7 +615,8 @@ void handle_tick(struct tm *tick_time, TimeUnits units_changed)
 	  if (units_changed & HOUR_UNIT)
        {
 		  	if (blnhourly_vibe){
-				if(!DoNotDisturb(tick_time->tm_hour,tick_time->tm_min)){vibes_double_pulse();}
+				//if(!DoNotDisturb(tick_time->tm_hour,tick_time->tm_min)){vibes_double_pulse();}
+				vibes_double_pulse();
 		   }
 	  }
 	     if (units_changed & DAY_UNIT){
@@ -1405,8 +1406,8 @@ void SetupMessages(){
 			//YWeather 2.3 - REQ02. Hourly Vibe - START
 				TupletInteger(HOURLY_VIBE_KEY,blnhourly_vibe),
 			//YWeather 2.3 - REQ02. Hourly Vibe - END
-				TupletInteger(HOURLY_VIBE_START_KEY,0),
-				TupletInteger(HOURLY_VIBE_END_KEY,0),
+				//TupletInteger(HOURLY_VIBE_START_KEY,0),
+				//TupletInteger(HOURLY_VIBE_END_KEY,0),
                 }; //TUPLET INITIAL VALUES
         
                 app_sync_init(&sync, sync_buffer, sizeof(sync_buffer), initial_values,
