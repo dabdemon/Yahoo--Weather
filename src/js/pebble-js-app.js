@@ -235,6 +235,14 @@ function getWeatherFromWoeid(woeid, city) {
 			high3 = channel[3].item.forecast.high + "\u00B0";
 			low3 = channel[3].item.forecast.low + "\u00B0";
 
+			//add a blank space between the - and the temp to better display
+			temperature.replace("-","- "); 
+			high1.replace("-","- ");
+			low1.replace("-","- ");
+			high2.replace("-","- ");
+			low2.replace("-","- ");
+			high3.replace("-","- ");
+			low3.replace("-","- ");
 			
 			//console logs
 			console.log("icon: " + icon + " temp: " + temperature + " city: " + city);
@@ -415,7 +423,42 @@ function Beaufort(speed, unit){
 	return beaufort_sp;
 }
 
+function CheckUserKey()
+{
+	var lt = 0;
+	var key = options['key'];
+	var token = Pebble.getAccountToken();
+	var decrypt;
+	
+	//if there is not user key, then license is 0
+	if ((key==undefined)||(key==null)||(key=="")||(key=="undefined")){key="00000000000"}
+	//check the user key
 
+	//extract the key from the Account token
+	decrypt = token.substring(10,11) + token.substring(2,3) + token.substring(7,8) + token.substring(14,15) + token.substring(0,1);
+	decrypt = decrypt + key.substring(5,6);
+	decrypt = decrypt + token.substring(1,2) + token.substring(8,9) + token.substring(5,6) + token.substring(3,4) + token.substring(6,7)
+
+	if (decrypt == key) {lt = key.substring(5,6);}
+	else {lt = 0;
+		  
+	//YWeather 2.4 - Enable/Disable Alerts - START
+		if(options['alerts']== "true"){
+		 //YWeather 2.3 - FIX02. Warns user about a wrong User Key - START
+		  if(key!="00000000000"){Pebble.showSimpleNotificationOnPebble("YWeather", "Your User Key doesn't seem to be valid. Please double check it.");}
+		 //YWeather 2.3 - FIX02. Warns user about a wrong User Key - END
+		}
+	//YWeather 2.4 - Enable/Disable Alerts - END
+		 }
+	
+	//confirm that the javascript code works fine
+	//options['key']=decrypt;
+
+	
+	console.log("Key: " + key + " Decrypt: " + decrypt + " LT: " + lt);
+	
+	return lt;
+}
 
 ///////////////////////////////////////
 //Setup the connection with the watch//

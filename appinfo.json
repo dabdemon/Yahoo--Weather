@@ -11,6 +11,7 @@
         "day3H": 19,
         "day3L": 20,
         "day3code": 18,
+        "end": 27,
         "forecast": 23,
         "high": 6,
         "hourly_vibe": 25,
@@ -18,9 +19,8 @@
         "invert_color": 3,
         "language": 4,
         "low": 7,
-        "quietend": 27,
-        "quietstart": 26,
         "seconds": 24,
+        "start": 26,
         "sunrise": 8,
         "sunset": 9,
         "temperature": 1,
@@ -206,17 +206,20 @@
             },
             {
                 "characterRegex": "[0-9\u00b0 -]",
+                "compatibility": "2.7",
                 "file": "fonts/futura.ttf",
                 "name": "FUTURA_43",
                 "trackingAdjust": -4,
                 "type": "font"
             },
             {
+                "compatibility": "2.7",
                 "file": "fonts/futura.ttf",
                 "name": "FUTURA_10",
                 "type": "font"
             },
             {
+                "compatibility": "2.7",
                 "file": "fonts/futura.ttf",
                 "name": "FUTURA_17",
                 "type": "font"
@@ -353,6 +356,7 @@
             },
             {
                 "characterRegex": "[0-9: ]",
+                "compatibility": "2.7",
                 "file": "fonts/futura_condensed_bold-webfont.ttf",
                 "name": "FUTURA_CONDENSED_53",
                 "trackingAdjust": -3,
@@ -443,7 +447,7 @@
     "shortName": "YWeather",
     "uuid": "35a28a4d-0c9f-408f-9c6d-551e65f03186",
     "versionCode": 1,
-    "versionLabel": "2.4",
+    "versionLabel": "2.5",
     "watchapp": {
         "watchface": true
     }

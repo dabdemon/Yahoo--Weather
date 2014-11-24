@@ -175,6 +175,14 @@ static const char *WEEKDAYS[] = {
 	"Piatok", 
 	"Sobota", 
 	"Nedela",
+	//ROMANIAN - 16
+	"Luni", 
+	"Marti", 
+	"Miercuri", 
+	"Joi", 
+	"Vineri", 
+	"Sâmbătă", 
+	"Duminică",
 };
 
 static const char *MONTHS[] = {
@@ -387,5 +395,18 @@ static const char *MONTHS[] = {
 	". Oktober", 
 	". November", 
 	". December",
+	//ROMANIAN - 16
+	" Ianuarie",
+	" Februarie",
+	" Martie",
+	" Aprilie",
+	" Mai",
+	" Iunie",
+	" Iulie",
+	" August",
+	" Septembrie",
+	" Octombrie",
+	" Noiembrie",
+	" Decembrie",
 };
 	

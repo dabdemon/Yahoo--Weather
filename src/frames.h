@@ -49,13 +49,13 @@
 #define MOON_ICON_FRAME (GRect(106, 138, 26, 26))
 
 //define 3 days forecast
-#define FORECAST_DAY1_FRAME (GRect(5, 93, 90, 23))
-#define FORECAST_DAY2_FRAME (GRect(5, 114, 90, 23))
-#define FORECAST_DAY3_FRAME (GRect(5, 135, 90, 23))	
+#define FORECAST_DAY1_FRAME (GRect(5, 93, 92, 23))
+#define FORECAST_DAY2_FRAME (GRect(5, 114, 92, 23))
+#define FORECAST_DAY3_FRAME (GRect(5, 135, 92, 23))	
 	
-#define FORECAST_CODE1_FRAME (GRect(95, 93, 22, 22))
-#define FORECAST_CODE2_FRAME (GRect(95, 114, 22, 22))
-#define FORECAST_CODE3_FRAME (GRect(95, 135, 22, 22))
+#define FORECAST_CODE1_FRAME (GRect(97, 93, 22, 22))
+#define FORECAST_CODE2_FRAME (GRect(97, 114, 22, 22))
+#define FORECAST_CODE3_FRAME (GRect(97, 135, 22, 22))
 
 //#define FORECAST_HIGH1_FRAME (GRect(81, 93, 47, 60))
 //#define FORECAST_HIGH2_FRAME (GRect(81, 115, 47, 60))

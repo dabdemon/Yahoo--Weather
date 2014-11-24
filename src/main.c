@@ -50,37 +50,6 @@ static void handle_battery(BatteryChargeState charge_state) {
          }
 	  //CHECK IF BATTERY STATUS SHOULD DISPLAY ALL THE TIME OR JUST WHILE RUNNING LOW
 	  else if (batt_status){
-		  /*
-		 if (charge_state.charge_percent <=20) //If the charge is between 10% and 20%
-         {
-			 Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_20);
-             bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
-         }
-															
-		 else if (charge_state.charge_percent <=40) //If the charge is between 20% and 40%
-         {
-			 Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_40);
-             bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
-         }
-
-		 else if (charge_state.charge_percent <=60) //If the charge is between 40% and 60%
-         {
-			 Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_60);
-             bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
-         }
-															
-		 else if (charge_state.charge_percent <=80) //If the charge is between 60% and 80%
-         {
-			 Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_80);
-             bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
-         }
-															
-		 else if (charge_state.charge_percent >80) //If the charge is between 80% and 100%
-         {
-			 Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_FULL);
-             bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
-         }
-		 */
 		  
 		  Batt_image = gbitmap_create_with_resource(BATTERY_ICON[charge_state.charge_percent/10]);
           bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
@@ -92,6 +61,7 @@ static void handle_battery(BatteryChargeState charge_state) {
 }
 
 
+	
 /**************************/
 // Vibes on disconnection //
 /**************************/
@@ -103,7 +73,7 @@ static void vibes()
     if (BTConnected == false){
 		if (bluetooth_connection_service_peek() == true){
 			//Vibes to alert connection
-			if (blnvibes==true){vibes_double_pulse();}
+			if (blnvibes==true){vibes_short_pulse();}
 			BTConnected = true;
 		}
 	}
@@ -178,6 +148,7 @@ void InvertColors(bool inverted)
 	}
 	
 }// END - Invert colors
+
 
 
 //**************************//
@@ -335,6 +306,118 @@ void getDate()
 
 }
 
+//YWeather 2.3 - REQ01. Display Seconds - START
+void getTime()
+	{
+		clock_copy_time_string(time_text, sizeof(time_text));
+			
+		//Set the time to the Time Layer
+        text_layer_set_text(Time_Layer, time_text);
+                
+        //Check Battery Status
+        handle_battery(battery_state_service_peek());
+                
+        //Check BT Status
+        handle_bluetooth(bluetooth_connection_service_peek());
+	
+}
+//YWeather 2.3 - REQ01. Display Seconds - END
+
+/*
+bool DoNotDisturb(int Hour, int Minutes){
+	//Define the variables
+	bool blnNextDay = 0;
+	//Read the Hourly Vibe Quiet Hours setup
+	intDNDStart = persist_read_int(HOURLY_VIBE_START_KEY);
+	intDNDEnd = persist_read_int(HOURLY_VIBE_END_KEY);
+	
+	//Determine if the DND End is the next day
+	if(intDNDStart>intDNDEnd){blnNextDay = 1;}
+	
+	if (blnNextDay){
+	//if the DND End is next day, DND period is when the Current Hour is greater than Start Hour
+		if ((Hour>=intDNDStart)||(Hour<intDNDEnd)){return true; } //DND period
+		else {return false;} //Not DND period
+	}
+	else{
+	//if the DND End is the same day, DND period is when the Current Hour is between Start and End Hours
+		if ((Hour>=intDNDStart)&&(Hour<intDNDEnd)){return true;} //DND period
+		else {return false;} //Not DND period
+	}
+	
+}
+*/
+
+//************************//
+// Capture the Tick event //
+//************************//
+void handle_tick(struct tm *tick_time, TimeUnits units_changed)
+{
+	//YWeather 2.3 - REQ01. Display Seconds - START
+			//Set the AM/PM indicator
+			if(clock_is_24h_style()){memcpy(&ampm_text,  "24H", strlen("24H"));}
+			else {strftime(ampm_text, sizeof(ampm_text), "%p", tick_time);}
+			text_layer_set_text(ampm_layer, ampm_text); //Update the weekday layer  
+	//YWeather 2.3 - REQ01. Display Seconds - END
+     
+	    if (units_changed & SECOND_UNIT)
+		{
+			//YWeather 2.3 - REQ01. Display Seconds - START
+			//refresh the tap counter every second
+			//TapCount = 0;
+			//Set the seconds
+			strftime(seconds_text, sizeof(seconds_text), "%S", tick_time);
+			if (blnseconds){text_layer_set_text(seconds_layer, seconds_text);}
+			else {text_layer_set_text(seconds_layer, "");}
+			//YWeather 2.3 - REQ01. Display Seconds - END
+			
+		}
+       if (units_changed & MINUTE_UNIT)
+       {
+//YWeather 2.3 - REQ01. Display Seconds - START
+			getTime();
+		   
+		   //clean up the seconds if disables
+		   if (! blnseconds){text_layer_set_text(seconds_layer, "");}
+//YWeather 2.3 - REQ01. Display Seconds - END
+	//YWeather 2.3 - REQ02. Hourly Vibe - START
+		   //Vibes on O'Clock
+		  // if (blnhourly_vibe){
+		   		//if ((tick_time->tm_min == 0)&&(tick_time->tm_sec == 0)) {vibes_double_pulse();}
+		   //}
+	} //MINUTE CHANGES
+		if (units_changed & HOUR_UNIT){
+			//Vibes on O'Clock
+			if (blnhourly_vibe){
+				//if(!DoNotDisturb(tick_time->tm_hour, tick_time->tm_min)){vibes_double_pulse();}
+				vibes_double_pulse();
+				}
+		} //HOUR CHANGES
+		   
+
+	//YWeather 2.3 - REQ02. Hourly Vibe - END
+	     if (units_changed & DAY_UNIT){
+			 	//Update the date
+			 	getDate();}
+
+	
+} //HANDLE_TICK
+
+
+void SubscribeTickEvent(){
+		time_t now = time(NULL);
+		struct tm *current_time = localtime(&now);
+	
+		if (blnseconds) {
+			handle_tick(current_time, SECOND_UNIT);
+			tick_timer_service_subscribe(SECOND_UNIT, &handle_tick);
+		}
+		else {
+			handle_tick(current_time, MINUTE_UNIT);
+			tick_timer_service_subscribe(MINUTE_UNIT, &handle_tick);
+			
+		}
+}
 
 //*****************//
 // AppSync options //
@@ -342,8 +425,6 @@ void getDate()
 
         static AppSync sync;
         static uint8_t sync_buffer[512];
-
-
 
   static void sync_tuple_changed_callback(const uint32_t key,
                                         const Tuple* new_tuple,
@@ -359,7 +440,7 @@ void getDate()
 	  		weather_image = gbitmap_create_with_resource(WEATHER_ICONS[new_tuple->value->uint8]);
 			//If the app is in the Main Screen, refresh the weather icon
 			if (blnForecast == false) {bitmap_layer_set_bitmap(weather_icon_layer, weather_image);}
-	  		ICON_CODE = new_tuple->value->uint8;
+	  		//ICON_CODE = new_tuple->value->uint8;
 	  	  	persist_write_int(WEATHER_ICON_KEY, new_tuple->value->uint8);
       		break;
 
@@ -405,33 +486,33 @@ void getDate()
 	  //Forecast for the day
 		case WEATHER_HIGH_KEY: 
 	  		//Save the High temperature
-	        memcpy(&high,  new_tuple->value->cstring, strlen( new_tuple->value->cstring));
+	        //memcpy(&high,  new_tuple->value->cstring, strlen( new_tuple->value->cstring));
 	    	persist_write_string(WEATHER_HIGH_KEY, new_tuple->value->cstring);
       		break;
 		case WEATHER_LOW_KEY:
 	  	  	//Save the Low temperature
-	  		memcpy(&low,  new_tuple->value->cstring, strlen( new_tuple->value->cstring));
+	  		//memcpy(&low,  new_tuple->value->cstring, strlen( new_tuple->value->cstring));
 	    	persist_write_string(WEATHER_LOW_KEY, new_tuple->value->cstring);
       		break;
 		case SUNRISE_KEY:
 	  	  	//Save the Sunrise Time
-	  	  	memcpy(&sunrise,  new_tuple->value->cstring, strlen(sunrise));
+	  	  	//memcpy(&sunrise,  new_tuple->value->cstring, strlen(sunrise));
 	    	persist_write_string(SUNRISE_KEY, new_tuple->value->cstring);
       		break;
 		case SUNSET_KEY:
 	  	  	//Save the Sunset Time
-	  	  	memcpy(&sunset,  new_tuple->value->cstring, strlen(sunset));
+	  	  	//memcpy(&sunset,  new_tuple->value->cstring, strlen(sunset));
 	    	persist_write_string(SUNSET_KEY, new_tuple->value->cstring);
       		break;
 		case WIND_KEY:
 	  	  	 //Save the Wind Speed
-	  	  	memcpy(&wind,  new_tuple->value->cstring, strlen(wind));
+	  	  	//memcpy(&wind,  new_tuple->value->cstring, strlen(wind));
 	    	persist_write_string(WIND_KEY, new_tuple->value->cstring);
       		break;
 	  
 	  	case WDIRECTION_KEY:
 	  	  	//Save the Wind Direction
-	  	  	wdirection = new_tuple->value->uint32;
+	  	  	//wdirection = new_tuple->value->uint32;
 	  	  	persist_write_int(WDIRECTION_KEY, wdirection);
       		break;
 	  
@@ -448,13 +529,13 @@ void getDate()
 	  
 	  	case FORECAST_HIGH1_KEY:
 	  		//Saves the high for the day
-	  		memcpy(&day1H,  new_tuple->value->cstring, strlen( new_tuple->value->cstring));
+	  		//memcpy(&day1H,  new_tuple->value->cstring, strlen( new_tuple->value->cstring));
 	  	 	persist_write_string(FORECAST_HIGH1_KEY, new_tuple->value->cstring);
       		break;
 	  
 	  	case FORECAST_LOW1_KEY:
 	  		//Saves the low for the day
-	  		memcpy(&day1L,  new_tuple->value->cstring, strlen( new_tuple->value->cstring));
+	  		//memcpy(&day1L,  new_tuple->value->cstring, strlen( new_tuple->value->cstring));
 	  	    persist_write_string(FORECAST_LOW1_KEY, new_tuple->value->cstring);
       		break;	 
 	  
@@ -465,13 +546,13 @@ void getDate()
 	  
 	  	case FORECAST_HIGH2_KEY:
 	  		//Saves the high for the day
-	  	  	memcpy(&day2H,  new_tuple->value->cstring, strlen( new_tuple->value->cstring));
+	  	  	//memcpy(&day2H,  new_tuple->value->cstring, strlen( new_tuple->value->cstring));
 	  	    persist_write_string(FORECAST_HIGH2_KEY, new_tuple->value->cstring);
       		break;
 	  
 	  	case FORECAST_LOW2_KEY:
 	  		//Saves the low for the day
-	  	  	memcpy(&day2L,  new_tuple->value->cstring, strlen( new_tuple->value->cstring));
+	  	  	//memcpy(&day2L,  new_tuple->value->cstring, strlen( new_tuple->value->cstring));
 	  	    persist_write_string(FORECAST_LOW2_KEY, new_tuple->value->cstring);
       		break;
 	  
@@ -482,13 +563,13 @@ void getDate()
 	  
 	  	case FORECAST_HIGH3_KEY:
 	  		//Saves the high for the day
-	  	  	memcpy(&day3H,  new_tuple->value->cstring, strlen( new_tuple->value->cstring));
+	  	  	//memcpy(&day3H,  new_tuple->value->cstring, strlen( new_tuple->value->cstring));
 	  	    persist_write_string(FORECAST_HIGH3_KEY, new_tuple->value->cstring);
       		break;
 	  
 	  	case FORECAST_LOW3_KEY:
 	  		//Saves the low for the day
-	  		memcpy(&day3L,  new_tuple->value->cstring, strlen( new_tuple->value->cstring));
+	  		//memcpy(&day3L,  new_tuple->value->cstring, strlen( new_tuple->value->cstring));
 	  	    persist_write_string(FORECAST_LOW3_KEY, new_tuple->value->cstring);
       		break;
 	  
@@ -511,9 +592,19 @@ void getDate()
       		break;
 	  	//YWeather 2.3 - REQ01. Display Seconds - START
 	  	  	case DISPLAY_SECONDS_KEY:
-	  		//Saves the display seconds toggle
-	  		blnseconds =  new_tuple->value->uint8 != 0;
-	  		persist_write_int(DISPLAY_SECONDS_KEY, new_tuple->value->uint8);
+	  		//Saves the display seconds toggle (only when the new value differs from the saved one)
+	  		if (blnseconds !=  new_tuple->value->uint8){
+				//APP_LOG(APP_LOG_LEVEL_INFO, "blnsecond cambia");
+				blnseconds =  new_tuple->value->uint8 != 0;
+				persist_write_int(DISPLAY_SECONDS_KEY, new_tuple->value->uint8);
+
+			//YWeather 2.4 - Enhance Display Seconds - START
+				//subscribes to the new tick even
+				tick_timer_service_unsubscribe();
+				SubscribeTickEvent();
+			}
+		//YWeather 2.4 - Enhance Display Seconds - END
+
       		break;
 	  	//YWeather 2.3 - REQ01. Display Seconds - END
 	  	//YWeather 2.3 - REQ02. Hourly Vibe - START
@@ -527,104 +618,11 @@ void getDate()
 	  
       		break;
 	  	//YWeather 2.3 - REQ02. Hourly Vibe - END
-	  case HOURLY_VIBE_START_KEY:
-	  		//Saves the hourly vibe quiet hours start
-	  		persist_write_int(HOURLY_VIBE_START_KEY, new_tuple->value->uint8);
-      		break;
-	  case HOURLY_VIBE_END_KEY:
-	  		//Saves the hourly vibe quiet hours end
-	  		persist_write_int(HOURLY_VIBE_END_KEY, new_tuple->value->uint8);
-      		break;
+
   }
+	  
 }
 
-bool DoNotDisturb(int Hour, int Minutes){
-	//Define the variables
-	bool blnNextDay = 0;
-	//Read the Hourly Vibe Quiet Hours setup
-	intDNDStart = persist_read_int(HOURLY_VIBE_START_KEY);
-	intDNDEnd = persist_read_int(HOURLY_VIBE_END_KEY);
-	
-	//Determine if the DND End is the next day
-	if(intDNDStart>intDNDEnd){blnNextDay = 1;}
-	
-	if (blnNextDay){
-	//if the DND End is next day, DND period is when the Current Hour is greater than Start Hour
-		if ((Hour>=intDNDStart)||(Hour<intDNDEnd)){return 1; } //DND period
-		else {return 0;} //Not DND period
-	}
-	else{
-	//if the DND End is the same day, DND period is when the Current Hour is between Start and End Hours
-		if ((Hour>=intDNDStart)&&(Hour<intDNDEnd)){return 1;} //DND period
-		else {return 0;} //Not DND period
-	}
-	
-}
-
-//YWeather 2.3 - REQ01. Display Seconds - START
-void getTime()
-	{
-		clock_copy_time_string(time_text, sizeof(time_text));
-			
-		//Set the time to the Time Layer
-        text_layer_set_text(Time_Layer, time_text);
-                
-        //Check Battery Status
-        handle_battery(battery_state_service_peek());
-                
-        //Check BT Status
-        handle_bluetooth(bluetooth_connection_service_peek());
-	
-}
-//YWeather 2.3 - REQ01. Display Seconds - END
-
-//************************//
-// Capture the Tick event //
-//************************//
-void handle_tick(struct tm *tick_time, TimeUnits units_changed)
-{
-     
-	    if (units_changed & SECOND_UNIT)
-		{
-			//YWeather 2.3 - REQ01. Display Seconds - START
-			//refresh the tap counter every second
-			//TapCount = 0;
-			//Set the seconds
-			strftime(seconds_text, sizeof(seconds_text), "%S", tick_time);
-			if (blnseconds){text_layer_set_text(seconds_layer, seconds_text);}
-			else {text_layer_set_text(seconds_layer, "");}
-			//Set the AM/PM indicator
-			if(clock_is_24h_style()){memcpy(&ampm_text,  "24H", strlen("24H"));}
-			else {strftime(ampm_text, sizeof(ampm_text), "%p", tick_time);}
-			text_layer_set_text(ampm_layer, ampm_text); //Update the weekday layer  
-			//YWeather 2.3 - REQ01. Display Seconds - END
-			
-		}
-       if (units_changed & MINUTE_UNIT)
-       {
-//YWeather 2.3 - REQ01. Display Seconds - START
-			getTime();
-//YWeather 2.3 - REQ01. Display Seconds - END
-	//YWeather 2.3 - REQ02. Hourly Vibe - START
-		   //Vibes on O'Clock
-//		   if (blnhourly_vibe){
-//		   		if (tick_time->tm_min == 0) {vibes_double_pulse();}
-//		   }
-	//YWeather 2.3 - REQ02. Hourly Vibe - END
-       } //MINUTE CHANGES
-	  if (units_changed & HOUR_UNIT)
-       {
-		  	if (blnhourly_vibe){
-				//if(!DoNotDisturb(tick_time->tm_hour,tick_time->tm_min)){vibes_double_pulse();}
-				vibes_double_pulse();
-		   }
-	  }
-	     if (units_changed & DAY_UNIT){
-			 	//Update the date
-			 	getDate();}
-
-	
-} //HANDLE_TICK
 
 
 //************************************************//
@@ -654,7 +652,7 @@ static void timer_callback(void *context) {
 		//vibes_double_pulse();
 	
         timer = app_timer_register(timeout_ms, timer_callback, NULL);
-        
+
         //Refresh the weather
         send_cmd();
 	       
@@ -782,7 +780,6 @@ void Load3Days()
 
 	//remove the inverted layer (if any) before creating the new text layers
 	if(blninverted){inverter_layer_destroy(inv_layer);	blninverted = false;}
-
 //DAY 1
 	//Weekday
 		Day1_Layer = text_layer_create(FORECAST_DAY1_FRAME);	
@@ -800,6 +797,7 @@ void Load3Days()
 	code1 = persist_read_int(FORECAST_CODE1_KEY);
 	forecast1 = gbitmap_create_with_resource(WEATHER_ICONS_SMALL[code1]);
 	
+
 	forecast1_layer = bitmap_layer_create(FORECAST_CODE1_FRAME);
 	bitmap_layer_set_bitmap(forecast1_layer, forecast1);
     layer_add_child(window_get_root_layer(my_window), bitmap_layer_get_layer(forecast1_layer));
@@ -837,18 +835,14 @@ void Load3Days()
 		layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Day2_Layer));
 
 		text_layer_set_text(Day2_Layer,weekday2_text);
-
 	//Display the weather icon
 	if (forecast2 != NULL){gbitmap_destroy(forecast2);}
-	
 	code2 = persist_read_int(FORECAST_CODE2_KEY);
 	forecast2 = gbitmap_create_with_resource(WEATHER_ICONS_SMALL[code2]);
-	
 	forecast2_layer = bitmap_layer_create(FORECAST_CODE2_FRAME);
 	bitmap_layer_set_bitmap(forecast2_layer, forecast2);
     layer_add_child(window_get_root_layer(my_window), bitmap_layer_get_layer(forecast2_layer));
 	
-
 	//High for the day
 	High2_Layer = text_layer_create(FORECAST_HIGH2_FRAME);	
 	text_layer_set_text_color(High2_Layer, GColorWhite);
@@ -856,10 +850,8 @@ void Load3Days()
 	text_layer_set_font(High2_Layer, font_update);
 	text_layer_set_text_alignment(High2_Layer, GTextAlignmentRight);
 	layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(High2_Layer));
-	
 	persist_read_string(FORECAST_HIGH2_KEY, day2H, sizeof(day2H));
 	text_layer_set_text(High2_Layer,day2H);
-	
 	//Low for the day
 	Low2_Layer = text_layer_create(FORECAST_LOW2_FRAME);	
 	text_layer_set_text_color(Low2_Layer, GColorWhite);
@@ -867,7 +859,6 @@ void Load3Days()
 	text_layer_set_font(Low2_Layer, font_update);
 	text_layer_set_text_alignment(Low2_Layer, GTextAlignmentRight);
 	layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Low2_Layer));
-	
 	persist_read_string(FORECAST_LOW2_KEY, day2L, sizeof(day2L));
 	text_layer_set_text(Low2_Layer,day2L);
 	
@@ -890,7 +881,7 @@ void Load3Days()
 	
 	
 	forecast3_layer = bitmap_layer_create(FORECAST_CODE3_FRAME);
-	bitmap_layer_set_bitmap(forecast3_layer, forecast2);
+	bitmap_layer_set_bitmap(forecast3_layer, forecast3);
     layer_add_child(window_get_root_layer(my_window), bitmap_layer_get_layer(forecast3_layer));
 	
 	//High for the day
@@ -917,7 +908,6 @@ void Load3Days()
 	
 	//if color inverted, then create the inverted layer
 	InvertColors(color_inverted);
-	
 	//setup the timer to set back the temperature after 5sec
 	weather = app_timer_register(ESDuration_ms, forecast3Days_callback, NULL);
 	
@@ -1368,14 +1358,14 @@ void LoadMainWindow(){
 
 void SetupMessages(){
 
-	
+
                 app_message_open(inbound_size, outbound_size);
         
                 Tuplet initial_values[] = {
                 TupletInteger(WEATHER_ICON_KEY, ICON_CODE), //INITIALIZE TO "N/A"
 				MyTupletCString(WEATHER_TEMPERATURE_KEY, temp),
 				//MyTupletCString(WEATHER_TEMPERATURE_KEY,low), //Init to something
-                MyTupletCString(WEATHER_CITY_KEY, "YWeather v2.3"), //display app version on load
+                MyTupletCString(WEATHER_CITY_KEY, "YWeather v2.5"), //display app version on load
 				TupletInteger(INVERT_COLOR_KEY, color_inverted),
 				TupletInteger(language_key, language), //INITIALIZE TO LAST SAVED
 				TupletInteger(VIBES_KEY, blnvibes),
@@ -1413,7 +1403,9 @@ void SetupMessages(){
                 app_sync_init(&sync, sync_buffer, sizeof(sync_buffer), initial_values,
                 ARRAY_LENGTH(initial_values), sync_tuple_changed_callback,
                 NULL, NULL);
+	
 }
+
 
 static void init_callback(void *context) {
        
@@ -1424,6 +1416,8 @@ static void init_callback(void *context) {
 
 void handle_init(void)
 {
+	
+
         //Define Resources
     	ResHandle res_d;
         ResHandle res_u;
@@ -1461,7 +1455,6 @@ void handle_init(void)
 	//YWeather 2.3 - REQ02. Hourly Vibe - START
 		blnhourly_vibe = persist_read_int(HOURLY_VIBE_KEY);
 	//YWeather 2.3 - REQ02. Hourly Vibe - END
-
 	
 		init_ESDuration_ms = ESDuration_ms/1000;
 		init_timeout_ms = timeout_ms/60000;
@@ -1500,14 +1493,7 @@ void handle_init(void)
 	               
 	  // Set up the update layer callback
 	
-		time_t now = time(NULL);
-		struct tm *current_time = localtime(&now);
-	//YWeather 2.3 - REQ01. Display Seconds - START
-		//handle_tick(current_time, MINUTE_UNIT);
-		//tick_timer_service_subscribe(MINUTE_UNIT, &handle_tick);
-		handle_tick(current_time, SECOND_UNIT);
-		tick_timer_service_subscribe(SECOND_UNIT, &handle_tick);
-	//YWeather 2.3 - REQ01. Display Seconds - END
+		SubscribeTickEvent();
 		
 		//Enable the Battery check event
 		battery_state_service_subscribe(&handle_battery);
@@ -1521,6 +1507,7 @@ void handle_init(void)
 		//that will avoid a crash when loading extended screen before all the
 		//componenets are properly loaded.
 		initialize = app_timer_register(5000, init_callback, NULL);
+		
         
 } //HANDLE_INIT
 
@@ -1533,45 +1520,13 @@ void handle_deinit(void)
 {
   //text_layer_destroy(text_layer);
 
+
         //Unsuscribe services
         tick_timer_service_unsubscribe();
         battery_state_service_unsubscribe();
         bluetooth_connection_service_unsubscribe();
 		accel_tap_service_unsubscribe();
-  /*      
-        if (BT_image){gbitmap_destroy(BT_image);}
-        if (Batt_image){gbitmap_destroy(Batt_image);}
-        if (weather_image){gbitmap_destroy(weather_image);}
-		if (chinese_day) {gbitmap_destroy(chinese_day);}
-	
-		if (high_image){gbitmap_destroy(high_image);}
-		if (low_image){gbitmap_destroy(low_image);}
-		if (sunrise_image){gbitmap_destroy(sunrise_image);}
-		if (sunset_image){gbitmap_destroy(sunset_image);}
-		if (wind_image){gbitmap_destroy(wind_image);}
 
-        
-        //Deallocate layers
-        text_layer_destroy(Time_Layer);
-        text_layer_destroy(date_layer);
-        text_layer_destroy(Weekday_Layer);
-        text_layer_destroy(Temperature_Layer);        
-        text_layer_destroy(Location_Layer);        
-        text_layer_destroy(Last_Update);        
-	    inverter_layer_destroy(inv_layer);
-	
-		text_layer_destroy(High_Layer);
-		text_layer_destroy(Low_Layer);
-		text_layer_destroy(Sunrise_Layer);
-		text_layer_destroy(Sunset_Layer);
-		text_layer_destroy(Wind_Layer);
-		text_layer_destroy(WDirection_Layer);
-		bitmap_layer_destroy(sunrise_icon_layer);
-		bitmap_layer_destroy(sunset_icon_layer);
-		bitmap_layer_destroy(high_icon_layer);
-		bitmap_layer_destroy(low_icon_layer);
-		bitmap_layer_destroy(wind_icon_layer);
- */
 	
         //Deallocate custom fonts
         fonts_unload_custom_font(font_date);

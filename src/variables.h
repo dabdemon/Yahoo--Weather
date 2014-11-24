@@ -36,8 +36,6 @@ enum WeatherKey {
 	//YWeather 2.3 - REQ02. Hourly Vibe - START
 	HOURLY_VIBE_KEY = 0x19, //TUPLE_INT
 	//YWeather 2.3 - REQ02. Hourly Vibe - END
-	HOURLY_VIBE_START_KEY = 0x1a, //TUPLE_INT
-	HOURLY_VIBE_END_KEY = 0x1b, //TUPLE_INT
 };
 
 	#define TAP_TIME 2000
@@ -132,11 +130,8 @@ enum WeatherKey {
 	int intmonth;
 	int intyear;
 
-	int intDNDStart;
-	int intDNDEnd;
-
 	//variable to avoid the app crashing when adding new languages
-	int intLangCounter = 15;
+	int intLangCounter = 16;
 	
 	
 	bool translate_sp = true;
@@ -155,3 +150,5 @@ enum WeatherKey {
 	//YWeather 2.3 - REQ02. Hourly Vibe - START
 	bool blnhourly_vibe = false;
 	//YWeather 2.3 - REQ02. Hourly Vibe - END
+	int intDNDStart=0;
+	int intDNDEnd=0;	
