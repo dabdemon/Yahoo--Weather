@@ -244,6 +244,13 @@
                             <option value="true">Yes</option>
                         </select>
                     </div>
+                     <div data-role="fieldcontain">
+                        <label for="weatherprovider">Language</label>
+                        <select name="weatherprovider" id="weatherprovider" data-theme="c" data-track-theme="d">
+                            <option value="0">Yahoo! Weather</option>
+                            <option value="1">The Weather Underground</option>
+                        </select>
+                    </div>
                     <div class='ui-body ui-body-b'>
                         <fieldset class='ui-grid-a'>
                             <div class='ui-block-a'><button type='submit' data-theme='d' id='b-cancel'>Cancel</button></div>
@@ -286,6 +293,7 @@
                         'seconds': $('#seconds').val(),
                         'hourly_vibe': $('#hourly_vibe').val(),
                         'alerts': $('#alerts').val(),
+                        'weatherprovider': $('#weatherprovider').val(),
                         'version' : "2.4"
                     }
                     return options;
@@ -304,6 +312,7 @@
                     $('#start').prop('disabled', true);
                     $('#end').prop('disabled', true);
                     $('#forecast').prop('disabled', true);
+                    $('#weatherprovider').prop('disabled', true);
                     //Enable LT 1 fields
                     if (getQueryVariable('lt') == "1") {
                         $('#feelslike').prop('disabled', false);
@@ -332,6 +341,7 @@
                         $('#accuracy').prop('disabled', false);
                         $('#timer').prop('disabled', false);
                         $('#forecast').prop('disabled', false);
+                        $('#weatherprovider').prop('disabled', false);
                     }
                     $('#b-cancel').click(function() {
                         document.location = 'pebblejs://close#';
@@ -363,6 +373,7 @@
                     $('#seconds').val(getQueryVariable('seconds')).change();
                     $('#hourly_vibe').val(getQueryVariable('hourly_vibe')).change();
                     $('#alerts').val(getQueryVariable('alerts')).change();
+                    $('#weatherprovider').val(getQueryVariable('weatherprovider')).change();
                     $('#os0').val(getQueryVariable('UUID'));
                     // Disable location field based on GPS toggle
                     $('#location').prop('disabled', $('#gps_switch').val() == "true");
