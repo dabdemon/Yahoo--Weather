@@ -81,9 +81,9 @@
                     <div data-role="fieldcontain">
                         <fieldset data-role="controlgroup" data-type="horizontal">
                             <legend>Units:</legend>
-                            <label for="celsius">Celsius</label>
+                            <label for="celsius">Metric</label>
                             <input type="radio" id="celsius" name="units" value="celsius" data-theme="c">
-                            <label for="fahrenheit">Fahrenheit</label>
+                            <label for="fahrenheit">Imperial</label>
                             <input type="radio" id="fahrenheit" name="units" value="fahrenheit" data-theme="c">
                         </fieldset>
                     </div>
@@ -92,6 +92,13 @@
                         <select name="invert_color" id="invert_color" data-theme="c" data-role="slider" data-track-theme="d">
                             <option value="false">No</option>
                             <option value="true">Yes</option>
+                        </select>
+                    </div>
+                    <div data-role="fieldcontain">
+                        <label for="hide_bat">Display Battery Level</label>
+                        <select name="hide_bat" id="hide_bat" data-theme="c" data-role="slider" data-track-theme="d">
+                            <option value="false">Low Batt</option>
+                            <option value="true">Always</option>
                         </select>
                     </div>
                     <div data-role="fieldcontain">
@@ -139,6 +146,7 @@
                     <div data-role="fieldcontain">
                         <label for="ESDuration">Extended screen duration</label>
                         <select name="ESDuration" id="ESDuration" data-theme="c" data-track-theme="d">
+                            <option value="0">Off - No forecast</option>
                             <option value="5">5 seconds</option>
                             <option value="8">8 seconds</option>
                             <option value="10">10 seconds</option>
@@ -294,6 +302,7 @@
                         'hourly_vibe': $('#hourly_vibe').val(),
                         'alerts': $('#alerts').val(),
                         'weatherprovider': $('#weatherprovider').val(),
+                        'hide_bat': $('#hide_bat').val(),
                         'version' : "2.4"
                     }
                     return options;
@@ -374,6 +383,7 @@
                     $('#hourly_vibe').val(getQueryVariable('hourly_vibe')).change();
                     $('#alerts').val(getQueryVariable('alerts')).change();
                     $('#weatherprovider').val(getQueryVariable('weatherprovider')).change();
+                    $('#hide_bat').val(getQueryVariable('hide_bat')).change();
                     $('#os0').val(getQueryVariable('UUID'));
                     // Disable location field based on GPS toggle
                     $('#location').prop('disabled', $('#gps_switch').val() == "true");
