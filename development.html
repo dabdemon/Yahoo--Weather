@@ -161,13 +161,18 @@
                             <option value="15">15 seconds</option>
                         </select>
                     </div>
+                    
                     <div data-role="fieldcontain">
-                        <label for="beaufort">Display Beaufort Wind Speed</label>
-                        <select name="beaufort" id="beaufort" data-theme="c" data-role="slider" data-track-theme="d">
-                            <option value="false">No</option>
-                            <option value="true">Yes</option>
+                        <label for="wspeed">Wind Speed Unit</label>
+                        <select name="wspeed" id="wspeed" data-theme="c" data-track-theme="d">
+                            <option value="0">km/h - mi/h</option>
+                            <option value="1">m/s</option>
+                            <option value="2">knots</option>
+                            <option value="3">beaufort</option>
                         </select>
                     </div>
+                    
+
                     <div data-role="fieldcontain">
                         <label for="donotdisturb">Hourly Vibe Quiet Hours</label>
                          <fieldset class='ui-grid-a'>
@@ -277,6 +282,25 @@
                 </div>
             </div>
             <script>
+                /*
+                $("#units").change(function() {
+                    fillWindSpeed(getQueryVariable("#units"));
+                });
+
+                function fillWindSpeed(units){
+                    //first remove all the existing values (if any)
+                     $('#wspeed').empty();
+                    //Dynamically set the mi/h or km/h
+                    if(units=="c"){$('#wspeed').append(new Option('km/h', '0'));}
+                    else{   $('#wspeed').append(new Option('mi/h', '0'));}
+                    //Finally set the static values
+                    $('#wspeed').append(new Option('m/s', '1'));
+                    $('#wspeed').append(new Option('knots', '2'));
+                    $('#wspeed').append(new Option('beaufort', '3'));
+
+                }
+                */
+                
                 function getQueryVariable(variable) {
                     var query = location.search.substring(1);
                     var vars = query.split('&');
@@ -299,7 +323,7 @@
                         'accuracy': $('#accuracy').val(),
                         'feelslike': $('#feelslike').val(),
                         'ESDuration': $('#ESDuration').val(),
-                        'beaufort': $('#beaufort').val(),
+                        'beaufort': $('#wspeed').val(),
                         'start': $('#start').val(),
                         'end': $('#end').val(),
                         'timer': $('#timer').val(),
@@ -312,11 +336,18 @@
                         'alerts': $('#alerts').val(),
                         'weatherprovider': $('#weatherprovider').val(),
                         'hide_bat': $('#hide_bat').val(),
-                        'version' : "2.4"
+                        'version' : "2.5"
                     }
                     return options;
                 }
                 $().ready(function() {
+                    
+
+                    
+        
+                    
+                    //Fill the Wind Speed options
+                     //fillWindSpeed(getQueryVariable("#units"));
                     //Disable the UUID. this is merely informational
                     //$('#UUID').prop('disabled', true);
                     $('#lt').prop('disabled', true);
@@ -326,7 +357,7 @@
                     $('#feelslike').prop('disabled', true);
                     $('#ESDuration').prop('disabled', true);
                     $('#timer').prop('disabled', true);
-                    $('#beaufort').prop('disabled', true);
+                    $('#wspeed').prop('disabled', true);
                     $('#start').prop('disabled', true);
                     $('#end').prop('disabled', true);
                     $('#forecast').prop('disabled', true);
@@ -335,7 +366,7 @@
                     if (getQueryVariable('lt') == "1") {
                         $('#feelslike').prop('disabled', false);
                         $('#ESDuration').prop('disabled', false);
-                        $('#beaufort').prop('disabled', false);
+                        $('#wspeed').prop('disabled', false);
                         $('#start').prop('disabled', false);
                         $('#end').prop('disabled', false);
                     }
@@ -343,7 +374,7 @@
                     if (getQueryVariable('lt') == "2") {
                         $('#feelslike').prop('disabled', false);
                         $('#ESDuration').prop('disabled', false);
-                        $('#beaufort').prop('disabled', false);
+                        $('#wspeed').prop('disabled', false);
                         $('#start').prop('disabled', false);
                         $('#end').prop('disabled', false);
                         $('#accuracy').prop('disabled', false);
@@ -353,7 +384,7 @@
                     if (getQueryVariable('lt') == "3") {
                         $('#feelslike').prop('disabled', false);
                         $('#ESDuration').prop('disabled', false);
-                        $('#beaufort').prop('disabled', false);
+                        $('#wspeed').prop('disabled', false);
                         $('#start').prop('disabled', false);
                         $('#end').prop('disabled', false);
                         $('#accuracy').prop('disabled', false);
@@ -381,7 +412,7 @@
                     $('#accuracy').val(getQueryVariable('accuracy')).change();
                     $('#feelslike').val(getQueryVariable('feelslike')).change();
                     $('#ESDuration').val(getQueryVariable('ESDuration')).change();
-                    $('#beaufort').val(getQueryVariable('beaufort')).change();
+                    $('#wspeed').val(getQueryVariable('wspeed')).change();
                     $('#start').val(getQueryVariable('start')).change();
                     $('#end').val(getQueryVariable('end')).change();
                     $('#timer').val(getQueryVariable('timer')).change();
