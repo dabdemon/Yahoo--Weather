@@ -108,7 +108,7 @@ function getWeatherFromLatLong(latitude, longitude) {
   var response;
   var woeid = -1;
   var accuracy = options['accuracy']; 
-  var query = encodeURI("select woeid, statecode, county, city, street from geo.placefinder where text=\"" + latitude + "," + longitude +"\" and gflags=\"R\"");
+  var query = encodeURI("select woeid, countrycode, statecode, county, city, street from geo.placefinder where text=\"" + latitude + "," + longitude +"\" and gflags=\"R\"");
 	console.log("geo query: " + query);
   var url = "http://query.yahooapis.com/v1/public/yql?q=" + query + "&format=json";
   var req = new XMLHttpRequest();
@@ -122,7 +122,13 @@ function getWeatherFromLatLong(latitude, longitude) {
 			woeid = response.query.results.Result.woeid;
 			
 			if (accuracy==6){city = response.query.results.Result.county;}
-			if (accuracy==11){city = response.query.results.Result.city + ", " + response.query.results.Result.statecode;}
+			if (accuracy==11){
+				if (response.query.results.Result.statecode!="null"){
+					city = response.query.results.Result.city + ", " + response.query.results.Result.statecode;
+				}
+				else {
+					city = response.query.results.Result.city + ", " + response.query.results.Result.countrycode;
+				}
 			if (accuracy==16){city = response.query.results.Result.street;}
 			
 			getWeatherFromWoeid(woeid, city);
