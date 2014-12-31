@@ -108,7 +108,7 @@ function getWeatherFromLatLong(latitude, longitude) {
   var response;
   var woeid = -1;
   var accuracy = options['accuracy']; 
-  var query = encodeURI("select woeid, county, city, street from geo.placefinder where text=\"" + latitude + "," + longitude +"\" and gflags=\"R\"");
+  var query = encodeURI("select woeid, statecode, county, city, street from geo.placefinder where text=\"" + latitude + "," + longitude +"\" and gflags=\"R\"");
 	console.log("geo query: " + query);
   var url = "http://query.yahooapis.com/v1/public/yql?q=" + query + "&format=json";
   var req = new XMLHttpRequest();
@@ -261,6 +261,7 @@ function getWeatherFromWoeid(woeid, city) {
 				"icon":icon,
 				"temperature":temperature,
 				"city":city,
+				"statecode":statecode,
 				//User preferences
 				"invert_color" : (options["invert_color"] == "true" ? 1 : 0),
 				"language" : parseInt(options['language']),
