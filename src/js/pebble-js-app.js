@@ -122,7 +122,7 @@ function getWeatherFromLatLong(latitude, longitude) {
 			woeid = response.query.results.Result.woeid;
 			
 			if (accuracy==6){city = response.query.results.Result.county;}
-			if (accuracy==11){city = response.query.results.Result.city;}
+			if (accuracy==11){city = response.query.results.Result.city + response.query.results.Result.statecode;}
 			if (accuracy==16){city = response.query.results.Result.street;}
 			
 			getWeatherFromWoeid(woeid, city);
@@ -261,7 +261,6 @@ function getWeatherFromWoeid(woeid, city) {
 				"icon":icon,
 				"temperature":temperature,
 				"city":city,
-				"statecode":statecode,
 				//User preferences
 				"invert_color" : (options["invert_color"] == "true" ? 1 : 0),
 				"language" : parseInt(options['language']),
