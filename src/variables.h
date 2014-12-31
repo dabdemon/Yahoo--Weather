@@ -96,6 +96,7 @@ enum WeatherKey {
 	static int wdirection;
 	static char strwdirection[100];
 	static char city[100];
+	static char statecode[]="     ";
 	static char temp[]="     ";
 
 	static char version[]="2.3";
