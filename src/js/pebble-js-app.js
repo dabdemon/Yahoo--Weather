@@ -73,6 +73,51 @@ var imageId = {
   3200 : NA, //not available
 };
 
+var TWU = {
+	
+	"http://icons.wxug.com/i/c/k/chanceflurries.gif" : SNOW,
+	"http://icons.wxug.com/i/c/k/chancerain.gif" : RAIN,
+	"http://icons.wxug.com/i/c/k/chancesleet.gif" : SLEET,
+	"http://icons.wxug.com/i/c/k/chancesnow.gif" : SNOW,
+	"http://icons.wxug.com/i/c/k/chancetstorms.gif" : STORM,
+	"http://icons.wxug.com/i/c/k/clear.gif" : CLEAR_DAY,
+	"http://icons.wxug.com/i/c/k/cloudy.gif" : CLOUDY,
+	"http://icons.wxug.com/i/c/k/flurries.gif" : SNOW,
+	"http://icons.wxug.com/i/c/k/fog.gif" : FOG,
+	"http://icons.wxug.com/i/c/k/hazy.gif" : FOG,
+	"http://icons.wxug.com/i/c/k/mostlycloudy.gif" : PARTLY_CLOUDY_DAY,
+	"http://icons.wxug.com/i/c/k/mostlysunny.gif" : CLEAR_DAY,
+	"http://icons.wxug.com/i/c/k/partlycloudy.gif" : PARTLY_CLOUDY_DAY,
+	"http://icons.wxug.com/i/c/k/partlysunny.gif" : PARTLY_CLOUDY_DAY,
+	"http://icons.wxug.com/i/c/k/sleet.gif" : SLEET,
+	"http://icons.wxug.com/i/c/k/rain.gif" : RAIN,
+	"http://icons.wxug.com/i/c/k/snow.gif" : SNOW,
+	"http://icons.wxug.com/i/c/k/sunny.gif" : CLEAR_DAY,
+	"http://icons.wxug.com/i/c/k/tstorms.gif" : STORM,
+
+	"http://icons.wxug.com/i/c/k/nt_chanceflurries.gif" : SNOW,
+	"http://icons.wxug.com/i/c/k/nt_chancerain.gif" : RAIN,
+	"http://icons.wxug.com/i/c/k/nt_chancesleet.gif" : SLEET,
+	"http://icons.wxug.com/i/c/k/nt_chancesnow.gif" : SNOW,
+	"http://icons.wxug.com/i/c/k/nt_chancetstorms.gif" : STORM,
+	"http://icons.wxug.com/i/c/k/nt_clear.gif" : CLEAR_NIGHT,
+	"http://icons.wxug.com/i/c/k/nt_cloudy.gif" : CLOUDY,
+	"http://icons.wxug.com/i/c/k/nt_flurries.gif" : SNOW,
+	"http://icons.wxug.com/i/c/k/nt_fog.gif" : FOG,
+	"http://icons.wxug.com/i/c/k/nt_hazy.gif" : FOG,
+	"http://icons.wxug.com/i/c/k/nt_mostlycloudy.gif" : PARTLY_CLOUDY_NIGHT,
+	"http://icons.wxug.com/i/c/k/nt_mostlysunny.gif" : CLEAR_NIGHT,
+	"http://icons.wxug.com/i/c/k/nt_partlycloudy.gif" : PARTLY_CLOUDY_NIGHT,
+	"http://icons.wxug.com/i/c/k/nt_partlysunny.gif" : PARTLY_CLOUDY_NIGHT,
+	"http://icons.wxug.com/i/c/k/nt_sleet.gif" : SLEET,
+	"http://icons.wxug.com/i/c/k/nt_rain.gif" : RAIN,
+	"http://icons.wxug.com/i/c/k/nt_snow.gif" : SNOW,
+	"http://icons.wxug.com/i/c/k/nt_sunny.gif" : CLEAR_NIGHT,
+	"http://icons.wxug.com/i/c/k/nt_tstorms.gif" : STORM,
+
+	
+};
+
 //////////////////////////	
 //Retrieve user settings//
 //////////////////////////
@@ -88,7 +133,7 @@ if (options === null) options = { "language" : 100, //default to "English"
 								  "accuracy" : 16, //default to "Street"
 								  "feelslike" : "false",
 								  "ESDuration" : 5,
-								  "beaufort" : "false",
+								  "wspeed" : "0",
 								  "start" : "0",
 								  "end" : "0",
 								  "timer" : 30,
@@ -96,12 +141,189 @@ if (options === null) options = { "language" : 100, //default to "English"
 								  "alerts" : "true",
 								  "seconds" : "false",
 								  "forecast" : "false",
+								  "weatherprovider" : "0", //Yahoo! Weather
+								  "hide_bat" : "false",
+								  "font" : 0,
 								  "key" : ""};
 
 
 /////////////////////////
 //Retreive Weather data//
 /////////////////////////
+
+///////////////////////////
+//The Weather Underground//
+///////////////////////////
+
+var twuk = "";
+
+function TWUFromLarLong(latitude, longitude){
+	var celsius = options['units'] == 'celsius';
+	var url = "http://api.wunderground.com/api/07128f2dabc68d9b/conditions/forecast/astronomy/q/"+latitude+","+longitude+".json";
+	var accuracy = options['accuracy']; 
+	var req = new XMLHttpRequest();
+	req.open('GET', url, true);
+	req.onload = function(e) {
+		if (req.readyState == 4) {
+			if (req.status == 200) {
+				console.log(req.responseText);
+        response = JSON.parse(req.responseText);
+        if (response) {
+			
+			if (accuracy==6){city = response.current_observation.observation_location.state;}
+			if (accuracy==11){city = response.current_observation.display_location.city;}
+			if (accuracy==16){city = response.current_observation.display_location.city;}
+			
+			//Extract the data before sending to Pebble
+			if (celsius){temperature = Math.round(response.current_observation.temp_c) + "\u00B0";}
+			else {temperature = Math.round(response.current_observation.temp_f) + "\u00B0";}
+			
+			console.log ("icono: " + response.current_observation.icon_url);
+			icon = TWU[response.current_observation.icon_url];
+
+			
+			if (celsius){wind = response.current_observation.wind_kph;}
+			else{wind = response.current_observation.wind_mph;}
+			wdirection = response.current_observation.wind_dir; 
+
+			
+			//if user wants to display the Feels Like, override the temperature.
+			if (options["feelslike"] == "true"){
+				if (celsius){temperature = Math.round(response.current_observation.feelslike_c) + "\u00B0";}
+				else {temperature = Math.round(response.current_observation.feelslike_f) + "\u00B0";}
+			}
+			
+			
+			
+			//if user wants to display the Beaufort scale, override the wind speed.
+			if (options["wspeed"] == "3"){
+				var beaufort_speed = Beaufort(wind, options['units']);
+				wind=beaufort_speed;}
+			//if user wants to display the wind speed in m/s, override the wind speed.
+			else if(options["wspeed"] == "1"){
+				if(celsius){wind=parseFloat(wind)/3.6;}
+				else{wind=parseFloat(wind)/2.24;}
+				//ensure the result never goes over 2 decimals
+				wind=wind.toFixed(2);
+			}
+			//if user wants to display the wind speed in knots, override the wind speed.
+			else if(options["wspeed"] == "2"){
+				if(celsius){wind=parseFloat(wind)*0.54;}
+				else{wind=parseFloat(wind)*0.87;}
+				}
+			
+					
+
+			
+			//Forecast for the day
+			if (celsius){high = response.forecast.simpleforecast.forecastday[0].high.celsius + "\u00B0";}
+			else {high = response.forecast.simpleforecast.forecastday[0].high.fahrenheit + "\u00B0";}
+			
+			if (celsius){low = response.forecast.simpleforecast.forecastday[0].low.celsius + "\u00B0";}
+			else {low = response.forecast.simpleforecast.forecastday[0].low.fahrenheit + "\u00B0";}
+			
+			sunrise = response.sun_phase.sunrise.hour+":"+response.sun_phase.sunrise.minute;
+			sunset = ((response.sun_phase.sunset.hour)-12)+":"+response.sun_phase.sunset.minute;
+			         	
+			//Read the 3 days forecast values from the API
+			code1 = TWU[response.forecast.simpleforecast.forecastday[1].icon_url]; 
+			if (celsius){high1 = response.forecast.simpleforecast.forecastday[1].high.celsius + "\u00B0";}
+			else {high1 = response.forecast.simpleforecast.forecastday[1].high.fahrenheit + "\u00B0";}
+			
+			if (celsius){low1 = response.forecast.simpleforecast.forecastday[1].low.celsius + "\u00B0";}
+			else {low1 = response.forecast.simpleforecast.forecastday[1].low.fahrenheit + "\u00B0";}
+
+			code2 = TWU[response.forecast.simpleforecast.forecastday[2].icon_url]; 
+			if (celsius){high2 = response.forecast.simpleforecast.forecastday[2].high.celsius + "\u00B0";}
+			else {high2 = response.forecast.simpleforecast.forecastday[2].high.fahrenheit + "\u00B0";}
+			
+			if (celsius){low2 = response.forecast.simpleforecast.forecastday[2].low.celsius + "\u00B0";}
+			else {low2 = response.forecast.simpleforecast.forecastday[2].low.fahrenheit + "\u00B0";}
+
+			code3 = TWU[response.forecast.simpleforecast.forecastday[3].icon_url]; 
+			if (celsius){high3 = response.forecast.simpleforecast.forecastday[3].high.celsius + "\u00B0";}
+			else {high3 = response.forecast.simpleforecast.forecastday[3].high.fahrenheit + "\u00B0";}
+			
+			if (celsius){low3 = response.forecast.simpleforecast.forecastday[3].low.celsius + "\u00B0";}
+			else {low3 = response.forecast.simpleforecast.forecastday[3].low.fahrenheit + "\u00B0";}
+
+			//add a blank space between the - and the temp to better display
+			temperature = temperature.replace("-","- "); 
+			high1 = high1.replace("-","- ");
+			low1 = low1.replace("-","- ");
+			high2 = high2.replace("-","- ");
+			low2 = low2.replace("-","- ");
+			high3 = high3.replace("-","- ");
+			low3 = low3.replace("-","- ");
+			
+			//console logs
+			console.log("icon: " + icon + " temp: " + temperature + " city: " + city);
+			console.log("today's high: " + high + " today's low: " + low);
+			console.log("sunrise: " + sunrise + " sunset: " + sunset);
+			console.log("wspeed unit: " + options["wspeed"]);
+			console.log("wind speed: " + wind + " wind direction: " + wdirection);
+			console.log("icon1: " + code1 + " high1: " + high1 + " low1: " + low1);
+			console.log("icon2: " + code2 + " high2: " + high2 + " low2: " + low2);
+			console.log("icon3: " + code3 + " high3: " + high3 + " low3: " + low3);
+			console.log("start: " + parseInt(options["start"]) + " end: " + parseInt(options["end"]));
+			console.log("display battery: " + (options["hide_bat"] == "true" ? 1 : 0));
+			
+			//send the values to the Pebble!!
+			Pebble.sendAppMessage({
+				//Current conditions
+				"icon":icon,
+				"temperature":temperature, //Round the temperature
+				"city":city,
+				//User preferences
+				"invert_color" : (options["invert_color"] == "true" ? 1 : 0),
+				"language" : parseInt(options['language']),
+				"vibes" : (options["vibes"] == "true" ? 1 : 0),
+				//Forecast for the day
+				"high":high,
+				"low":low,
+				"sunrise":sunrise,
+				"sunset":sunset,
+				"wind":wind.toString(),
+				"wdirection" : wdirection,
+				//3 days forecast data
+				"day1code":code1,
+				"day1H":high1,
+				"day1L":low1,
+				"day2code":code2,
+				"day2H":high2,
+				"day2L":low2,
+				"day3code":code3,
+				"day3H":high3,
+				"day3L":low3,
+				//Extra Features
+				"ESDuration":parseInt(options['ESDuration']),
+				"timer":parseInt(options['timer']),
+				"seconds":(options["seconds"] == "true" ? 1 : 0),
+				"hourly_vibe":(options["hourly_vibe"] == "true" ? 1 : 0),
+				//YWeather v2.4 - Hourly Vibe Quiet Hours - START
+				"start":parseInt(options["start"]),
+				"end":parseInt(options["end"]),
+				//YWeather v2.4 - Hourly Vibe Quiet Hours - END
+				"forecast":(options["forecast"] == "true" ? 1 : 0),
+				"hide_bat" : (options["hide_bat"] == "true" ? 1 : 0),
+				"font" : parseInt(options['font']),
+          });
+			
+        }
+      } else {
+        console.log("unable to get woeid from The Weather Underground API");
+		if(options['alerts']== "true"){
+			Pebble.showSimpleNotificationOnPebble("YWeather", "Yahoo! Weather seems to be down... is this the end of the world?");
+		}
+      }
+    }
+  }
+  req.send(null);
+}
+
+//////////////////
+//Yahoo! Weather//
+//////////////////
 
 //Retrieve the WOEID & City name from Yahoo! when GPS is OFF
 function getWeatherFromLatLong(latitude, longitude) {
@@ -129,7 +351,9 @@ function getWeatherFromLatLong(latitude, longitude) {
         }
       } else {
         console.log("unable to get woeid from Yahoo! API");
-		Pebble.showSimpleNotificationOnPebble("YWeather", "Yahoo! Weather seems to be down... is this the end of the world?");
+		if(options['alerts']== "true"){
+			Pebble.showSimpleNotificationOnPebble("YWeather", "I cannot retrieve the weather from Yahoo! Weather.");
+		}
       }
     }
   }
@@ -154,11 +378,14 @@ function getWeatherFromLocation(location_name) {
         if (response) {
 			woeid = response.query.results.place.woeid;
 			city = response.query.results.place.name;
+			
 			getWeatherFromWoeid(woeid, city);
         }
       } else {
         console.log("unable to get woeid from Yahoo! API");
-		Pebble.showSimpleNotificationOnPebble("YWeather", "Yahoo! Weather seems to be down... is this the end of the world?");
+		if(options['alerts']== "true"){
+			Pebble.showSimpleNotificationOnPebble("YWeather", "I cannot retrieve the weather data from Yahoo! Weather");
+		}
       }
     }
   }
@@ -204,7 +431,9 @@ function getWeatherFromWoeid(woeid, city) {
 			sunrise = channel[0].astronomy.sunrise;
 			sunset = channel[0].astronomy.sunset;
 			wind = channel[0].wind.speed;
-			wdirection = channel[0].wind.direction;
+			wdirection = windDirection(channel[0].wind.direction);
+			
+
 			//Feels Like
 			wind_chill = channel[0].wind.chill;
 			humidity =  channel[0].atmosphere.humidity;
@@ -218,9 +447,24 @@ function getWeatherFromWoeid(woeid, city) {
 			
 			
 			//if user wants to display the Beaufort scale, override the wind speed.
-			if (options["beaufort"] == "true"){
+			if (options["wspeed"] == "3"){
 				var beaufort_speed = Beaufort(wind, options['units']);
 				wind=beaufort_speed;}
+			//if user wants to display the wind speed in m/s, override the wind speed.
+			else if(options["wspeed"] == "1"){
+				if(celsius){wind=parseFloat(wind)/3.6;}
+				else{wind=parseFloat(wind)/2.24;}
+				//ensure the result never goes over 2 decimals
+				wind = wind.toFixed(2);
+			}
+			//if user wants to display the wind speed in knots, override the wind speed.
+			else if(options["wspeed"] == "2"){
+				if(celsius){wind=parseFloat(wind)*0.54;}
+				else{wind=parseFloat(wind)*0.87;}
+				
+				}
+			
+
 			         	
 			//Read the 3 days forecast values from the API
 			code1 = imageId[channel[1].item.forecast.code];
@@ -236,19 +480,20 @@ function getWeatherFromWoeid(woeid, city) {
 			low3 = channel[3].item.forecast.low + "\u00B0";
 
 			//add a blank space between the - and the temp to better display
-			temperature.replace("-","- "); 
-			high1.replace("-","- ");
-			low1.replace("-","- ");
-			high2.replace("-","- ");
-			low2.replace("-","- ");
-			high3.replace("-","- ");
-			low3.replace("-","- ");
+			temperature = temperature.replace("-","- "); 
+			high1 = high1.replace("-","- ");
+			low1 = low1.replace("-","- ");
+			high2 = high2.replace("-","- ");
+			low2 = low2.replace("-","- ");
+			high3 = high3.replace("-","- ");
+			low3 = low3.replace("-","- ");
 			
 			//console logs
 			console.log("icon: " + icon + " temp: " + temperature + " city: " + city);
 			console.log("wind chill: " + wind_chill + " humidiy: " + humidity +  " Feels Like: " + Feels_Like);
 			console.log("today's high: " + high + " today's low: " + low);
 			console.log("sunrise: " + sunrise + " sunset: " + sunset);
+			console.log("wspeed unit: " + options["wspeed"]);
 			console.log("wind speed: " + wind + " wind direction: " + wdirection);
 			console.log("icon1: " + code1 + " high1: " + high1 + " low1: " + low1);
 			console.log("icon2: " + code2 + " high2: " + high2 + " low2: " + low2);
@@ -271,7 +516,7 @@ function getWeatherFromWoeid(woeid, city) {
 				"sunrise":sunrise,
 				"sunset":sunset,
 				"wind":wind,
-				"wdirection" : parseInt(wdirection),
+				"wdirection" : wdirection,
 				//3 days forecast data
 				"day1code":code1,
 				"day1H":high1,
@@ -288,10 +533,12 @@ function getWeatherFromWoeid(woeid, city) {
 				"seconds":(options["seconds"] == "true" ? 1 : 0),
 				"hourly_vibe":(options["hourly_vibe"] == "true" ? 1 : 0),
 				//YWeather v2.4 - Hourly Vibe Quiet Hours - START
-				//"quietstart":parseInt(options["start"]),
-				//"quietend":parseInt(options["end"]),
+				"start":parseInt(options["start"]),
+				"end":parseInt(options["end"]),
 				//YWeather v2.4 - Hourly Vibe Quiet Hours - END
 				"forecast":(options["forecast"] == "true" ? 1 : 0),
+				"hide_bat" : (options["hide_bat"] == "true" ? 1 : 0),
+				"font" : parseInt(options['font']),
           });
         }
       } else {
@@ -325,7 +572,10 @@ var locationOptions = { "timeout": 15000, "maximumAge": 60000, "enableHighAccura
 function locationSuccess(pos) {
   var coordinates = pos.coords;
   console.log("location success");
-  getWeatherFromLatLong(coordinates.latitude, coordinates.longitude);
+
+	//call the weather function based on the selected provider (defaulted to Yahoo! Weather)
+	if (options['weatherprovider']=="1"){TWUFromLarLong(coordinates.latitude, coordinates.longitude);}
+	else {getWeatherFromLatLong(coordinates.latitude, coordinates.longitude);}
 }
 
 function locationError(err) {
@@ -424,6 +674,62 @@ function Beaufort(speed, unit){
 }
 
 
+/*****************************/
+/* Decode the Wind Direction */
+/*****************************/
+
+function windDirection(wdirection)
+{
+/*
+Wind directions
+	
+N 348.75 - 11.25
+NNE 11.25 - 33.75
+NE 33.75 - 56.25
+ENE 56.25 - 78.75
+E 78.75 - 101.25
+ESE 101.25 - 123.75
+SE 123.75 - 146.25
+SSE 146.25 - 168.75
+S 168.75 - 191.25
+SSW 191.25 - 213.75
+SW 213.75 - 236.25
+WSW 236.25 - 258.75
+W 258.75 - 281.25
+WNW 281.25 - 303.75
+NW 303.75 - 326.25
+NNW 326.25 - 348.75
+
+*/
+	
+	//correct the wind direction if blank
+	if (wdirection == ""){wdirection=0;}
+	
+	var strwdirection;
+	
+	if((wdirection>348)||(wdirection<12)){strwdirection = "N";}
+	else if((wdirection>11)&&(wdirection<34)){strwdirection = "NNE";}
+	else if((wdirection>33)&&(wdirection<57)){strwdirection = "NE";}
+	else if((wdirection>56)&&(wdirection<79)){strwdirection = "ENE";}
+	else if((wdirection>78)&&(wdirection<102)){strwdirection = "E";}
+	else if((wdirection>101)&&(wdirection<124)){strwdirection = "ESE";}
+	else if((wdirection>123)&&(wdirection<147)){strwdirection = "SE";}
+	else if((wdirection>146)&&(wdirection<169)){strwdirection = "SSE";}
+	else if((wdirection>168)&&(wdirection<191)){strwdirection = "S";}
+	else if((wdirection>191)&&(wdirection<214)){strwdirection ="SSW";}
+	else if((wdirection>214)&&(wdirection<237)){strwdirection = "SW";}
+	else if((wdirection>237)&&(wdirection<259)){strwdirection = "WSW";}
+	else if((wdirection>259)&&(wdirection<282)){strwdirection = "W";}
+	else if((wdirection>282)&&(wdirection<304)){strwdirection = "WNW";}
+	else if((wdirection>304)&&(wdirection<327)){strwdirection = "NW";}
+	else if((wdirection>326)&&(wdirection<349)){strwdirection = "NNW";}
+	
+	return strwdirection;
+
+}
+
+
+
 
 ///////////////////////////////////////
 //Setup the connection with the watch//
@@ -431,7 +737,7 @@ function Beaufort(speed, unit){
 
 //Displays the configuration page in the phone
 Pebble.addEventListener('showConfiguration', function(e) {
-  var uri = 'http://dabdemon.github.io/Yahoo--Weather/settings.html?' + //Here you need to enter your configuration webservice
+  var uri = 'http://dabdemon.github.io/Yahoo--Weather/development.html?' + //Here you need to enter your configuration webservice
     'language=' + encodeURIComponent(options['language']) +
 	'&use_gps=' + encodeURIComponent(options['use_gps']) +
     '&location=' + encodeURIComponent(options['location']) +
@@ -441,7 +747,7 @@ Pebble.addEventListener('showConfiguration', function(e) {
 	'&accuracy=' + encodeURIComponent(options['accuracy']) +
 	'&feelslike=' + encodeURIComponent(options['feelslike']) +
 	'&ESDuration=' + encodeURIComponent(options['ESDuration']) +
-	'&beaufort=' + encodeURIComponent(options['beaufort']) +	
+	'&wspeed=' + encodeURIComponent(options['wspeed']) +	
 	'&start=' + encodeURIComponent(options['start']) +	
 	'&end=' + encodeURIComponent(options['end']) +	
 	'&timer=' + encodeURIComponent(options['timer']) +
@@ -457,6 +763,11 @@ Pebble.addEventListener('showConfiguration', function(e) {
 //YWeather 2.3 - REQ01. Display Seconds - START
 	'&seconds=' + encodeURIComponent(options['seconds']) +
 //YWeather 2.3 - REQ01. Display Seconds - END
+	'&weatherprovider=' + encodeURIComponent(options['weatherprovider']) +
+	'&hide_bat=' + encodeURIComponent(options['hide_bat']) +
+	'&start=' + encodeURIComponent(options['start']) +
+	'&end=' + encodeURIComponent(options['end']) +
+	'&font=' + encodeURIComponent(options['font']) +
 	'&forecast=' + encodeURIComponent(options['forecast']);
 
 	//console.log('showing configuration at uri: ' + uri);

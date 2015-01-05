@@ -12,7 +12,9 @@
         "day3L": 20,
         "day3code": 18,
         "end": 27,
+        "font": 29,
         "forecast": 23,
+        "hide_bat": 28,
         "high": 6,
         "hourly_vibe": 25,
         "icon": 0,
@@ -39,9 +41,43 @@
     "resources": {
         "media": [
             {
-                "file": "images/hourly_vibe.png",
-                "name": "hourly_vibe",
-                "type": "png"
+                "characterRegex": "[0-9: ]",
+                "file": "fonts/texgyreheroscn-regular.ttf",
+                "name": "Modern_53",
+                "type": "font"
+            },
+            {
+                "characterRegex": "[0-9\u00b0 -]",
+                "file": "fonts/texgyreheroscn-regular.ttf",
+                "name": "Modern_47",
+                "type": "font"
+            },
+            {
+                "file": "fonts/texgyreheroscn-regular.ttf",
+                "name": "Modern_17",
+                "type": "font"
+            },
+            {
+                "file": "fonts/texgyreheroscn-regular.ttf",
+                "name": "Modern_10",
+                "type": "font"
+            },
+            {
+                "characterRegex": "[0-9\u00b0.: -]",
+                "file": "fonts/Aunchanted Bold.ttf",
+                "name": "Aunchanted_bold_51",
+                "trackingAdjust": -1,
+                "type": "font"
+            },
+            {
+                "file": "fonts/Aunchanted Bold.ttf",
+                "name": "Aunchanted_bold_20",
+                "type": "font"
+            },
+            {
+                "file": "fonts/Aunchanted Bold.ttf",
+                "name": "Aunchanted_bold_14",
+                "type": "font"
             },
             {
                 "file": "images/YWeather_Menu.png",

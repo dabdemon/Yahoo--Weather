@@ -7,11 +7,11 @@
 #define DATE_FRAME       (GRect(1, 70, 139, 168-62))
 	//YWeather 2.3 - REQ01. Display Seconds - START
 #define TIME_FRAME2      (GRect(0, 15, 116, 168-16))
-#define SECONDS_FRAME    (GRect(116, 50, 36, 22))
-#define AMPM_FRAME    (GRect(118, 40, 36, 22))
+#define SECONDS_FRAME    (GRect(117, 50, 32, 22))
+#define AMPM_FRAME    (GRect(117, 40, 32, 22))
 	//YWeather 2.3 - REQ01. Display Seconds - END
 	//YWeather 2.3 - REQ02. Hourly Vibe - START
-#define HourlyVibe_FRAME    (GRect(120, 30, 15, 9))
+//#define HourlyVibe_FRAME    (GRect(120, 28, 15, 9))
 	//YWeather 2.3 - REQ02. Hourly Vibe - END
 
 	

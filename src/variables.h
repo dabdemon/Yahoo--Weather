@@ -3,39 +3,43 @@
 //*************//
 
 enum WeatherKey {
-	WEATHER_ICON_KEY = 0x0,        // TUPLE_INT
-	WEATHER_TEMPERATURE_KEY = 0x1, // TUPLE_CSTRING
-	WEATHER_CITY_KEY = 0x2,        //	TUPLE_CSTRING
-	INVERT_COLOR_KEY = 0x3,  		 // TUPLE_INT
-	language_key = 0x4, 			// TUPLE_INT
-	VIBES_KEY = 0x5,  		 // TUPLE_INT
+	WEATHER_ICON_KEY = 0, // 0x0,        // TUPLE_INT
+	WEATHER_TEMPERATURE_KEY = 1, // 0x1, // TUPLE_CSTRING
+	WEATHER_CITY_KEY = 2, //0x2,        //	TUPLE_CSTRING
+	INVERT_COLOR_KEY = 3, //0x3,  		 // TUPLE_INT
+	language_key = 4, //0x4, 			// TUPLE_INT
+	VIBES_KEY = 5, //0x5,  		 // TUPLE_INT
 //Forecast for the day
-	WEATHER_HIGH_KEY = 0x6,	//TUPLE_CSTRING
-	WEATHER_LOW_KEY = 0x7,	//TUPLE_CSTRING
-	SUNRISE_KEY = 0x8, //TUPLE_CSTRING
-	SUNSET_KEY = 0x9, //TUPLE_CSTRING
-	WIND_KEY = 0xa, //TUPLE_CSTRING
-	WDIRECTION_KEY = 0xb, //TUPLE_INT
+	WEATHER_HIGH_KEY = 6, //0x6,	//TUPLE_CSTRING
+	WEATHER_LOW_KEY = 7, //0x7,	//TUPLE_CSTRING
+	SUNRISE_KEY = 8, //0x8, //TUPLE_CSTRING
+	SUNSET_KEY = 9, //0x9, //TUPLE_CSTRING
+	WIND_KEY = 10, //0xa, //TUPLE_CSTRING
+	WDIRECTION_KEY = 11, //0xb, //TUPLE_INT
 //3 day forecast
-	FORECAST_CODE1_KEY = 0xc, //TUPLE_INT
-	FORECAST_HIGH1_KEY = 0xd, //TUPLE_CSTRING
-	FORECAST_LOW1_KEY = 0xe, //TUPLE_CSTRINT
-	FORECAST_CODE2_KEY = 0xf, //TUPLE_INT
-	FORECAST_HIGH2_KEY = 0x10, //TUPLE_CSTRING
-	FORECAST_LOW2_KEY = 0x11, //TUPLE_CSTRING
-	FORECAST_CODE3_KEY = 0x12, //TUPLE_INT
-	FORECAST_HIGH3_KEY = 0x13, //TUPLE_CSTRING
-	FORECAST_LOW3_KEY = 0x14, //TUPLE_CSTRING
+	FORECAST_CODE1_KEY = 12, //0xc, //TUPLE_INT
+	FORECAST_HIGH1_KEY = 13, //0xd, //TUPLE_CSTRING
+	FORECAST_LOW1_KEY = 14, //0xe, //TUPLE_CSTRINT
+	FORECAST_CODE2_KEY = 15, //0xf, //TUPLE_INT
+	FORECAST_HIGH2_KEY = 16, //0x10, //TUPLE_CSTRING
+	FORECAST_LOW2_KEY = 17, //0x11, //TUPLE_CSTRING
+	FORECAST_CODE3_KEY = 18, //0x12, //TUPLE_INT
+	FORECAST_HIGH3_KEY = 19, //0x13, //TUPLE_CSTRING
+	FORECAST_LOW3_KEY = 20, //0x14, //TUPLE_CSTRING
 //Extra Features
-	EXTRA_ESDURATION_KEY = 0x15, //TUPLE_INT
-	EXTRA_TIMER_KEY = 0x16, //TUPLE_INT
-	EXTRA_FORECAST_KEY = 0x17, //TUPLE_INT
+	EXTRA_ESDURATION_KEY = 21, //0x15, //TUPLE_INT
+	EXTRA_TIMER_KEY = 22, //0x16, //TUPLE_INT
+	EXTRA_FORECAST_KEY = 23, //0x17, //TUPLE_INT
 	//YWeather 2.3 - REQ01. Display Seconds - START
-	DISPLAY_SECONDS_KEY = 0x18, //TUPLE_INT
+	DISPLAY_SECONDS_KEY = 24, //0x18, //TUPLE_INT
 	//YWeather 2.3 - REQ01. Display Seconds - START
 	//YWeather 2.3 - REQ02. Hourly Vibe - START
-	HOURLY_VIBE_KEY = 0x19, //TUPLE_INT
+	HOURLY_VIBE_KEY = 25, //0x19, //TUPLE_INT
 	//YWeather 2.3 - REQ02. Hourly Vibe - END
+	HOURLY_VIBE_START_KEY = 26, //INT
+	HOURLY_VIBE_END_KEY = 27, //INT
+	HIDE_BAT_KEY = 28, //INT
+	FONT_KEY = 29, //INT
 };
 
 	#define TAP_TIME 2000
@@ -84,7 +88,7 @@ enum WeatherKey {
 	static char time_text[] = "00:00";
 //YWeather 2.3 - REQ01. Display Seconds - START
 	static char seconds_text[] = "00";
-	static char ampm_text[] = "24H";
+	static char ampm_text[] = "   ";
 //YWeather 2.3 - REQ01. Display Seconds - END
 	//static char inverted[]="B";
 	//static char temperature[]="     ";
@@ -98,7 +102,7 @@ enum WeatherKey {
 	static char city[100];
 	static char temp[]="     ";
 
-	static char version[]="2.3";
+	static char version[]="2.5";
 
 	static char weekday1_text[] = "XXXXXXXXXXXXX";
 	static char weekday2_text[] = "XXXXXXXXXXXXX";
@@ -118,13 +122,13 @@ enum WeatherKey {
 	//static uint8_t *resized_data;
 	//static uint8_t *resized_data2;
 	//static uint8_t *resized_data3;
-
-
 	int iHours;
 	int iHours2;
 	int iMinutes;
 	int iMinutes2;
-	
+
+
+
 	int moonphase_number;
 	int intday;
 	int intmonth;
@@ -138,7 +142,7 @@ enum WeatherKey {
 	int language = 100;
 	bool color_inverted;
 	int ICON_CODE;
-	bool batt_status = true; //If true, display the battery status all the time; if false, just when running low (<10%)
+	bool batt_status = false; //If true, display the battery status all the time; if false, just when running low (<10%)
 	
 	bool blnvibes;
 	bool blninverted =  false;
@@ -150,5 +154,6 @@ enum WeatherKey {
 	//YWeather 2.3 - REQ02. Hourly Vibe - START
 	bool blnhourly_vibe = false;
 	//YWeather 2.3 - REQ02. Hourly Vibe - END
-	int intDNDStart=0;
-	int intDNDEnd=0;	
+    
+//Load the custom fonts
+	int intUI = 0; //0 = Classic, 1 = Modern

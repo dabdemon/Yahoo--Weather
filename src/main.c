@@ -7,6 +7,8 @@
 #include "textlayers.h"
 #include "frames.h"
 
+#include "functions.h"
+
 
  
 //UIDs:
@@ -309,8 +311,19 @@ void getDate()
 //YWeather 2.3 - REQ01. Display Seconds - START
 void getTime()
 	{
-		clock_copy_time_string(time_text, sizeof(time_text));
-			
+	
+	time_t actualPtr = time(NULL);
+	struct tm *tz1Ptr = gmtime(&actualPtr);
+	
+	if (clock_is_24h_style()){strftime(time_text, sizeof(time_text), "%H:%M", tz1Ptr);}
+	else {strftime(time_text, sizeof(time_text), "%I:%M", tz1Ptr);}	
+	
+	//Remove the leading 0s
+	if (time_text[0]=='0') {memcpy(&time_text," ",1);}
+	
+	//clock_copy_time_string(time_text, sizeof(time_text));
+	
+		
 		//Set the time to the Time Layer
         text_layer_set_text(Time_Layer, time_text);
                 
@@ -323,30 +336,6 @@ void getTime()
 }
 //YWeather 2.3 - REQ01. Display Seconds - END
 
-/*
-bool DoNotDisturb(int Hour, int Minutes){
-	//Define the variables
-	bool blnNextDay = 0;
-	//Read the Hourly Vibe Quiet Hours setup
-	intDNDStart = persist_read_int(HOURLY_VIBE_START_KEY);
-	intDNDEnd = persist_read_int(HOURLY_VIBE_END_KEY);
-	
-	//Determine if the DND End is the next day
-	if(intDNDStart>intDNDEnd){blnNextDay = 1;}
-	
-	if (blnNextDay){
-	//if the DND End is next day, DND period is when the Current Hour is greater than Start Hour
-		if ((Hour>=intDNDStart)||(Hour<intDNDEnd)){return true; } //DND period
-		else {return false;} //Not DND period
-	}
-	else{
-	//if the DND End is the same day, DND period is when the Current Hour is between Start and End Hours
-		if ((Hour>=intDNDStart)&&(Hour<intDNDEnd)){return true;} //DND period
-		else {return false;} //Not DND period
-	}
-	
-}
-*/
 
 //************************//
 // Capture the Tick event //
@@ -355,8 +344,9 @@ void handle_tick(struct tm *tick_time, TimeUnits units_changed)
 {
 	//YWeather 2.3 - REQ01. Display Seconds - START
 			//Set the AM/PM indicator
-			if(clock_is_24h_style()){memcpy(&ampm_text,  "24H", strlen("24H"));}
-			else {strftime(ampm_text, sizeof(ampm_text), "%p", tick_time);}
+			//if(clock_is_24h_style()){memcpy(&ampm_text,  "24H", strlen("24H"));}
+			//else {strftime(ampm_text, sizeof(ampm_text), "%p", tick_time);}
+			if(!clock_is_24h_style()){strftime(ampm_text, sizeof(ampm_text), "%p", tick_time);}
 			text_layer_set_text(ampm_layer, ampm_text); //Update the weekday layer  
 	//YWeather 2.3 - REQ01. Display Seconds - END
      
@@ -389,8 +379,8 @@ void handle_tick(struct tm *tick_time, TimeUnits units_changed)
 		if (units_changed & HOUR_UNIT){
 			//Vibes on O'Clock
 			if (blnhourly_vibe){
-				//if(!DoNotDisturb(tick_time->tm_hour, tick_time->tm_min)){vibes_double_pulse();}
-				vibes_double_pulse();
+				if(!DoNotDisturb(tick_time->tm_hour, tick_time->tm_min,HOURLY_VIBE_START_KEY,HOURLY_VIBE_END_KEY)){vibes_double_pulse();}
+				//vibes_double_pulse();
 				}
 		} //HOUR CHANGES
 		   
@@ -447,7 +437,8 @@ void SubscribeTickEvent(){
     case WEATHER_TEMPERATURE_KEY:
          //Update the temperature
 	        //Set the time on which weather was retrived
-			clock_copy_time_string(last_update, sizeof(last_update));
+			//clock_copy_time_string(last_update, sizeof(last_update));
+	  		memcpy(&last_update,  time_text, strlen(time_text));
 	  		//If the app is in the Main Screen, refresh Last Update
 			if (blnForecast == false) {text_layer_set_text(Last_Update, last_update);}
 	  		
@@ -513,7 +504,8 @@ void SubscribeTickEvent(){
 	  	case WDIRECTION_KEY:
 	  	  	//Save the Wind Direction
 	  	  	//wdirection = new_tuple->value->uint32;
-	  	  	persist_write_int(WDIRECTION_KEY, wdirection);
+	  	  	//persist_write_int(WDIRECTION_KEY, wdirection);
+	  		persist_write_string(WDIRECTION_KEY, new_tuple->value->cstring);
       		break;
 	  
 	  	case FORECAST_CODE1_KEY:
@@ -611,13 +603,28 @@ void SubscribeTickEvent(){
 	  	  	case HOURLY_VIBE_KEY:
 	  		//Saves the hourly vibe toggle
 	  		blnhourly_vibe =  new_tuple->value->uint8 != 0;
-	  		persist_write_int(HOURLY_VIBE_KEY, new_tuple->value->uint8);
-	  
-	  		if (blnhourly_vibe){bitmap_layer_set_bitmap(hourly_vibe_layer, hourly_vibe);}
-			else {bitmap_layer_set_bitmap(hourly_vibe_layer, NULL);}
-	  
+	  		persist_write_int(HOURLY_VIBE_KEY, new_tuple->value->uint8); 
       		break;
 	  	//YWeather 2.3 - REQ02. Hourly Vibe - END
+	  	  	
+	  		case HOURLY_VIBE_START_KEY:
+	  		persist_write_int(HOURLY_VIBE_START_KEY, new_tuple->value->uint8);
+	  		break;
+	  
+	  	  	case HOURLY_VIBE_END_KEY:
+	  		persist_write_int(HOURLY_VIBE_END_KEY, new_tuple->value->uint8);
+	  		break;
+	  
+	  	 	case HIDE_BAT_KEY:
+		  	batt_status = new_tuple->value->uint8 != 0;
+		  	persist_write_int(HIDE_BAT_KEY, batt_status);
+
+		  	break;
+	  
+	  	  case FONT_KEY:
+	  	  intUI = new_tuple->value->uint8;
+	  	  persist_write_int(FONT_KEY, intUI);
+		  break;
 
   }
 	  
@@ -929,182 +936,7 @@ static void forecast_callback(void *context) {
 }
 
 
-/*****************************/
-/* Decode the Wind Direction */
-/*****************************/
 
-void windDirection()
-{
-/*
-Wind directions
-	
-N 348.75 - 11.25
-NNE 11.25 - 33.75
-NE 33.75 - 56.25
-ENE 56.25 - 78.75
-E 78.75 - 101.25
-ESE 101.25 - 123.75
-SE 123.75 - 146.25
-SSE 146.25 - 168.75
-S 168.75 - 191.25
-SSW 191.25 - 213.75
-SW 213.75 - 236.25
-WSW 236.25 - 258.75
-W 258.75 - 281.25
-WNW 281.25 - 303.75
-NW 303.75 - 326.25
-NNW 326.25 - 348.75
-
-*/
-	
-	memset(&strwdirection[0],0,strlen(strwdirection));
-	
-	if((wdirection>348)||(wdirection<12)){memcpy(&strwdirection, "N", 1);}
-	else if((wdirection>11)&&(wdirection<34)){memcpy(&strwdirection, "NNE", 3);}
-	else if((wdirection>33)&&(wdirection<57)){memcpy(&strwdirection, "NE", 2);}
-	else if((wdirection>56)&&(wdirection<79)){memcpy(&strwdirection, "ENE", 3);}
-	else if((wdirection>78)&&(wdirection<102)){memcpy(&strwdirection, "E", 1);}
-	else if((wdirection>101)&&(wdirection<124)){memcpy(&strwdirection, "ESE", 3);}
-	else if((wdirection>123)&&(wdirection<147)){memcpy(&strwdirection, "SE", 2);}
-	else if((wdirection>146)&&(wdirection<169)){memcpy(&strwdirection, "SSE", 3);}
-	else if((wdirection>168)&&(wdirection<191)){memcpy(&strwdirection, "S", 1);}
-	else if((wdirection>191)&&(wdirection<214)){memcpy(&strwdirection, "SSW", 3);}
-	else if((wdirection>214)&&(wdirection<237)){memcpy(&strwdirection, "SW", 2);}
-	else if((wdirection>237)&&(wdirection<259)){memcpy(&strwdirection, "WSW", 3);}
-	else if((wdirection>259)&&(wdirection<282)){memcpy(&strwdirection, "W", 1);}
-	else if((wdirection>282)&&(wdirection<304)){memcpy(&strwdirection, "WNW", 3);}
-	else if((wdirection>304)&&(wdirection<327)){memcpy(&strwdirection, "NW", 2);}
-	else if((wdirection>326)&&(wdirection<349)){memcpy(&strwdirection, "NNW", 3);}
-
-}
-
-/*********************************************************/
-/* Format Sunrise/Sunset time based on Pebble's settings */
-/*********************************************************/
-void formatSunset(){
-	
-	time_t actualPtr = time(NULL);
-	
-	//Split the sunset hour and minutes (assume sunset is always after noon)
-	
-	if (sunset[1]==':'){
-		
-	
-		//hours
-		iHours = sunset[0] - '0';
-		//minutes
-		iMinutes = sunset[2] - '0';
-		iMinutes2 = sunset[3] - '0';
-		
-		iMinutes = ((iMinutes*10)+iMinutes2);
-	}
-	else{
-		//hours
-		iHours = sunset[0] - '0';
-		iHours2 = sunset[1] - '0';
-		
-		iHours = ((iHours*10)+iHours2);
-		
-		//minutes
-		iMinutes = sunset[3] - '0';
-		iMinutes2 = sunset[4] - '0';
-		
-		iMinutes = ((iMinutes*10)+iMinutes2);
-		
-	}
-
-	//SUNSET
-	struct tm *tz1Ptr = gmtime(&actualPtr);
-	tz1Ptr->tm_hour = iHours+12; //assume sunset is always after noon
-	tz1Ptr->tm_min = iMinutes;
-	
-	
-	if (clock_is_24h_style()){strftime(sunset, sizeof(sunset), "%H:%M", tz1Ptr);}
-	else {strftime(sunset, sizeof(sunset), "%I:%M", tz1Ptr);}	
-	
-	//Remove the leading 0s
-	if (sunset[0]=='0') {memcpy(&sunset," ",1);}
-	
-}
-
-void formatSunrise(){
-	
-	time_t actualPtr2 = time(NULL);
-	
-	//Split the sunset hour and minutes (assume sunrise is always before noon)
-	
-	if (sunrise[1]==':'){
-		
-	
-		//hours
-		iHours = sunrise[0] - '0';
-		//minutes
-		iMinutes = sunrise[2] - '0';
-		iMinutes2 = sunrise[3] - '0';
-		
-		iMinutes = ((iMinutes*10)+iMinutes2);
-	}
-	else{
-		//hours
-		iHours = sunrise[0] - '0';
-		iHours2 = sunrise[1] - '0';
-		
-		iHours = ((iHours*10)+iHours2);
-		
-		//minutes
-		iMinutes = sunrise[3] - '0';
-		iMinutes2 = sunrise[4] - '0';
-		
-		iMinutes = ((iMinutes*10)+iMinutes2);
-		
-	}
-
-
-	//SUNRISE
-	struct tm *tz2Ptr = gmtime(&actualPtr2);
-	tz2Ptr->tm_hour = iHours; //assume sunrise is always before noon
-	tz2Ptr->tm_min = iMinutes;
-	
-	
-	if (clock_is_24h_style()){strftime(sunrise, sizeof(sunrise), "%H:%M", tz2Ptr);}
-	else {strftime(sunrise, sizeof(sunrise), "%I:%M", tz2Ptr);}	
-	
-	//Remove the leading 0s
-	if (sunrise[0]=='0') {memcpy(&sunrise," ",1);}
-	
-}
-
-/****************************/
-/* Calculate the Moon Phase */
-/****************************/
-
-//Extracted from "Ninety Weather Moon" by Novo//
-int moon_phase(int y, int m, int d) {
-    /*
-      calculates the moon phase (0-7), accurate to 1 segment.
-      0 = > new moon.
-      4 => full moon.
-    */
-    int c,e;
-    double jd;
-    int b;
-
-    if (m < 3) {
-        y--;
-        m += 12;
-    }
-    ++m;
-    c = 365.25*y;
-    e = 30.6*m;
- //   jd = c+e+d-694039.09;  	/* jd is total days elapsed */
-	jd = c+e+d-694038.09;  	/* jd is total days elapsed */
-    jd /= 29.53;        	/* divide by the moon cycle (29.53 days) */
-    b = jd;		   			/* int(jd) -> b, take integer part of jd */
-    jd -= b;		   		/* subtract integer part to leave fractional part of original jd */
-    b = jd*8 + 0.5;	   		/* scale fraction from 0-8 and round by adding 0.5 */
-    b = b & 7;		   		/* 0 and 8 are the same so turn 8 into 0 */
-    return b;
-}
 
 /****************************************/
 /* Display the secondary weather screen */
@@ -1167,8 +999,7 @@ void LoadForecast()
 	layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Sunrise_Layer));
 	
 	persist_read_string(SUNRISE_KEY, sunrise, sizeof(sunrise));
-	formatSunrise();
-	text_layer_set_text(Sunrise_Layer,sunrise);
+	text_layer_set_text(Sunrise_Layer,formatSunrise(sunrise));
 	
 	//Display the sunset icon
 	if (sunrise_image){gbitmap_destroy(sunrise_image);}
@@ -1186,8 +1017,7 @@ void LoadForecast()
 	layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Sunset_Layer));
 	
 	persist_read_string(SUNSET_KEY, sunset, sizeof(sunset));
-	formatSunset();
-	text_layer_set_text(Sunset_Layer,sunset);
+	text_layer_set_text(Sunset_Layer,formatSunset(sunset));
 	
 	//Display the sunset icon
 	if (sunset_image){gbitmap_destroy(sunset_image);}
@@ -1215,9 +1045,10 @@ void LoadForecast()
 	text_layer_set_text_alignment(WDirection_Layer, GTextAlignmentRight);
 	layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(WDirection_Layer));
 	
-	wdirection =  persist_read_int(WDIRECTION_KEY); 
+	//wdirection =  persist_read_int(WDIRECTION_KEY); 
 	//decode the wind direction code to text
-	windDirection();
+	//windDirection();
+	persist_read_string(WDIRECTION_KEY, strwdirection, sizeof(strwdirection));
 	text_layer_set_text(WDirection_Layer,strwdirection);
 	
 	//Display the wind icon
@@ -1256,11 +1087,14 @@ void LoadForecast()
 void accel_tap_handler(AccelAxisType axis, int32_t direction){
 
     //send_cmd();
+	//Check if the Forecast is enabled 
+	if (ESDuration_ms>0){
 	//Just fire the event while displaying the primary screen
-	if (blnForecast==false){
-		TapCount = TapCount + 1;
-		if (TapCount > 1){
-			LoadForecast();
+		if (blnForecast==false){
+			TapCount = TapCount + 1;
+			if (TapCount > 1){
+				LoadForecast();
+			}
 		}
 	}
 }
@@ -1309,17 +1143,6 @@ void LoadMainWindow(){
 		//YWeather 2.3 - REQ01. Display Seconds - END
                 layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Time_Layer));
 	
-	//YWeather 2.3 - REQ02. Hourly Vibe - START
-				//Temporary set the hourly vibe icon by default
-				if (hourly_vibe){gbitmap_destroy(hourly_vibe);}
-				hourly_vibe = gbitmap_create_with_resource(RESOURCE_ID_hourly_vibe);
-	
-	            hourly_vibe_layer = bitmap_layer_create(HourlyVibe_FRAME);
-				if (blnhourly_vibe){bitmap_layer_set_bitmap(hourly_vibe_layer, hourly_vibe);}
-				else {bitmap_layer_set_bitmap(hourly_vibe_layer, NULL);}
-                layer_add_child(window_get_root_layer(my_window), bitmap_layer_get_layer(hourly_vibe_layer));
-					
-	//YWeather 2.3 - REQ02. Hourly Vibe - END
 	
 	//YWeather 2.3 - REQ01. Display Seconds - START
 	            //Display the Second layer
@@ -1375,7 +1198,8 @@ void SetupMessages(){
 				MyTupletCString(SUNSET_KEY,sunset),
 				MyTupletCString(WIND_KEY,wind),
 				//MyTupletCString(WIND_KEY,"0"), //Init to something
-				TupletInteger(WDIRECTION_KEY,wdirection),
+				//TupletInteger(WDIRECTION_KEY,wdirection),
+				MyTupletCString(WDIRECTION_KEY,strwdirection),
 				//3 days forecast
 				TupletInteger(FORECAST_CODE1_KEY,0),
 				MyTupletCString(FORECAST_HIGH1_KEY,day1H),
@@ -1396,8 +1220,10 @@ void SetupMessages(){
 			//YWeather 2.3 - REQ02. Hourly Vibe - START
 				TupletInteger(HOURLY_VIBE_KEY,blnhourly_vibe),
 			//YWeather 2.3 - REQ02. Hourly Vibe - END
-				//TupletInteger(HOURLY_VIBE_START_KEY,0),
-				//TupletInteger(HOURLY_VIBE_END_KEY,0),
+				TupletInteger(HOURLY_VIBE_START_KEY,0),
+				TupletInteger(HOURLY_VIBE_END_KEY,9),
+				TupletInteger(HIDE_BAT_KEY,batt_status),
+				TupletInteger(FONT_KEY, intUI), //INITIALIZE TO LAST SAVED
                 }; //TUPLET INITIAL VALUES
         
                 app_sync_init(&sync, sync_buffer, sizeof(sync_buffer), initial_values,
@@ -1435,7 +1261,8 @@ void handle_init(void)
 		persist_read_string(SUNRISE_KEY, sunrise, sizeof(sunrise));
 		persist_read_string(SUNSET_KEY, sunset, sizeof(sunset));
 		persist_read_string(WIND_KEY, wind, sizeof(wind));
-		wdirection =  persist_read_int(WDIRECTION_KEY); 
+		//wdirection =  persist_read_int(WDIRECTION_KEY); 
+		persist_read_string(WDIRECTION_KEY, strwdirection, sizeof(strwdirection));
 		persist_read_string(FORECAST_HIGH1_KEY, day1H, sizeof(day1H));
 		persist_read_string(FORECAST_LOW1_KEY, day1L, sizeof(day1L));
 		persist_read_string(FORECAST_HIGH2_KEY, day2H, sizeof(day2H));
@@ -1447,7 +1274,7 @@ void handle_init(void)
 		//ensures timeout_ms is never less than 5mins (if so, set to 30mins)
 		if (timeout_ms<35000) {timeout_ms=180000;}
 		//ensures Extended Screen duration is never less than 5secs (if so, set to 5secs)
-		if (ESDuration_ms < 5000){ESDuration_ms = 5000;} 
+		//if (ESDuration_ms < 5000){ESDuration_ms = 5000;} 
 		bln3daysForecast = persist_read_int(EXTRA_FORECAST_KEY);
 	//YWeather 2.3 - REQ01. Display Seconds - START
 		blnseconds = persist_read_int(DISPLAY_SECONDS_KEY);
@@ -1455,6 +1282,8 @@ void handle_init(void)
 	//YWeather 2.3 - REQ02. Hourly Vibe - START
 		blnhourly_vibe = persist_read_int(HOURLY_VIBE_KEY);
 	//YWeather 2.3 - REQ02. Hourly Vibe - END
+		batt_status = persist_read_int(HIDE_BAT_KEY);
+		intUI = persist_read_int(FONT_KEY);
 	
 		init_ESDuration_ms = ESDuration_ms/1000;
 		init_timeout_ms = timeout_ms/60000;
@@ -1465,16 +1294,37 @@ void handle_init(void)
         window_stack_push(my_window, true /* Animated */);
 		window_set_background_color(my_window, GColorBlack);          
         
-        //Load the custom fonts
-        res_t = resource_get_handle(RESOURCE_ID_FUTURA_CONDENSED_53); // Time font
-        res_d = resource_get_handle(RESOURCE_ID_FUTURA_17); // Date font
-        res_u = resource_get_handle(RESOURCE_ID_FUTURA_10); // Last Update font
-        res_temp = resource_get_handle(RESOURCE_ID_FUTURA_43); //Temperature     
-                
-    	font_date = fonts_load_custom_font(res_d);
+
+		if (intUI == 1){
+			res_t = resource_get_handle(RESOURCE_ID_Modern_53); // Time font
+			res_d = resource_get_handle(RESOURCE_ID_Modern_17); // Date font
+			res_u = resource_get_handle(RESOURCE_ID_Modern_10); // Last Update font
+			res_temp = resource_get_handle(RESOURCE_ID_Modern_47); //Temperature  
+			
+		}
+		else if (intUI == 2){
+			res_t = resource_get_handle(RESOURCE_ID_Aunchanted_bold_51); // Time font
+			res_d = resource_get_handle(RESOURCE_ID_Aunchanted_bold_20); // Date font
+			res_u = resource_get_handle(RESOURCE_ID_Aunchanted_bold_14); // Last Update font
+			res_temp = resource_get_handle(RESOURCE_ID_Aunchanted_bold_51); //Temperature  
+			
+		}
+		else{ //default to Futura
+			res_t = resource_get_handle(RESOURCE_ID_FUTURA_CONDENSED_53); // Time font
+			res_d = resource_get_handle(RESOURCE_ID_FUTURA_17); // Date font
+			res_u = resource_get_handle(RESOURCE_ID_FUTURA_10); // Last Update font
+			res_temp = resource_get_handle(RESOURCE_ID_FUTURA_43); //Temperature  
+			
+		}
+
+     
+
+		font_date = fonts_load_custom_font(res_d);
         font_update = fonts_load_custom_font(res_u);
         font_time = fonts_load_custom_font(res_t);
-        font_temperature = fonts_load_custom_font(res_temp);
+        font_temperature = fonts_load_custom_font(res_temp);	
+
+
        
       
 		//Load the Main Window
