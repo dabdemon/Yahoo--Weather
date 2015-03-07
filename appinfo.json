@@ -41,353 +41,83 @@
     "resources": {
         "media": [
             {
-                "characterRegex": "[0-9: ]",
-                "file": "fonts/texgyreheroscn-regular.ttf",
-                "name": "Modern_53",
-                "type": "font"
-            },
-            {
-                "characterRegex": "[0-9\u00b0 -]",
-                "file": "fonts/texgyreheroscn-regular.ttf",
-                "name": "Modern_47",
-                "type": "font"
-            },
-            {
-                "file": "fonts/texgyreheroscn-regular.ttf",
-                "name": "Modern_17",
-                "type": "font"
-            },
-            {
-                "file": "fonts/texgyreheroscn-regular.ttf",
-                "name": "Modern_10",
-                "type": "font"
-            },
-            {
-                "characterRegex": "[0-9\u00b0.: -]",
-                "file": "fonts/Aunchanted Bold.ttf",
-                "name": "Aunchanted_bold_51",
-                "trackingAdjust": -1,
-                "type": "font"
-            },
-            {
-                "file": "fonts/Aunchanted Bold.ttf",
-                "name": "Aunchanted_bold_20",
-                "type": "font"
-            },
-            {
-                "file": "fonts/Aunchanted Bold.ttf",
-                "name": "Aunchanted_bold_14",
-                "type": "font"
-            },
-            {
-                "file": "images/YWeather_Menu.png",
-                "menuIcon": true,
-                "name": "Menu_Image",
+                "file": "images/moon_7.png",
+                "name": "MOON_7",
                 "type": "png"
             },
             {
-                "file": "images/tuesday_ru.png",
-                "name": "TUESDAY_RU",
+                "file": "images/moon_6.png",
+                "name": "MOON_6",
                 "type": "png"
             },
             {
-                "file": "images/monday_ru.png",
-                "name": "MONDAY_RU",
+                "file": "images/moon_5.png",
+                "name": "MOON_5",
                 "type": "png"
             },
             {
-                "file": "images/wind_icon.png",
-                "name": "WIND_ICON",
+                "file": "images/moon_4.png",
+                "name": "MOON_4",
                 "type": "png"
             },
             {
-                "file": "images/ICON_DRIZZLE_SMALL.png",
-                "name": "ICON_DRIZZLE_SMALL",
+                "file": "images/moon_3.png",
+                "name": "MOON_3",
                 "type": "png"
             },
             {
-                "file": "images/ICON_NOT_AVAILABLE_SMALL.png",
-                "name": "ICON_NOT_AVAILABLE_SMALL",
+                "file": "images/moon_2.png",
+                "name": "MOON_2",
                 "type": "png"
             },
             {
-                "file": "images/ICON_THUNDER_SMALL.png",
-                "name": "ICON_THUNDER_SMALL",
+                "file": "images/moon_1.png",
+                "name": "MOON_1",
                 "type": "png"
             },
             {
-                "file": "images/ICON_CLOUDY_SMALL.png",
-                "name": "ICON_CLOUDY_SMALL",
+                "file": "images/moon_0.png",
+                "name": "MOON_0",
                 "type": "png"
             },
             {
-                "file": "images/ICON_RAIN_SNOW_SMALL.png",
-                "name": "ICON_RAIN_SNOW_SMALL",
+                "file": "images/wind_small.png",
+                "name": "ICON_WIND_SMALL",
                 "type": "png"
             },
             {
-                "file": "images/ICON_RAIN_SLEET_SMALL.png",
-                "name": "ICON_RAIN_SLEET_SMALL",
+                "file": "images/sunday.png",
+                "name": "CHIN_SUNDAY",
                 "type": "png"
             },
             {
-                "file": "images/ICON_SNOW_SLEET_SMALL.png",
-                "name": "ICON_SNOW_SLEET_SMALL",
+                "file": "images/saturday.png",
+                "name": "CHIN_SATURDAY",
                 "type": "png"
             },
             {
-                "file": "images/ICON_SLEET_SMALL.png",
-                "name": "ICON_SLEET_SMALL",
+                "file": "images/friday.png",
+                "name": "CHIN_FRIDAY",
                 "type": "png"
             },
             {
-                "file": "images/ICON_SNOW_SMALL.png",
-                "name": "ICON_SNOW_SMALL",
+                "file": "images/thursday.png",
+                "name": "CHIN_THURSDAY",
                 "type": "png"
             },
             {
-                "file": "images/ICON_RAIN_SMALL.png",
-                "name": "ICON_RAIN_SMALL",
+                "file": "images/wednesday.png",
+                "name": "CHIN_WEDNESDAY",
                 "type": "png"
             },
             {
-                "file": "images/ICON_FOG_SMALL.png",
-                "name": "ICON_FOG_SMALL",
+                "file": "images/tuesday.png",
+                "name": "CHIN_TUESDAY",
                 "type": "png"
             },
             {
-                "file": "images/ICON_PARTLY_CLOUDY_NIGHT_SMALL.png",
-                "name": "ICON_PARTLY_CLOUDY_NIGHT_SMALL",
-                "type": "png"
-            },
-            {
-                "file": "images/ICON_PARTLY_CLOUDY_DAY.png",
-                "name": "ICON_PARTLY_CLOUDY_DAY_SMALL",
-                "type": "png"
-            },
-            {
-                "file": "images/ICON_HOT_SMALL.png",
-                "name": "ICON_HOT_SMALL",
-                "type": "png"
-            },
-            {
-                "file": "images/ICON_COLD_SMALL.png",
-                "name": "ICON_COLD_SMALL",
-                "type": "png"
-            },
-            {
-                "file": "images/clear-night_small.png",
-                "name": "ICON_CLEAR_NIGHT_SMALL",
-                "type": "png"
-            },
-            {
-                "file": "images/clear-day_small.png",
-                "name": "ICON_CLEAR_DAY_SMALL",
-                "type": "png"
-            },
-            {
-                "file": "images/Wednesday17.png",
-                "name": "JAP_WED",
-                "type": "png"
-            },
-            {
-                "file": "images/Tuesday17.png",
-                "name": "JAP_TUE",
-                "type": "png"
-            },
-            {
-                "file": "images/Thursday17.png",
-                "name": "JAP_THU",
-                "type": "png"
-            },
-            {
-                "file": "images/sunday17.png",
-                "name": "JAP_SUN",
-                "type": "png"
-            },
-            {
-                "file": "images/Saturday17.png",
-                "name": "JAP_SAT",
-                "type": "png"
-            },
-            {
-                "file": "images/monday17.png",
-                "name": "JAP_MON",
-                "type": "png"
-            },
-            {
-                "file": "images/Friday17.png",
-                "name": "JAP_FRI",
-                "type": "png"
-            },
-            {
-                "file": "images/low.png",
-                "name": "LOW",
-                "type": "png"
-            },
-            {
-                "file": "images/high.png",
-                "name": "HIGH",
-                "type": "png"
-            },
-            {
-                "file": "images/sunrise_small.PNG",
-                "name": "SUNRISE",
-                "type": "png"
-            },
-            {
-                "file": "images/sunset_small.PNG",
-                "name": "SUNSET",
-                "type": "png"
-            },
-            {
-                "characterRegex": "[0-9\u00b0 -]",
-                "compatibility": "2.7",
-                "file": "fonts/futura.ttf",
-                "name": "FUTURA_43",
-                "trackingAdjust": -4,
-                "type": "font"
-            },
-            {
-                "compatibility": "2.7",
-                "file": "fonts/futura.ttf",
-                "name": "FUTURA_10",
-                "type": "font"
-            },
-            {
-                "compatibility": "2.7",
-                "file": "fonts/futura.ttf",
-                "name": "FUTURA_17",
-                "type": "font"
-            },
-            {
-                "file": "images/batt_full_2.png",
-                "name": "BATT_FULL",
-                "type": "png"
-            },
-            {
-                "file": "images/batt_80_2.png",
-                "name": "BATT_80",
-                "type": "png"
-            },
-            {
-                "file": "images/batt_60_2.png",
-                "name": "BATT_60",
-                "type": "png"
-            },
-            {
-                "file": "images/batt_40_2.png",
-                "name": "BATT_40",
-                "type": "png"
-            },
-            {
-                "file": "images/batt_20_2.png",
-                "name": "BATT_20",
-                "type": "png"
-            },
-            {
-                "file": "images/not-available.png",
-                "name": "ICON_NOT_AVAILABLE",
-                "type": "png"
-            },
-            {
-                "file": "images/wind.png",
-                "name": "ICON_WIND",
-                "type": "png"
-            },
-            {
-                "file": "images/thunder.png",
-                "name": "ICON_THUNDER",
-                "type": "png"
-            },
-            {
-                "file": "images/snow-sleet.png",
-                "name": "ICON_SNOW_SLEET",
-                "type": "png"
-            },
-            {
-                "file": "images/snow.png",
-                "name": "ICON_SNOW",
-                "type": "png"
-            },
-            {
-                "file": "images/sleet.png",
-                "name": "ICON_SLEET",
-                "type": "png"
-            },
-            {
-                "file": "images/rain-snow.png",
-                "name": "ICON_RAIN_SNOW",
-                "type": "png"
-            },
-            {
-                "file": "images/rain-sleet.png",
-                "name": "ICON_RAIN_SLEET",
-                "type": "png"
-            },
-            {
-                "file": "images/rain.png",
-                "name": "ICON_RAIN",
-                "type": "png"
-            },
-            {
-                "file": "images/partly-cloudy-night.png",
-                "name": "ICON_PARTLY_CLOUDY_NIGHT",
-                "type": "png"
-            },
-            {
-                "file": "images/partly-cloudy-day.png",
-                "name": "ICON_PARTLY_CLOUDY_DAY",
-                "type": "png"
-            },
-            {
-                "file": "images/fog.png",
-                "name": "ICON_FOG",
-                "type": "png"
-            },
-            {
-                "file": "images/drizzle.png",
-                "name": "ICON_DRIZZLE",
-                "type": "png"
-            },
-            {
-                "file": "images/hot.png",
-                "name": "ICON_HOT",
-                "type": "png"
-            },
-            {
-                "file": "images/cold.png",
-                "name": "ICON_COLD",
-                "type": "png"
-            },
-            {
-                "file": "images/cloudy.png",
-                "name": "ICON_CLOUDY",
-                "type": "png"
-            },
-            {
-                "file": "images/clear-night.png",
-                "name": "ICON_CLEAR_NIGHT",
-                "type": "png"
-            },
-            {
-                "file": "images/clear-day.png",
-                "name": "ICON_CLEAR_DAY",
-                "type": "png"
-            },
-            {
-                "file": "images/batt_empty.png",
-                "name": "BATT_EMPTY",
-                "type": "png"
-            },
-            {
-                "file": "images/batt_char.png",
-                "name": "BATT_CHAR",
-                "type": "png"
-            },
-            {
-                "file": "images/bluetooth_white_small.png",
-                "name": "BT_CONNECTED",
+                "file": "images/monday.png",
+                "name": "CHIN_MONDAY",
                 "type": "png"
             },
             {
@@ -399,87 +129,319 @@
                 "type": "font"
             },
             {
-                "file": "images/monday.png",
-                "name": "CHIN_MONDAY",
+                "file": "images/bluetooth_white_small.png",
+                "name": "BT_CONNECTED",
                 "type": "png"
             },
             {
-                "file": "images/tuesday.png",
-                "name": "CHIN_TUESDAY",
+                "file": "images/batt_char.png",
+                "name": "BATT_CHAR",
                 "type": "png"
             },
             {
-                "file": "images/wednesday.png",
-                "name": "CHIN_WEDNESDAY",
+                "file": "images/batt_empty.png",
+                "name": "BATT_EMPTY",
                 "type": "png"
             },
             {
-                "file": "images/thursday.png",
-                "name": "CHIN_THURSDAY",
+                "file": "images/clear-day.png",
+                "name": "ICON_CLEAR_DAY",
                 "type": "png"
             },
             {
-                "file": "images/friday.png",
-                "name": "CHIN_FRIDAY",
+                "file": "images/clear-night.png",
+                "name": "ICON_CLEAR_NIGHT",
                 "type": "png"
             },
             {
-                "file": "images/saturday.png",
-                "name": "CHIN_SATURDAY",
+                "file": "images/cloudy.png",
+                "name": "ICON_CLOUDY",
                 "type": "png"
             },
             {
-                "file": "images/sunday.png",
-                "name": "CHIN_SUNDAY",
+                "file": "images/cold.png",
+                "name": "ICON_COLD",
                 "type": "png"
             },
             {
-                "file": "images/wind_small.png",
-                "name": "ICON_WIND_SMALL",
+                "file": "images/hot.png",
+                "name": "ICON_HOT",
                 "type": "png"
             },
             {
-                "file": "images/moon_0.png",
-                "name": "MOON_0",
+                "file": "images/drizzle.png",
+                "name": "ICON_DRIZZLE",
                 "type": "png"
             },
             {
-                "file": "images/moon_1.png",
-                "name": "MOON_1",
+                "file": "images/fog.png",
+                "name": "ICON_FOG",
                 "type": "png"
             },
             {
-                "file": "images/moon_2.png",
-                "name": "MOON_2",
+                "file": "images/partly-cloudy-day.png",
+                "name": "ICON_PARTLY_CLOUDY_DAY",
                 "type": "png"
             },
             {
-                "file": "images/moon_3.png",
-                "name": "MOON_3",
+                "file": "images/partly-cloudy-night.png",
+                "name": "ICON_PARTLY_CLOUDY_NIGHT",
                 "type": "png"
             },
             {
-                "file": "images/moon_4.png",
-                "name": "MOON_4",
+                "file": "images/rain.png",
+                "name": "ICON_RAIN",
                 "type": "png"
             },
             {
-                "file": "images/moon_5.png",
-                "name": "MOON_5",
+                "file": "images/rain-sleet.png",
+                "name": "ICON_RAIN_SLEET",
                 "type": "png"
             },
             {
-                "file": "images/moon_6.png",
-                "name": "MOON_6",
+                "file": "images/rain-snow.png",
+                "name": "ICON_RAIN_SNOW",
                 "type": "png"
             },
             {
-                "file": "images/moon_7.png",
-                "name": "MOON_7",
+                "file": "images/sleet.png",
+                "name": "ICON_SLEET",
+                "type": "png"
+            },
+            {
+                "file": "images/snow.png",
+                "name": "ICON_SNOW",
+                "type": "png"
+            },
+            {
+                "file": "images/snow-sleet.png",
+                "name": "ICON_SNOW_SLEET",
+                "type": "png"
+            },
+            {
+                "file": "images/thunder.png",
+                "name": "ICON_THUNDER",
+                "type": "png"
+            },
+            {
+                "file": "images/wind.png",
+                "name": "ICON_WIND",
+                "type": "png"
+            },
+            {
+                "file": "images/not-available.png",
+                "name": "ICON_NOT_AVAILABLE",
+                "type": "png"
+            },
+            {
+                "file": "images/batt_20_2.png",
+                "name": "BATT_20",
+                "type": "png"
+            },
+            {
+                "file": "images/batt_40_2.png",
+                "name": "BATT_40",
+                "type": "png"
+            },
+            {
+                "file": "images/batt_60_2.png",
+                "name": "BATT_60",
+                "type": "png"
+            },
+            {
+                "file": "images/batt_80_2.png",
+                "name": "BATT_80",
+                "type": "png"
+            },
+            {
+                "file": "images/batt_full_2.png",
+                "name": "BATT_FULL",
+                "type": "png"
+            },
+            {
+                "compatibility": "2.7",
+                "file": "fonts/futura.ttf",
+                "name": "FUTURA_17",
+                "type": "font"
+            },
+            {
+                "compatibility": "2.7",
+                "file": "fonts/futura.ttf",
+                "name": "FUTURA_10",
+                "type": "font"
+            },
+            {
+                "characterRegex": "[0-9\u00b0 -]",
+                "compatibility": "2.7",
+                "file": "fonts/futura.ttf",
+                "name": "FUTURA_43",
+                "trackingAdjust": -4,
+                "type": "font"
+            },
+            {
+                "file": "images/sunset_small.PNG",
+                "name": "SUNSET",
+                "type": "png"
+            },
+            {
+                "file": "images/sunrise_small.PNG",
+                "name": "SUNRISE",
+                "type": "png"
+            },
+            {
+                "file": "images/high.png",
+                "name": "HIGH",
+                "type": "png"
+            },
+            {
+                "file": "images/low.png",
+                "name": "LOW",
+                "type": "png"
+            },
+            {
+                "file": "images/Friday17.png",
+                "name": "JAP_FRI",
+                "type": "png"
+            },
+            {
+                "file": "images/monday17.png",
+                "name": "JAP_MON",
+                "type": "png"
+            },
+            {
+                "file": "images/Saturday17.png",
+                "name": "JAP_SAT",
+                "type": "png"
+            },
+            {
+                "file": "images/sunday17.png",
+                "name": "JAP_SUN",
+                "type": "png"
+            },
+            {
+                "file": "images/Thursday17.png",
+                "name": "JAP_THU",
+                "type": "png"
+            },
+            {
+                "file": "images/Tuesday17.png",
+                "name": "JAP_TUE",
+                "type": "png"
+            },
+            {
+                "file": "images/Wednesday17.png",
+                "name": "JAP_WED",
+                "type": "png"
+            },
+            {
+                "file": "images/clear-day_small.png",
+                "name": "ICON_CLEAR_DAY_SMALL",
+                "type": "png"
+            },
+            {
+                "file": "images/clear-night_small.png",
+                "name": "ICON_CLEAR_NIGHT_SMALL",
+                "type": "png"
+            },
+            {
+                "file": "images/ICON_COLD_SMALL.png",
+                "name": "ICON_COLD_SMALL",
+                "type": "png"
+            },
+            {
+                "file": "images/ICON_HOT_SMALL.png",
+                "name": "ICON_HOT_SMALL",
+                "type": "png"
+            },
+            {
+                "file": "images/ICON_PARTLY_CLOUDY_DAY.png",
+                "name": "ICON_PARTLY_CLOUDY_DAY_SMALL",
+                "type": "png"
+            },
+            {
+                "file": "images/ICON_PARTLY_CLOUDY_NIGHT_SMALL.png",
+                "name": "ICON_PARTLY_CLOUDY_NIGHT_SMALL",
+                "type": "png"
+            },
+            {
+                "file": "images/ICON_FOG_SMALL.png",
+                "name": "ICON_FOG_SMALL",
+                "type": "png"
+            },
+            {
+                "file": "images/ICON_RAIN_SMALL.png",
+                "name": "ICON_RAIN_SMALL",
+                "type": "png"
+            },
+            {
+                "file": "images/ICON_SNOW_SMALL.png",
+                "name": "ICON_SNOW_SMALL",
+                "type": "png"
+            },
+            {
+                "file": "images/ICON_SLEET_SMALL.png",
+                "name": "ICON_SLEET_SMALL",
+                "type": "png"
+            },
+            {
+                "file": "images/ICON_SNOW_SLEET_SMALL.png",
+                "name": "ICON_SNOW_SLEET_SMALL",
+                "type": "png"
+            },
+            {
+                "file": "images/ICON_RAIN_SLEET_SMALL.png",
+                "name": "ICON_RAIN_SLEET_SMALL",
+                "type": "png"
+            },
+            {
+                "file": "images/ICON_RAIN_SNOW_SMALL.png",
+                "name": "ICON_RAIN_SNOW_SMALL",
+                "type": "png"
+            },
+            {
+                "file": "images/ICON_CLOUDY_SMALL.png",
+                "name": "ICON_CLOUDY_SMALL",
+                "type": "png"
+            },
+            {
+                "file": "images/ICON_THUNDER_SMALL.png",
+                "name": "ICON_THUNDER_SMALL",
+                "type": "png"
+            },
+            {
+                "file": "images/ICON_NOT_AVAILABLE_SMALL.png",
+                "name": "ICON_NOT_AVAILABLE_SMALL",
+                "type": "png"
+            },
+            {
+                "file": "images/ICON_DRIZZLE_SMALL.png",
+                "name": "ICON_DRIZZLE_SMALL",
+                "type": "png"
+            },
+            {
+                "file": "images/wind_icon.png",
+                "name": "WIND_ICON",
+                "type": "png"
+            },
+            {
+                "file": "images/monday_ru.png",
+                "name": "MONDAY_RU",
+                "type": "png"
+            },
+            {
+                "file": "images/tuesday_ru.png",
+                "name": "TUESDAY_RU",
+                "type": "png"
+            },
+            {
+                "file": "images/YWeather_Menu.png",
+                "menuIcon": true,
+                "name": "Menu_Image",
                 "type": "png"
             }
         ]
     },
+    "sdkVersion": "2",
     "shortName": "YWeather",
     "uuid": "35a28a4d-0c9f-408f-9c6d-551e65f03186",
     "versionCode": 1,

@@ -143,7 +143,7 @@ if (options === null) options = { "language" : 100, //default to "English"
 								  "forecast" : "false",
 								  "weatherprovider" : "0", //Yahoo! Weather
 								  "hide_bat" : "false",
-								  "font" : 0,
+				//				  "font" : 0,
 								  "key" : ""};
 
 
@@ -306,7 +306,7 @@ function TWUFromLarLong(latitude, longitude){
 				//YWeather v2.4 - Hourly Vibe Quiet Hours - END
 				"forecast":(options["forecast"] == "true" ? 1 : 0),
 				"hide_bat" : (options["hide_bat"] == "true" ? 1 : 0),
-				"font" : parseInt(options['font']),
+			//	"font" : parseInt(options['font']),
           });
 			
         }
@@ -538,7 +538,7 @@ function getWeatherFromWoeid(woeid, city) {
 				//YWeather v2.4 - Hourly Vibe Quiet Hours - END
 				"forecast":(options["forecast"] == "true" ? 1 : 0),
 				"hide_bat" : (options["hide_bat"] == "true" ? 1 : 0),
-				"font" : parseInt(options['font']),
+			//	"font" : parseInt(options['font']),
           });
         }
       } else {
@@ -737,7 +737,7 @@ NNW 326.25 - 348.75
 
 //Displays the configuration page in the phone
 Pebble.addEventListener('showConfiguration', function(e) {
-  var uri = 'http://dabdemon.github.io/Yahoo--Weather/development.html?' + //Here you need to enter your configuration webservice
+  var uri = 'http://dabdemon.github.io/Yahoo--Weather/settings.html?' + //Here you need to enter your configuration webservice
     'language=' + encodeURIComponent(options['language']) +
 	'&use_gps=' + encodeURIComponent(options['use_gps']) +
     '&location=' + encodeURIComponent(options['location']) +
@@ -767,7 +767,7 @@ Pebble.addEventListener('showConfiguration', function(e) {
 	'&hide_bat=' + encodeURIComponent(options['hide_bat']) +
 	'&start=' + encodeURIComponent(options['start']) +
 	'&end=' + encodeURIComponent(options['end']) +
-	'&font=' + encodeURIComponent(options['font']) +
+//	'&font=' + encodeURIComponent(options['font']) +
 	'&forecast=' + encodeURIComponent(options['forecast']);
 
 	//console.log('showing configuration at uri: ' + uri);

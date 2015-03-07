@@ -621,10 +621,10 @@ void SubscribeTickEvent(){
 
 		  	break;
 	  
-	  	  case FONT_KEY:
-	  	  intUI = new_tuple->value->uint8;
-	  	  persist_write_int(FONT_KEY, intUI);
-		  break;
+	  	 // case FONT_KEY:
+	  	 // intUI = new_tuple->value->uint8;
+	  	 // persist_write_int(FONT_KEY, intUI);
+		 // break;
 
   }
 	  
@@ -1223,7 +1223,7 @@ void SetupMessages(){
 				TupletInteger(HOURLY_VIBE_START_KEY,0),
 				TupletInteger(HOURLY_VIBE_END_KEY,9),
 				TupletInteger(HIDE_BAT_KEY,batt_status),
-				TupletInteger(FONT_KEY, intUI), //INITIALIZE TO LAST SAVED
+				//TupletInteger(FONT_KEY, intUI), //INITIALIZE TO LAST SAVED
                 }; //TUPLET INITIAL VALUES
         
                 app_sync_init(&sync, sync_buffer, sizeof(sync_buffer), initial_values,
@@ -1283,7 +1283,7 @@ void handle_init(void)
 		blnhourly_vibe = persist_read_int(HOURLY_VIBE_KEY);
 	//YWeather 2.3 - REQ02. Hourly Vibe - END
 		batt_status = persist_read_int(HIDE_BAT_KEY);
-		intUI = persist_read_int(FONT_KEY);
+		//intUI = persist_read_int(FONT_KEY);
 	
 		init_ESDuration_ms = ESDuration_ms/1000;
 		init_timeout_ms = timeout_ms/60000;
@@ -1295,29 +1295,12 @@ void handle_init(void)
 		window_set_background_color(my_window, GColorBlack);          
         
 
-		if (intUI == 1){
-			res_t = resource_get_handle(RESOURCE_ID_Modern_53); // Time font
-			res_d = resource_get_handle(RESOURCE_ID_Modern_17); // Date font
-			res_u = resource_get_handle(RESOURCE_ID_Modern_10); // Last Update font
-			res_temp = resource_get_handle(RESOURCE_ID_Modern_47); //Temperature  
+		res_t = resource_get_handle(RESOURCE_ID_FUTURA_CONDENSED_53); // Time font
+		res_d = resource_get_handle(RESOURCE_ID_FUTURA_17); // Date font
+		res_u = resource_get_handle(RESOURCE_ID_FUTURA_10); // Last Update font
+		res_temp = resource_get_handle(RESOURCE_ID_FUTURA_43); //Temperature  
 			
-		}
-		else if (intUI == 2){
-			res_t = resource_get_handle(RESOURCE_ID_Aunchanted_bold_51); // Time font
-			res_d = resource_get_handle(RESOURCE_ID_Aunchanted_bold_20); // Date font
-			res_u = resource_get_handle(RESOURCE_ID_Aunchanted_bold_14); // Last Update font
-			res_temp = resource_get_handle(RESOURCE_ID_Aunchanted_bold_51); //Temperature  
-			
-		}
-		else{ //default to Futura
-			res_t = resource_get_handle(RESOURCE_ID_FUTURA_CONDENSED_53); // Time font
-			res_d = resource_get_handle(RESOURCE_ID_FUTURA_17); // Date font
-			res_u = resource_get_handle(RESOURCE_ID_FUTURA_10); // Last Update font
-			res_temp = resource_get_handle(RESOURCE_ID_FUTURA_43); //Temperature  
-			
-		}
-
-     
+   
 
 		font_date = fonts_load_custom_font(res_d);
         font_update = fonts_load_custom_font(res_u);
