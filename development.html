@@ -116,7 +116,7 @@
                             <option value="true">Yes</option>
                         </select>
                     </div>
-                    *NOTE: You need to reload YWeather to display/hide seconds.
+                   
                     <div data-role="fieldcontain">
                         <label for="seconds">Display Seconds</label>
                         <select name="seconds" id="seconds" data-theme="c" data-role="slider" data-track-theme="d">
@@ -152,7 +152,7 @@
                         </select>
                     </div>
                     <div data-role="fieldcontain">
-                        <label for="ESDuration">Extended screen duration</label>
+                        <label for="ESDuration">Forecast screen duration</label>
                         <select name="ESDuration" id="ESDuration" data-theme="c" data-track-theme="d">
                             <option value="0">Off - No forecast</option>
                             <option value="5">5 seconds</option>
@@ -161,6 +161,16 @@
                             <option value="15">15 seconds</option>
                         </select>
                     </div>
+                    
+                    <div data-role="fieldcontain">
+                        <label for="backlight">Extend backlight duration</label>
+                        <select name="backlight" id="backlight" data-theme="c" data-role="slider" data-track-theme="d">
+                            <option value="false">No</option>
+                            <option value="true">Yes</option>
+                        </select>
+                    </div>
+                    
+                    <b>*NOTE:</b> Extending the backlight duration will impact your battery life. Please use this carefully.
                     
                     <div data-role="fieldcontain">
                         <label for="wspeed">Wind Speed Unit</label>
@@ -324,6 +334,7 @@
                         'accuracy': $('#accuracy').val(),
                         'feelslike': $('#feelslike').val(),
                         'ESDuration': $('#ESDuration').val(),
+                        'backlight': $('#backlight').val(),
                         'wspeed': $('#wspeed').val(),
                         'start': $('#start').val(),
                         'end': $('#end').val(),
@@ -356,7 +367,8 @@
                     //Disable all the Extra Features to enable them based on LT
                     $('#accuracy').prop('disabled', true);
                     $('#feelslike').prop('disabled', true);
-                    $('#ESDuration').prop('disabled', true);
+                    $('#ESDuration').prop('disabled', true
+                    $('#backlight').prop('disabled', true);
                     $('#timer').prop('disabled', true);
                     $('#wspeed').prop('disabled', true);
                     $('#start').prop('disabled', true);
@@ -367,6 +379,7 @@
                     if (getQueryVariable('lt') == "1") {
                         $('#feelslike').prop('disabled', false);
                         $('#ESDuration').prop('disabled', false);
+                        $('#backlight').prop('disabled', false);
                         $('#wspeed').prop('disabled', false);
                         $('#start').prop('disabled', false);
                         $('#end').prop('disabled', false);
@@ -375,6 +388,7 @@
                     if (getQueryVariable('lt') == "2") {
                         $('#feelslike').prop('disabled', false);
                         $('#ESDuration').prop('disabled', false);
+                        $('#backlight').prop('disabled', false);
                         $('#wspeed').prop('disabled', false);
                         $('#start').prop('disabled', false);
                         $('#end').prop('disabled', false);
@@ -385,6 +399,7 @@
                     if (getQueryVariable('lt') == "3") {
                         $('#feelslike').prop('disabled', false);
                         $('#ESDuration').prop('disabled', false);
+                        $('#backlight').prop('disabled', false);
                         $('#wspeed').prop('disabled', false);
                         $('#start').prop('disabled', false);
                         $('#end').prop('disabled', false);
@@ -413,6 +428,7 @@
                     $('#accuracy').val(getQueryVariable('accuracy')).change();
                     $('#feelslike').val(getQueryVariable('feelslike')).change();
                     $('#ESDuration').val(getQueryVariable('ESDuration')).change();
+                    $('#backlight').val(getQueryVariable('backlight')).change();
                     $('#wspeed').val(getQueryVariable('wspeed')).change();
                     $('#start').val(getQueryVariable('start')).change();
                     $('#end').val(getQueryVariable('end')).change();
