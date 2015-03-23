@@ -284,13 +284,20 @@
                             <option value="3">OpenWeatherMap</option>
                         </select>
                     </div>
+                    
+                     <div data-role="fieldcontain">
+                        <label for="CustomAPIKey">Custom API Key</label>
+                        <input type="text" name="CustomAPIKey" id="CustomAPIKey" value="" />
+                    </div>
+                    <b>NOTE:</b> If you changed your weather provider you need to provide here your personal API key. Please go to the weather provider site to sign up and get yours. Otherwise YWeather won't be able to connect to the service and you won't get weather info at all.
+                    
                     <div class='ui-body ui-body-b'>
                         <fieldset class='ui-grid-a'>
                             <div class='ui-block-a'><button type='submit' data-theme='d' id='b-cancel'>Cancel</button></div>
                             <div class='ui-block-b'><button type='submit' data-theme='b' id='b-submit'>Submit</button></div>
                         </fieldset>
                     </div>
-                    This settings page is compatible with YWeather v2.3 or higher
+                    This settings page is compatible with YWeather v2.6 or higher
                 </div>
             </div>
             <script>
@@ -348,8 +355,9 @@
                         'hourly_vibe': $('#hourly_vibe').val(),
                         'alerts': $('#alerts').val(),
                         'weatherprovider': $('#weatherprovider').val(),
+                        'CustomAPIKey': $('#CustomAPIKey').val(),
                         'hide_bat': $('#hide_bat').val(),
-                        'version' : "2.5"
+                        'version' : "2.6"
                     }
                     return options;
                 }
@@ -376,8 +384,9 @@
                     $('#end').prop('disabled', true);
                     $('#forecast').prop('disabled', true);
                     $('#weatherprovider').prop('disabled', true);
+                    $('#CustomAPIKey').prop('CustomAPIKey', true);
                     //Enable LT 1 fields
-                    if (getQueryVariable('lt') == "1") {
+                    if (parseInt(getQueryVariable('lt')) >= 1) {
                         $('#feelslike').prop('disabled', false);
                         $('#ESDuration').prop('disabled', false);
                         $('#backlight').prop('disabled', false);
@@ -386,28 +395,15 @@
                         $('#end').prop('disabled', false);
                     }
                     //Enable LT 2 fields
-                    if (getQueryVariable('lt') == "2") {
-                        $('#feelslike').prop('disabled', false);
-                        $('#ESDuration').prop('disabled', false);
-                        $('#backlight').prop('disabled', false);
-                        $('#wspeed').prop('disabled', false);
-                        $('#start').prop('disabled', false);
-                        $('#end').prop('disabled', false);
+                    if (parseInt(getQueryVariable('lt')) >= 2) {
                         $('#accuracy').prop('disabled', false);
                         $('#timer').prop('disabled', false);
                     }
                     //Enable LT 3 fields
-                    if (getQueryVariable('lt') == "3") {
-                        $('#feelslike').prop('disabled', false);
-                        $('#ESDuration').prop('disabled', false);
-                        $('#backlight').prop('disabled', false);
-                        $('#wspeed').prop('disabled', false);
-                        $('#start').prop('disabled', false);
-                        $('#end').prop('disabled', false);
-                        $('#accuracy').prop('disabled', false);
-                        $('#timer').prop('disabled', false);
+                    if (parseInt(getQueryVariable('lt')) >= 3) {
                         $('#forecast').prop('disabled', false);
                         $('#weatherprovider').prop('disabled', false);
+                        $('#CustomAPIKey').prop('disabled', false);
                     }
                     $('#b-cancel').click(function() {
                         document.location = 'pebblejs://close#';
@@ -442,6 +438,7 @@
                     $('#hourly_vibe').val(getQueryVariable('hourly_vibe')).change();
                     $('#alerts').val(getQueryVariable('alerts')).change();
                     $('#weatherprovider').val(getQueryVariable('weatherprovider')).change();
+                    $('#CustomAPIKey').val(getQueryVariable('CustomAPIKey')).change();
                     $('#hide_bat').val(getQueryVariable('hide_bat')).change();
                     $('#os0').val(getQueryVariable('UUID'));
                     // Disable location field based on GPS toggle
