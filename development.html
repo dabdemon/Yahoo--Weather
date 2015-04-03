@@ -434,7 +434,7 @@
                     $('#timer').val(getQueryVariable('timer')).change();
                     $('#UUID').val(getQueryVariable('UUID'));
                     $('#lt').val(getQueryVariable('lt'));
-                    $('#key').val(getQueryVariable('key'));
+                    $('#key').val($.trim(getQueryVariable('key')));
                     $('#forecast').val(getQueryVariable('forecast')).change();
                     $('#seconds').val(getQueryVariable('seconds')).change();
                     $('#hourly_vibe').val(getQueryVariable('hourly_vibe')).change();
