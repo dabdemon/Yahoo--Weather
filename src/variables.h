@@ -40,6 +40,8 @@ enum WeatherKey {
 	HOURLY_VIBE_END_KEY = 27, //INT
 	HIDE_BAT_KEY = 28, //INT
 	FONT_KEY = 29, //INT
+	BACKLIGHT_KEY = 30, //INT
+	POP_KEY = 31, //CSTRING
 };
 
 	#define TAP_TIME 2000
@@ -59,6 +61,8 @@ enum WeatherKey {
 	// Setup messaging
 	const int inbound_size = 512;
 	const int outbound_size = 512;
+	
+	static AppTimer *BackLightTimer;
 	
 	//Time control for weather refresh
 	static AppTimer *timer;
@@ -101,6 +105,7 @@ enum WeatherKey {
 	static char strwdirection[100];
 	static char city[100];
 	static char temp[]="     ";
+	static char PoP[] = "    ";
 
 	static char version[]="2.5";
 
@@ -144,7 +149,8 @@ enum WeatherKey {
 	int ICON_CODE;
 	bool batt_status = false; //If true, display the battery status all the time; if false, just when running low (<10%)
 	
-	bool blnvibes;
+	//bool blnvibes;
+	int blnvibes;
 	bool blninverted =  false;
 	bool blnForecast = false;
 	bool bln3daysForecast = false;
@@ -154,6 +160,9 @@ enum WeatherKey {
 	//YWeather 2.3 - REQ02. Hourly Vibe - START
 	bool blnhourly_vibe = false;
 	//YWeather 2.3 - REQ02. Hourly Vibe - END
+	bool blnBacklight = false;
+	bool blnPhoneLost = true;
+	bool blnVibed = false;
     
 //Load the custom fonts
 	int intUI = 0; //0 = Classic, 1 = Modern

@@ -1,6 +1,7 @@
 {
     "appKeys": {
         "ESDuration": 21,
+        "backlight": 30,
         "city": 2,
         "day1H": 13,
         "day1L": 14,
@@ -21,6 +22,7 @@
         "invert_color": 3,
         "language": 4,
         "low": 7,
+        "pop": 31,
         "seconds": 24,
         "start": 26,
         "sunrise": 8,
@@ -445,7 +447,7 @@
     "shortName": "YWeather",
     "uuid": "35a28a4d-0c9f-408f-9c6d-551e65f03186",
     "versionCode": 1,
-    "versionLabel": "2.5",
+    "versionLabel": "2.6",
     "watchapp": {
         "watchface": true
     }

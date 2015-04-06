@@ -92,6 +92,9 @@ static const uint32_t BATTERY_ICON[] = {
         static GBitmap *wind_image;
         static BitmapLayer *wind_icon_layer; //Layer for the wind info
 
+ 		static GBitmap *rain_image;
+        static BitmapLayer *rain_icon_layer; //Layer for the wind info
+
         static GBitmap *moon_image;
         static BitmapLayer *moon_icon_layer; //Layer for the wind info
 

@@ -47,6 +47,9 @@
         
 #define TOTAL_MOON_DIGITS 1
 #define MOON_ICON_FRAME (GRect(106, 138, 26, 26))
+	
+#define POP_FRAME (GRect(100, 135, 45, 168-108))
+#define RAIN_ICON_FRAME (GRect(81, 135, 26, 26))	
 
 //define 3 days forecast
 #define FORECAST_DAY1_FRAME (GRect(5, 93, 92, 23))

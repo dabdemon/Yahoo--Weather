@@ -21,6 +21,8 @@ TextLayer *Sunset_Layer;        //Layer for the Low Temperature
 TextLayer *Wind_Layer;        //Layer for the Wind speed 
 TextLayer *WDirection_Layer;        //Layer for the Wind direction
 
+TextLayer *PoP_Layer;
+
 TextLayer *Day1_Layer;
 TextLayer *High1_Layer;
 TextLayer *Low1_Layer;

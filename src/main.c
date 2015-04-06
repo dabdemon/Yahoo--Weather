@@ -70,24 +70,46 @@ static void handle_battery(BatteryChargeState charge_state) {
 static void vibes()
 {
 
-
-	//Vibes on connection
-    if (BTConnected == false){
-		if (bluetooth_connection_service_peek() == true){
-			//Vibes to alert connection
-			if (blnvibes==true){vibes_short_pulse();}
-			BTConnected = true;
-		}
+	
+	//Vibes to aler the user if its the first time it vibes OR if the user selected to
+	//vibe until the connection is restored.
+	
+	if (blnvibes == 2){
+	
+			//Vibes to alert disconnection and do this every minute until the connection is restored
+			if (bluetooth_connection_service_peek()== false){
+					//alert the user about the BT connection
+					vibes_long_pulse();}			
+				
+	
 	}
-                
-	//Vibes on disconnect
-    if (BTConnected == true){
-    	//Vibes to alert disconnection
-		if (bluetooth_connection_service_peek()== false){
-			if(blnvibes==true){vibes_long_pulse();}
-       		BTConnected = false;
-	    }
-    }
+	else if (blnvibes == 1){
+	
+	
+			//Vibes on connection
+			if (BTConnected == false){
+				if (bluetooth_connection_service_peek() == true){
+					//Vibes to alert connection
+					//if (blnvibes==true){
+						//alert the user about the BT disconnection
+						//vibes_short_pulse();
+					//}
+					BTConnected = true;
+				}
+			}
+
+
+			//Vibes on disconnect (just once)
+			if (BTConnected == true){
+				//Vibes to alert disconnection
+				if (bluetooth_connection_service_peek()== false){
+					//alert the user about the BT connection
+					vibes_long_pulse();			
+					BTConnected = false;
+				}
+			}
+	
+}
 
 }	
 
@@ -105,10 +127,10 @@ static void handle_bluetooth(bool connected)
 			if (BT_image !=NULL) {gbitmap_destroy(BT_image);}
 			BT_image = gbitmap_create_with_resource(RESOURCE_ID_BT_CONNECTED);
             bitmap_layer_set_bitmap(BT_icon_layer, BT_image);
-			if (BTConnected == false){
+			//if (BTConnected == false){
 			//setup the timer to catch false disconnections (5 secs)
-         	timer = app_timer_register(5000, vibes, NULL);
-			}
+         	//timer = app_timer_register(5000, vibes, NULL);
+			//}
 
         }
         else
@@ -116,10 +138,10 @@ static void handle_bluetooth(bool connected)
             //Kill the previous image
 		    //if (BT_image!=NULL) {gbitmap_destroy(BT_image);}
             bitmap_layer_set_bitmap(BT_icon_layer, NULL);
-			if (BTConnected == true){
+			//if (BTConnected == true){
 			//setup the timer to catch false disconnections (5 secs)
          	timer = app_timer_register(5000, vibes, NULL);
-		}
+		//}
 			
       
         }
@@ -470,8 +492,8 @@ void SubscribeTickEvent(){
 		  break;
 	  
 	  case VIBES_KEY:
-		  blnvibes = new_tuple->value->uint8 != 0;
-		  persist_write_bool(VIBES_KEY, blnvibes);
+		  blnvibes = new_tuple->value->uint8;
+		  persist_write_int(VIBES_KEY, blnvibes);
 		  break;
   
 	  //Forecast for the day
@@ -625,6 +647,17 @@ void SubscribeTickEvent(){
 	  	 // intUI = new_tuple->value->uint8;
 	  	 // persist_write_int(FONT_KEY, intUI);
 		 // break;
+	  
+	  		case BACKLIGHT_KEY:
+		  	blnBacklight = new_tuple->value->uint8 != 0;
+		  	persist_write_int(BACKLIGHT_KEY, blnBacklight);
+
+		  	break;
+	  
+	  		case POP_KEY:
+	  	  	//Save the Rain Probability
+	    	persist_write_string(POP_KEY, new_tuple->value->cstring);
+      		break;
 
   }
 	  
@@ -671,6 +704,10 @@ static void timer_callback(void *context) {
 /*********************************/
 void LoadTemperature()
 {	
+	//If the backlight is on, turn it off and cancel the timer
+	app_timer_cancel(BackLightTimer);
+	light_enable(false);
+	
 	//remove the inverted layer (if any) before creating the new text layers
 	if(blninverted){inverter_layer_destroy(inv_layer);	blninverted = false;}
 	//Track that we are displaying the primary screen
@@ -739,7 +776,9 @@ void UnloadForecast()
 	if(low_icon_layer){bitmap_layer_destroy(low_icon_layer);}
 	if(wind_icon_layer){bitmap_layer_destroy(wind_icon_layer);}
 	//printf ("%s \n", "Unload moon icon");
-	if(moon_icon_layer){bitmap_layer_destroy(moon_icon_layer);}
+	//if(moon_icon_layer){bitmap_layer_destroy(moon_icon_layer);}
+	if(PoP_Layer){text_layer_destroy(PoP_Layer);}
+	if(rain_icon_layer){bitmap_layer_destroy(rain_icon_layer);}
 	
 }
 
@@ -775,7 +814,8 @@ void Unload3Days(){
 
 static void forecast3Days_callback(void *context) {
        
-        //Refresh the weather
+		
+		//Refresh the weather
 		Unload3Days();
         LoadTemperature();
     
@@ -929,6 +969,9 @@ static void forecast_callback(void *context) {
 			Load3Days();
 		}
 		else{
+			//turn the backlight off
+			//light_enable(false);
+			//Load the Main Screen
 			LoadTemperature();
 		}
     
@@ -1057,7 +1100,9 @@ void LoadForecast()
 	wind_icon_layer = bitmap_layer_create(WIND_ICON_FRAME);
 	bitmap_layer_set_bitmap(wind_icon_layer, wind_image);
     layer_add_child(window_get_root_layer(my_window), bitmap_layer_get_layer(wind_icon_layer));
-	
+
+//Replace the moonphase with the rain probability. Will enable back from settings later.
+/*
 	//moonphase
 	moonphase_number = moon_phase(intyear+1900,intmonth,intday);
 	if (moon_image) {gbitmap_destroy(moon_image);}
@@ -1065,6 +1110,26 @@ void LoadForecast()
 	moon_icon_layer = bitmap_layer_create(MOON_ICON_FRAME);
 	bitmap_layer_set_bitmap(moon_icon_layer, moon_image);
     layer_add_child(window_get_root_layer(my_window), bitmap_layer_get_layer(moon_icon_layer));
+*/
+	
+	//RAIN PROBABILITY
+	PoP_Layer = text_layer_create(POP_FRAME);	
+	text_layer_set_text_color(PoP_Layer, GColorWhite);
+	text_layer_set_background_color(PoP_Layer, GColorClear);
+	text_layer_set_font(PoP_Layer, font_date);
+	text_layer_set_text_alignment(PoP_Layer, GTextAlignmentRight);
+	layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(PoP_Layer));
+	
+	persist_read_string(POP_KEY, PoP, sizeof(PoP));
+	text_layer_set_text(PoP_Layer,PoP);
+	
+	//Rain ICON
+	if (rain_image){gbitmap_destroy(rain_image);}
+	rain_image = gbitmap_create_with_resource(RESOURCE_ID_ICON_RAIN_SMALL);
+	rain_icon_layer = bitmap_layer_create(RAIN_ICON_FRAME);
+	bitmap_layer_set_bitmap(rain_icon_layer, rain_image);
+    layer_add_child(window_get_root_layer(my_window), bitmap_layer_get_layer(rain_icon_layer));
+	
 	
 	//if color inverted, then create the inverted layer
 	InvertColors(color_inverted);
@@ -1078,6 +1143,14 @@ void LoadForecast()
 	
 } //LoadForecast - END
 
+
+void ExtendBackLight(){
+	
+	//Turn the lights on!
+	light_enable_interaction();
+	//Reset the time for another second
+	BackLightTimer = app_timer_register(1000, ExtendBackLight, NULL);
+}
 
 //************************************//
 //** Capture the accelerometer Taps **//
@@ -1093,6 +1166,9 @@ void accel_tap_handler(AccelAxisType axis, int32_t direction){
 		if (blnForecast==false){
 			TapCount = TapCount + 1;
 			if (TapCount > 1){
+				//turn the backlight on (every second until forecast screen closes)
+				if(blnBacklight){BackLightTimer = app_timer_register(1000, ExtendBackLight, NULL);}
+				//load extended screen
 				LoadForecast();
 			}
 		}
@@ -1130,17 +1206,15 @@ void LoadMainWindow(){
                 layer_add_child(window_get_root_layer(my_window), bitmap_layer_get_layer(BT_icon_layer));
         
                 //Display the Time layer
-			//YWeather 2.3 - REQ01. Display Seconds - START
-                //Time_Layer = text_layer_create(TIME_FRAME);
-				Time_Layer = text_layer_create(TIME_FRAME2);	
-			//YWeather 2.3 - REQ01. Display Seconds - END
+			
+			if (blnseconds){Time_Layer = text_layer_create(TIME_FRAME2);
+						   text_layer_set_text_alignment(Time_Layer, GTextAlignmentRight);}
+			else{Time_Layer = text_layer_create(TIME_FRAME);
+				text_layer_set_text_alignment(Time_Layer, GTextAlignmentCenter);}
+					
 				text_layer_set_text_color(Time_Layer, GColorWhite);
 	            text_layer_set_background_color(Time_Layer, GColorClear);
                 text_layer_set_font(Time_Layer, font_time);
-		//YWeather 2.3 - REQ01. Display Seconds - START
-                //text_layer_set_text_alignment(Time_Layer, GTextAlignmentCenter);
-				text_layer_set_text_alignment(Time_Layer, GTextAlignmentRight);
-		//YWeather 2.3 - REQ01. Display Seconds - END
                 layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Time_Layer));
 	
 	
@@ -1188,7 +1262,7 @@ void SetupMessages(){
                 TupletInteger(WEATHER_ICON_KEY, ICON_CODE), //INITIALIZE TO "N/A"
 				MyTupletCString(WEATHER_TEMPERATURE_KEY, temp),
 				//MyTupletCString(WEATHER_TEMPERATURE_KEY,low), //Init to something
-                MyTupletCString(WEATHER_CITY_KEY, "YWeather v2.5"), //display app version on load
+                MyTupletCString(WEATHER_CITY_KEY, "YWeather v2.6"), //display app version on load
 				TupletInteger(INVERT_COLOR_KEY, color_inverted),
 				TupletInteger(language_key, language), //INITIALIZE TO LAST SAVED
 				TupletInteger(VIBES_KEY, blnvibes),
@@ -1200,6 +1274,7 @@ void SetupMessages(){
 				//MyTupletCString(WIND_KEY,"0"), //Init to something
 				//TupletInteger(WDIRECTION_KEY,wdirection),
 				MyTupletCString(WDIRECTION_KEY,strwdirection),
+				MyTupletCString(POP_KEY,PoP),
 				//3 days forecast
 				TupletInteger(FORECAST_CODE1_KEY,0),
 				MyTupletCString(FORECAST_HIGH1_KEY,day1H),
@@ -1214,15 +1289,12 @@ void SetupMessages(){
 				TupletInteger(EXTRA_ESDURATION_KEY,init_ESDuration_ms),
 				TupletInteger(EXTRA_TIMER_KEY,init_timeout_ms),
 				TupletInteger(EXTRA_FORECAST_KEY,bln3daysForecast),
-			//YWeather 2.3 - REQ01. Display Seconds - START
 				TupletInteger(DISPLAY_SECONDS_KEY,blnseconds),
-			//YWeather 2.3 - REQ01. Display Seconds - END
-			//YWeather 2.3 - REQ02. Hourly Vibe - START
 				TupletInteger(HOURLY_VIBE_KEY,blnhourly_vibe),
-			//YWeather 2.3 - REQ02. Hourly Vibe - END
 				TupletInteger(HOURLY_VIBE_START_KEY,0),
 				TupletInteger(HOURLY_VIBE_END_KEY,9),
 				TupletInteger(HIDE_BAT_KEY,batt_status),
+				TupletInteger(BACKLIGHT_KEY, blnBacklight),
 				//TupletInteger(FONT_KEY, intUI), //INITIALIZE TO LAST SAVED
                 }; //TUPLET INITIAL VALUES
         
@@ -1252,7 +1324,7 @@ void handle_init(void)
   
 		//load persistent storage options
 		color_inverted = persist_read_bool(INVERT_COLOR_KEY);
-		blnvibes = persist_read_bool(VIBES_KEY);
+		blnvibes = persist_read_int(VIBES_KEY);
 		language = persist_read_int(language_key);
 		ICON_CODE = persist_read_int(WEATHER_ICON_KEY);
 		persist_read_string(WEATHER_TEMPERATURE_KEY, temp, sizeof(temp));
@@ -1261,6 +1333,7 @@ void handle_init(void)
 		persist_read_string(SUNRISE_KEY, sunrise, sizeof(sunrise));
 		persist_read_string(SUNSET_KEY, sunset, sizeof(sunset));
 		persist_read_string(WIND_KEY, wind, sizeof(wind));
+		persist_read_string(POP_KEY, PoP, sizeof(PoP));
 		//wdirection =  persist_read_int(WDIRECTION_KEY); 
 		persist_read_string(WDIRECTION_KEY, strwdirection, sizeof(strwdirection));
 		persist_read_string(FORECAST_HIGH1_KEY, day1H, sizeof(day1H));
@@ -1284,6 +1357,7 @@ void handle_init(void)
 	//YWeather 2.3 - REQ02. Hourly Vibe - END
 		batt_status = persist_read_int(HIDE_BAT_KEY);
 		//intUI = persist_read_int(FONT_KEY);
+		blnBacklight= persist_read_int(BACKLIGHT_KEY);
 	
 		init_ESDuration_ms = ESDuration_ms/1000;
 		init_timeout_ms = timeout_ms/60000;
