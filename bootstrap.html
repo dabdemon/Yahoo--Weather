@@ -713,7 +713,7 @@
                         'use_gps': $('#gps_switch').val(),
                         'location': $('#location').val(),
                         'units': $('input:radio[name=units]:checked').val(),
-                        'invert_color': $('#invert_color').val(),
+                        'invert_color': $('input:radio[name=invert_color]:checked').val(),
                         'vibes': $('#vibes').val(),
                         'accuracy': $('#accuracy').val(),
                         'feelslike': $('#feelslike').val(),
@@ -795,7 +795,11 @@
                     } else {
                         $('input:radio[name=units][value=fahrenheit]').prop('checked', true).trigger("click");
                     }
-                    $('#invert_color').val(getQueryVariable('invert_color')).change();
+                    if (getQueryVariable('invert_color') == "false") {
+                        $('input:radio[name=invert_color][value=false]').prop('checked', true).trigger("click");
+                    } else {
+                        $('input:radio[name=invert_color][value=true]').prop('checked', true).trigger("click");
+                    }
                     $('#vibes').val(getQueryVariable('vibes')).change();
                     $('#accuracy').val(getQueryVariable('accuracy')).change();
                     $('#feelslike').val(getQueryVariable('feelslike')).change();
