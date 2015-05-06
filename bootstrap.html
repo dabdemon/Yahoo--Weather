@@ -427,11 +427,12 @@
 									<div class="form-group">
 									    <label for="donotdisturb" class="control-label col-md-3">Hourly Vibe quiet Hours</label>
 									    <div class="col-md-9">
-										    <div class="col-xs-6">
+										    <div>
 										       <div class="input-group">
 										        <div class="input-group-addon">
 										          <span class="text-warning">LT1</span>
 										        </div>
+										        <label for="start">Start</label>
 						       					<select type="text" name="start" id="start" class="form-control" />
 				                                    <option value="0">0:00 (12:00am)</option>
 				                                    <option value="1">1:00 (1:00am)</option>
@@ -460,11 +461,12 @@
 						                        </select>
 										       </div>
 										    </div>
-										    <div class="col-xs-6">
+										    <div>
 										       <div class="input-group">
 										        <div class="input-group-addon">
 										          <span class="text-warning">LT1</span>
 										        </div>
+										        <label for="end">End</label>
 						       					<select type="text" name="end" id="end" class="form-control" />
 				                                    <option value="0">0:00 (12:00am)</option>
 				                                    <option value="1">1:00 (1:00am)</option>
@@ -710,15 +712,15 @@
                     var options = {
                         'language': $('#language').val(),
                         'font': $('#font').val(),
-                        'use_gps': $('#gps_switch').val(),
+                        'use_gps': $('input:radio[name=use_gps]:checked').val(),
                         'location': $('#location').val(),
                         'units': $('input:radio[name=units]:checked').val(),
                         'invert_color': $('input:radio[name=invert_color]:checked').val(),
-                        'vibes': $('#vibes').val(),
+                        'vibes': $('input:radio[name=vibes]:checked').val(),
                         'accuracy': $('#accuracy').val(),
-                        'feelslike': $('#feelslike').val(),
+                        'feelslike': $('input:radio[name=feelslike]:checked').val(),
                         'ESDuration': $('#ESDuration').val(),
-                        'backlight': $('#backlight').val(),
+                        'backlight': $('input:radio[name=backlight]:checked').val(),
                         'wspeed': $('#wspeed').val(),
                         'start': $('#start').val(),
                         'end': $('#end').val(),
@@ -726,13 +728,13 @@
                         'UUID': $('#UUID').val(),
                         'lt': $('#lt').val(),
                         'key': $.trim($('#key').val()),
-                        'forecast': $('#forecast').val(),
-                        'seconds': $('#seconds').val(),
-                        'hourly_vibe': $('#hourly_vibe').val(),
-                        'alerts': $('#alerts').val(),
+                        'forecast': $('input:radio[name=forecast]:checked').val(),
+                        'seconds': $('input:radio[name=seconds]:checked').val(),
+                        'hourly_vibe': $('input:radio[name=hourly_vibe]:checked').val(),
+                        'alerts': $('input:radio[name=alerts]:checked').val(),
                         'weatherprovider': $('#weatherprovider').val(),
                         'CustomAPIKey': $('#CustomAPIKey').val(),
-                        'hide_bat': $('#hide_bat').val(),
+                        'hide_bat': $('input:radio[name=hide_bat]:checked').val(),
                         'version' : "2.6"
                     }
                     return options;
@@ -747,7 +749,7 @@
                     //Disable the UUID. this is merely informational
                     //$('#UUID').prop('disabled', true);
                     $('#lt').prop('disabled', true);
-                    $("#lt").hide();
+                    //$("#lt").hide();
                     //Disable all the Extra Features to enable them based on LT
                     $('#accuracy').prop('disabled', true);
                     $('#feelslike').prop('disabled', true);
@@ -788,23 +790,50 @@
                     });
                     $('#language').val(getQueryVariable('language')).change();
                     $('#font').val(getQueryVariable('font')).change();
-                    $('#gps_switch').val(getQueryVariable('use_gps')).change();
+                    if (getQueryVariable('gps_switch') == "true") {
+                        $('input:radio[name=gps_switch][value=true]').prop('checked', true).trigger("click");
+                    } else {
+                        $('input:radio[name=gps_switch][value=false]').prop('checked', true).trigger("click");
+                    }
                     $('#location').val(getQueryVariable('location'));
                     if (getQueryVariable('units') == "celsius") {
                         $('input:radio[name=units][value=celsius]').prop('checked', true).trigger("click");
                     } else {
                         $('input:radio[name=units][value=fahrenheit]').prop('checked', true).trigger("click");
                     }
+
                     if (getQueryVariable('invert_color') == "false") {
                         $('input:radio[name=invert_color][value=false]').prop('checked', true).trigger("click");
                     } else {
                         $('input:radio[name=invert_color][value=true]').prop('checked', true).trigger("click");
                     }
-                    $('#vibes').val(getQueryVariable('vibes')).change();
+          
+                    if (getQueryVariable('vibes') == "0") {
+                        $('input:radio[name=vibes][value=0]').prop('checked', true).trigger("click");
+                    }
+                    else if (getQueryVariable('vibes') == "1"){
+ 						$('input:radio[name=vibes][value=1]').prop('checked', true).trigger("click");
+                    } 
+                    else {
+                        $('input:radio[name=vibes][value=2]').prop('checked', true).trigger("click");
+                    }
+                    
                     $('#accuracy').val(getQueryVariable('accuracy')).change();
-                    $('#feelslike').val(getQueryVariable('feelslike')).change();
+
+                    if (getQueryVariable('feelslike') == "false") {
+                        $('input:radio[name=feelslike][value=false]').prop('checked', true).trigger("click");
+                    } else {
+                        $('input:radio[name=feelslike][value=true]').prop('checked', true).trigger("click");
+                    }
+
                     $('#ESDuration').val(getQueryVariable('ESDuration')).change();
-                    $('#backlight').val(getQueryVariable('backlight')).change();
+
+                    if (getQueryVariable('backlight') == "false") {
+                        $('input:radio[name=backlight][value=false]').prop('checked', true).trigger("click");
+                    } else {
+                        $('input:radio[name=backlight][value=true]').prop('checked', true).trigger("click");
+                    }
+
                     $('#wspeed').val(getQueryVariable('wspeed')).change();
                     $('#start').val(getQueryVariable('start')).change();
                     $('#end').val(getQueryVariable('end')).change();
@@ -812,13 +841,40 @@
                     $('#UUID').val(getQueryVariable('UUID'));
                     $('#lt').val(getQueryVariable('lt'));
                     $('#key').val($.trim(getQueryVariable('key')));
-                    $('#forecast').val(getQueryVariable('forecast')).change();
-                    $('#seconds').val(getQueryVariable('seconds')).change();
-                    $('#hourly_vibe').val(getQueryVariable('hourly_vibe')).change();
-                    $('#alerts').val(getQueryVariable('alerts')).change();
+
+                    if (getQueryVariable('forecast') == "false") {
+                        $('input:radio[name=forecast][value=false]').prop('checked', true).trigger("click");
+                    } else {
+                        $('input:radio[name=forecast][value=true]').prop('checked', true).trigger("click");
+                    }
+
+                    if (getQueryVariable('seconds') == "false") {
+                        $('input:radio[name=seconds][value=false]').prop('checked', true).trigger("click");
+                    } else {
+                        $('input:radio[name=seconds][value=true]').prop('checked', true).trigger("click");
+                    }
+
+                    if (getQueryVariable('hourly_vibe') == "false") {
+                        $('input:radio[name=hourly_vibe][value=false]').prop('checked', true).trigger("click");
+                    } else {
+                        $('input:radio[name=hourly_vibe][value=true]').prop('checked', true).trigger("click");
+                    }
+
+                    if (getQueryVariable('alerts') == "false") {
+                        $('input:radio[name=alerts][value=false]').prop('checked', true).trigger("click");
+                    } else {
+                        $('input:radio[name=alerts][value=true]').prop('checked', true).trigger("click");
+                    }
+
                     $('#weatherprovider').val(getQueryVariable('weatherprovider')).change();
                     $('#CustomAPIKey').val(getQueryVariable('CustomAPIKey')).change();
-                    $('#hide_bat').val(getQueryVariable('hide_bat')).change();
+
+                    if (getQueryVariable('hide_bat') == "false") {
+                        $('input:radio[name=hide_bat][value=false]').prop('checked', true).trigger("click");
+                    } else {
+                        $('input:radio[name=hide_bat][value=true]').prop('checked', true).trigger("click");
+                    }
+
                     $('#os0').val(getQueryVariable('UUID'));
                     // Disable location field based on GPS toggle
                     $('#location').prop('disabled', $('#gps_switch').val() == "true");
