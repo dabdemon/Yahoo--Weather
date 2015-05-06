@@ -29,7 +29,8 @@ static void handle_battery(BatteryChargeState charge_state) {
      //static char battery_text[] = "100%";
 	
 	//kill previous batt_image to avoid invalid ones.
-	if (Batt_image !=NULL) {gbitmap_destroy(Batt_image);}
+	//if (Batt_image !=NULL) {gbitmap_destroy(Batt_image);}
+	Batt_image = NULL;
     bitmap_layer_set_bitmap(Batt_icon_layer, NULL);
 
   if (charge_state.is_charging) {

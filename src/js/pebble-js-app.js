@@ -305,7 +305,7 @@ function getLocationName(pos){
 //The Weather Underground//
 ///////////////////////////
 
-var twuk = "3035a2fg0eb84c254";
+var twuk = "3035a2f0eb84c254";
 
 function TWUFromLarLong(latitude, longitude){
 	var celsius = options['units'] == 'celsius';
@@ -499,7 +499,7 @@ function TWUFromLarLong(latitude, longitude){
 //////////////////////
 // open weather map //
 //////////////////////
-var owmk = "14d5ef44410ddbfg8687a1f51d26234bf";
+var owmk = "14d5ef44410ddbf8687a1f51d26234bf";
 
 function openweatherByLatLong(latitude, longitude)
 {
@@ -654,7 +654,7 @@ function openweatherByLatLong(latitude, longitude)
 // forecast.io //
 /////////////////
 
-var fiok = "810bdb86c6ab46075245248c3e6c5b0d5";
+var fiok = "810bdb86c6a46075245248c3e6c5b0d5";
 
 function forecastioByLatLong(latitude, longitude)
 {
@@ -1306,6 +1306,7 @@ NNW 326.25 - 348.75
 	return strwdirection;
 
 }
+
 
 
 
