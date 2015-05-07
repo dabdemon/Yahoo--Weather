@@ -718,6 +718,9 @@
                             return decodeURIComponent(pair[1]);
                     }
                     return false;
+                    
+                    	var return_to = getQueryParam('return_to', 'pebblejs://close#');
+			document.location = return_to + encodeURIComponent(JSON.stringify(some_settings)
                 }
                 function saveOptions() {
                     var options = {
