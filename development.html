@@ -800,7 +800,7 @@
                     });
                     $('#b-submit').click(function() {
                         var return_to = getQueryParam('return_to', 'pebblejs://close#');
-			document.location = return_to + encodeURIComponent(JSON.stringify(saveOptions())
+			document.location = return_to + encodeURIComponent(JSON.stringify(saveOptions()));
                     });
                     $('#language').val(getQueryVariable('language')).change();
                     $('#font').val(getQueryVariable('font')).change();
