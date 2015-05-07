@@ -719,8 +719,7 @@
                     }
                     return false;
                     
-                    	var return_to = getQueryParam('return_to', 'pebblejs://close#');
-			document.location = return_to + encodeURIComponent(JSON.stringify(some_settings)
+                    	
                 }
                 function saveOptions() {
                     var options = {
@@ -800,7 +799,8 @@
                         document.location = 'pebblejs://close#';
                     });
                     $('#b-submit').click(function() {
-                        document.location = 'pebblejs://close#' + encodeURIComponent(JSON.stringify(saveOptions()));
+                        var return_to = getQueryParam('return_to', 'pebblejs://close#');
+			document.location = return_to + encodeURIComponent(JSON.stringify(some_settings)
                     });
                     $('#language').val(getQueryVariable('language')).change();
                     $('#font').val(getQueryVariable('font')).change();
