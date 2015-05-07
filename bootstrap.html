@@ -790,11 +790,13 @@
                     });
                     $('#language').val(getQueryVariable('language')).change();
                     $('#font').val(getQueryVariable('font')).change();
+
                     if (getQueryVariable('gps_switch') == "true") {
                         $('input:radio[name=gps_switch][value=true]').prop('checked', true).trigger("click");
                     } else {
                         $('input:radio[name=gps_switch][value=false]').prop('checked', true).trigger("click");
                     }
+
                     $('#location').val(getQueryVariable('location'));
                     if (getQueryVariable('units') == "celsius") {
                         $('input:radio[name=units][value=celsius]').prop('checked', true).trigger("click");
@@ -817,7 +819,7 @@
                     else {
                         $('input:radio[name=vibes][value=2]').prop('checked', true).trigger("click");
                     }
-                    
+
                     $('#accuracy').val(getQueryVariable('accuracy')).change();
 
                     if (getQueryVariable('feelslike') == "false") {
@@ -876,10 +878,11 @@
                     }
 
                     $('#os0').val(getQueryVariable('UUID'));
+
                     // Disable location field based on GPS toggle
-                    $('#location').prop('disabled', $('#gps_switch').val() == "true");
-                    $('#gps_switch').change(function() {
-                        $('#location').prop('disabled', $('#gps_switch').val() == "true");
+                    //$('#location').prop('disabled', $('#gps_switch').val() == "true");
+                    //$('#gps_switch').change(function() {
+                      //  $('#location').prop('disabled', $('#gps_switch').val() == "true");
                     });
                 });
             </script>
