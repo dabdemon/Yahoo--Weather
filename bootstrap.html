@@ -167,15 +167,15 @@
 
 									<!-- Choose if use GPS or not-->
 					  				<div class="form-group">
-						    			<label for="gps_switch" class="control-label col-md-3">Location Method</label>
+						    			<label for="use_gps" class="control-label col-md-3">Location Method</label>
 						    			<div class="col-sm-6">
 						    				<div class="btn-group" data-toggle="buttons">
 										      <label class="btn btn-primary">
-										         <input type="radio" id="false" value="false" name="gps_switch" />
+										         <input type="radio" id="false" value="false" name="use_gps" />
 										        Manual Input
 										      </label>
 										      <label class="btn btn-primary">
-										        <input type="radio" id="true" value="true" name="gps_switch" />
+										        <input type="radio" id="true" value="true" name="use_gps" />
 										        Use GPS
 										      </label>
 										    </div>
@@ -723,7 +723,7 @@
                     var options = {
                         'language': $('#language').val(),
                         'font': $('#font').val(),
-                        'use_gps': $('input:radio[name=gps_switch]:checked').val(),
+                        'use_gps': $('input:radio[name=use_gps]:checked').val(),
                         'location': $('#location').val(),
                         'units': $('input:radio[name=units]:checked').val(),
                         'invert_color': $('input:radio[name=invert_color]:checked').val(),
@@ -801,21 +801,17 @@
                     });
                     $('#language').val(getQueryVariable('language')).change();
                     $('#font').val(getQueryVariable('font')).change();
-
-                    if (getQueryVariable('gps_switch') == "false") {
-                        $('input:radio[name=gps_switch][value=false]').prop('checked', true).trigger("click");
+                    if (getQueryVariable('use_gps') == "false") {
+                        $('input:radio[name=use_gps][value=false]').prop('checked', true).trigger("click");
                     } else {
-                        $('input:radio[name=gps_switch][value=true]').prop('checked', true).trigger("click");
+                        $('input:radio[name=use_gps][value=true]').prop('checked', true).trigger("click");
                     }
-
                     $('#location').val(getQueryVariable('location'));
-
                     if (getQueryVariable('units') == "celsius") {
                         $('input:radio[name=units][value=celsius]').prop('checked', true).trigger("click");
                     } else {
                         $('input:radio[name=units][value=fahrenheit]').prop('checked', true).trigger("click");
                     }
-
                     if (getQueryVariable('invert_color') == "false") {
                         $('input:radio[name=invert_color][value=false]').prop('checked', true).trigger("click");
                     } else {
@@ -831,23 +827,18 @@
                     else {
                         $('input:radio[name=vibes][value=2]').prop('checked', true).trigger("click");
                     }
-
                     $('#accuracy').val(getQueryVariable('accuracy')).change();
-
                     if (getQueryVariable('feelslike') == "false") {
                         $('input:radio[name=feelslike][value=false]').prop('checked', true).trigger("click");
                     } else {
                         $('input:radio[name=feelslike][value=true]').prop('checked', true).trigger("click");
                     }
-
                     $('#ESDuration').val(getQueryVariable('ESDuration')).change();
-
                     if (getQueryVariable('backlight') == "false") {
                         $('input:radio[name=backlight][value=false]').prop('checked', true).trigger("click");
                     } else {
                         $('input:radio[name=backlight][value=true]').prop('checked', true).trigger("click");
                     }
-
                     $('#wspeed').val(getQueryVariable('wspeed')).change();
                     $('#start').val(getQueryVariable('start')).change();
                     $('#end').val(getQueryVariable('end')).change();
@@ -855,42 +846,34 @@
                     $('#UUID').val(getQueryVariable('UUID'));
                     $('#lt').val(getQueryVariable('lt'));
                     $('#key').val($.trim(getQueryVariable('key')));
-
                     if (getQueryVariable('forecast') == "false") {
                         $('input:radio[name=forecast][value=false]').prop('checked', true).trigger("click");
                     } else {
                         $('input:radio[name=forecast][value=true]').prop('checked', true).trigger("click");
                     }
-
                     if (getQueryVariable('seconds') == "false") {
                         $('input:radio[name=seconds][value=false]').prop('checked', true).trigger("click");
                     } else {
                         $('input:radio[name=seconds][value=true]').prop('checked', true).trigger("click");
                     }
-
                     if (getQueryVariable('hourly_vibe') == "false") {
                         $('input:radio[name=hourly_vibe][value=false]').prop('checked', true).trigger("click");
                     } else {
                         $('input:radio[name=hourly_vibe][value=true]').prop('checked', true).trigger("click");
                     }
-
                     if (getQueryVariable('alerts') == "false") {
                         $('input:radio[name=alerts][value=false]').prop('checked', true).trigger("click");
                     } else {
                         $('input:radio[name=alerts][value=true]').prop('checked', true).trigger("click");
                     }
-
                     $('#weatherprovider').val(getQueryVariable('weatherprovider')).change();
                     $('#CustomAPIKey').val(getQueryVariable('CustomAPIKey')).change();
-
                     if (getQueryVariable('hide_bat') == "false") {
                         $('input:radio[name=hide_bat][value=false]').prop('checked', true).trigger("click");
                     } else {
                         $('input:radio[name=hide_bat][value=true]').prop('checked', true).trigger("click");
                     }
-
                     $('#os0').val(getQueryVariable('UUID'));
-
                     // Disable location field based on GPS toggle
                     //$('#location').prop('disabled', $('#gps_switch').val() == "true");
                     //$('#gps_switch').change(function() {
