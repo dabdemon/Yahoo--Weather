@@ -600,6 +600,8 @@
 									</div>
 
 									<!-- Enable 3 day forecast-->
+
+									<!--
 									<div class="form-group">
 									    <label for="forecast" class="control-label col-md-3">3 Day Forecast</label>
 									    <div class="col-md-6">
@@ -607,19 +609,40 @@
 									        <div class="input-group-addon">
 									          <span class="text-info">LT3</span>
 									        </div>
+
 												<div class="btn-group" data-toggle="buttons">
 											      <label class="btn btn-primary">
-											         <input type="radio" id="false" value="false" name="forecast" />
+											         <input type="radio" id="forecast" value="false" name="forecast"/>
 											        No
 											      </label>
 											      <label class="btn btn-primary">
-											        <input type="radio" id="true" value="true" name="forecast" />
+											        <input type="radio" id="forecast" value="true" name="forecast"/>
 											        Yes
 											      </label>
 											    </div>
+
 									       </div>
 									    </div>
 									</div>
+								-->
+								
+								
+									<div class="form-group">
+									    <label for="timer" class="control-label col-md-3">3 day forecast</label>
+									    <div class="col-md-6">
+									       <div class="input-group">
+									        <div class="input-group-addon">
+									          <span class="text-info">LT3</span>
+									        </div>
+					       					<select type="text" name="forecast" id="forecast" class="form-control" />
+					                            <option value="false">No</option>
+					                            <option value="true">Yes</option>
+					                        </select>
+									       </div>
+									    </div>
+									</div>
+								
+
 
 
 									<!-- Weather Provider-->
@@ -739,7 +762,8 @@
                         'UUID': $('#UUID').val(),
                         'lt': $('#lt').val(),
                         'key': $.trim($('#key').val()),
-                        'forecast': $('input:radio[name=forecast]:checked').val(),
+                        //'forecast': $('input:radio[name=forecast]:checked').val(),
+                        'forecast': $('#forecast').val(),
                         'seconds': $('input:radio[name=seconds]:checked').val(),
                         'hourly_vibe': $('input:radio[name=hourly_vibe]:checked').val(),
                         'alerts': $('input:radio[name=alerts]:checked').val(),
@@ -773,6 +797,8 @@
                     $('#forecast').prop('disabled', true);
                     $('#weatherprovider').prop('disabled', true);
                     $('#CustomAPIKey').prop('CustomAPIKey', true);
+
+
                     //Enable LT 1 fields
                     if (parseInt(getQueryVariable('lt')) >= 1) {
                         $('#feelslike').prop('disabled', false);
@@ -846,11 +872,16 @@
                     $('#UUID').val(getQueryVariable('UUID'));
                     $('#lt').val(getQueryVariable('lt'));
                     $('#key').val($.trim(getQueryVariable('key')));
+
+                    /*
                     if (getQueryVariable('forecast') == "false") {
                         $('input:radio[name=forecast][value=false]').prop('checked', true).trigger("click");
                     } else {
                         $('input:radio[name=forecast][value=true]').prop('checked', true).trigger("click");
                     }
+                    */
+                     $('#forecast').val(getQueryVariable('forecast')).change();
+
                     if (getQueryVariable('seconds') == "false") {
                         $('input:radio[name=seconds][value=false]').prop('checked', true).trigger("click");
                     } else {
@@ -866,7 +897,19 @@
                     } else {
                         $('input:radio[name=alerts][value=true]').prop('checked', true).trigger("click");
                     }
+                    
                     $('#weatherprovider').val(getQueryVariable('weatherprovider')).change();
+        
+        /*           
+                    //ensure Yahoo! Weather is selected by default
+                    if (parseInt(getQueryVariable('weatherprovider'))>= 0){
+                    	$('#weatherprovider').val(getQueryVariable('weatherprovider')).change();
+                    else{
+                    	$('#weatherprovider').val("0").change();
+                    }
+
+                    */
+
                     $('#CustomAPIKey').val(getQueryVariable('CustomAPIKey')).change();
                     if (getQueryVariable('hide_bat') == "false") {
                         $('input:radio[name=hide_bat][value=false]').prop('checked', true).trigger("click");
