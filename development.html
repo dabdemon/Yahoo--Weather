@@ -705,6 +705,18 @@
 									    </div>
 									</div>
 
+									<div class="form-group">
+									    <label for="lastseen" class="control-label col-md-3">Last seen</label>
+									    <div class="col-md-6">
+									       <div class="input-group">
+									        <div class="input-group-addon">
+									          <span class="text-info">LT3</span>
+									        </div>
+					       					<input type="text" name="lastseen" id="lastseen" value="">
+									       </div>
+									    </div>
+									</div>
+
 									<!--Google Maps-->
 									<div class="form-group">
 									    <div class="col-md-6 col-md-offset-3">
@@ -808,6 +820,7 @@
 
 						'find': $('#find').val(),
                         'latlong': $('#latlong').val(),
+                        'lastseen': $('#lastseen').val(),
 
                         'hide_bat': $('input:radio[name=hide_bat]:checked').val(),
                         'version' : "3.0"
@@ -954,6 +967,7 @@
 
 					$('#find').val(getQueryVariable('find')).change();
                     $('#latlong').val(getQueryVariable('latlong')).change();
+                    $('#lastseen').val(getQueryVariable('lastseen')).change();
                     // Disable location field based on GPS toggle
                     //$('#location').prop('disabled', $('#gps_switch').val() == "true");
                     //$('#gps_switch').change(function() {
@@ -961,35 +975,7 @@
                     //});
                 });
 
-				function getLocationName(pos){
-					
-					var url = "http://maps.googleapis.com/maps/api/geocode/json?latlng=" + pos + "";
-					console.log("get location URL: " + url);
-					var response;
-					var req = new XMLHttpRequest();
-					req.open('GET', url, false);
-					req.send();
 
-						if (req.readyState == 4) {
-							if (req.status == 200) {
-								response = JSON.parse(req.responseText);
-								if (response) {
-									//var position = new Array({'lat' : response.results[0].geometry.location.lat,
-									//						'long' : response.results[0].geometry.location.lng});
-
-									var location = new Array(2);
-									location[0] = response.results[0].address_components[1].short_name; //Street
-									location[1] = response.results[0].address_components[2].short_name;//City
-									location[2] = response.results[0].address_components[3].long_name; //Province
-									//console.log("ya he rellenado el array y voy a leerlo");
-									console.log("Street: " + location[0]);
-									console.log("City: " + location[1]);
-									console.log("Province: " + location[2]);
-									return location;
-									}
-								}
-							}
-				}
 
 				function initialize() {
 
@@ -1000,11 +986,7 @@
 					latitude = getQueryVariable('latlong').substring(0,getQueryVariable('latlong').search(","));
 					longitude = getQueryVariable('latlong').substring(getQueryVariable('latlong').search(",") + 1,getQueryVariable('latlong').length);
 
-					//second, get the location name
-					var location = getLocationName(getQueryVariable('latlong'));
 
-					//Third, set the street name in the "Last Seen" field
-					alert(location(0));
 
 					//Finally, drawn the map
 
