@@ -720,7 +720,7 @@
 									<!--Google Maps-->
 									<div class="form-group">
 									    <div class="col-md-6 col-md-offset-3">
-									       <div id="googleMap" style="width:200px;height:180px;"></div>
+									       <div id="googleMap" style="width:300px;height:300px;"></div>
 									    </div>
 									</div>
 									
@@ -989,13 +989,19 @@
 
 
 					//Finally, drawn the map
-
+				  var myLatlng = new google.maps.LatLng(latitude,longitude);
 				  var mapProp = {
-				    center:new google.maps.LatLng(latitude,longitude),
+				    center:myLatlng,
 				    zoom:15,
 				    mapTypeId:google.maps.MapTypeId.ROADMAP
 				  };
 				  var map=new google.maps.Map(document.getElementById("googleMap"), mapProp);
+
+				  var marker = new google.maps.Marker({
+				      position: myLatlng,
+				      map: map,
+				      title: 'Hello Pebble!'
+				  });
 				}
 
 				google.maps.event.addDomListener(window, 'load', initialize);
