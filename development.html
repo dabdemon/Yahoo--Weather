@@ -708,7 +708,7 @@
 									<!--Google Maps-->
 									<div class="form-group">
 									    <div class="col-md-6 col-md-offset-3">
-									       <div id="googleMap" style="width:250px;height:250px;"></div>
+									       <div id="googleMap" style="width:200px;height:180px;"></div>
 									    </div>
 									</div>
 									
@@ -1004,13 +1004,13 @@
 					var location = getLocationName(getQueryVariable('latlong'));
 
 					//Third, set the street name in the "Last Seen" field
-					$('#latlong').val(location(0));
-					
+					alert(location(0));
+
 					//Finally, drawn the map
 
 				  var mapProp = {
 				    center:new google.maps.LatLng(latitude,longitude),
-				    zoom:17,
+				    zoom:15,
 				    mapTypeId:google.maps.MapTypeId.ROADMAP
 				  };
 				  var map=new google.maps.Map(document.getElementById("googleMap"), mapProp);
