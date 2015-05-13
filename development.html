@@ -1,308 +1,747 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset='utf-8'>
-        <meta name='viewport' content='width=device-width, initial-scale=1'>
-        <link rel='stylesheet' href='http://code.jquery.com/mobile/1.4.2/jquery.mobile-1.4.2.min.css' />
-        <script src='http://code.jquery.com/jquery-1.9.1.min.js'></script>
-        <script src='http://code.jquery.com/mobile/1.4.2/jquery.mobile-1.4.2.min.js'></script>
-        <style>
-            .ui-header .ui-title { margin-left: 1em; margin-right: 1em; text-overflow: clip; }
-            /*.ui-radio { width: 50%; }*/
-        </style>
-    </head>
-    <body>
-        <div data-role='page' id='main'>
-            <div data-role='header' class='jqm-header' data-theme='b'>
-                <IMG SRC="http://imagizer.imageshack.us/v2/320x240q90/546/5tp4.png">
-                    </div>
-                <div data-role='content'>
-                    <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-                        <input type="hidden" name="cmd" value="_xclick">
-                        <input type="hidden" name="business" value="yweather.pebble@gmail.com">
-                        <input type="hidden" name="lc" value="US">
-                        <input type="hidden" name="item_name" value="YWeather">
-                        <input type="hidden" name="button_subtype" value="services">
-                        <input type="hidden" name="no_note" value="0">
-                        <input type="hidden" name="currency_code" value="EUR">
-                        <input type="hidden" name="tax_rate" value="0.000">
-                        <input type="hidden" name="shipping" value="0.00">
-                        <input type="hidden" name="bn" value="PP-BuyNowBF:btn_paynowCC_LG.gif:NonHostedGuest">
-                        <input type="hidden" name="on0" value="USER ID">
-                        <input type="hidden" name="os0" id="os0">
+	<head>
+		<meta name='viewport' content='width=device-width, initial-scale=1'>
+		<!--load the Bootstrap "Superhero" theme-->
+		<link rel="stylesheet" href="https://bootswatch.com/superhero/bootstrap.min.css">
+		<!--load JQuery and Bootstrap JavaScript -->
+		<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+    	<script src="https://bootswatch.com/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 
-                        <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_paynowCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-                        <img alt="" border="0" src="https://www.paypalobjects.com/es_ES/i/scr/pixel.gif" width="1" height="1">
-                    </form>
-                    User ID
-                    <input name="UUID" id="UUID">
+		<title>YWeather Settings</title>
+	</head>
+	<body>
 
-                    <div data-role="fieldcontain">
-                        <label for="key">User Key</label>
-                        <input type="text" name="key" id="key" value=" " />
-                    </div>
-                    <div data-role="fieldcontain">
-                        <label for="language">Language</label>
-                        <select name="language" id="language" data-theme="c" data-track-theme="d">
-                            <option value="11">Catalan</option>
-                            <option value="99">Chinese</option>
-                            <option value="3">Czech</option>
-                            <option value="10">Danish</option>
-                            <option value="7">Dutch</option>
-                            <option value="100">English (U.S.)</option>
-                            <option value="97">English (Non-U.S.)</option>
-                            <option value="6">Finnish</option>
-                            <option value="4">French</option>
-                            <option value="2">German</option>
-                            <option value="12">Hungarian</option>
-                            <option value="1">Italian</option>
-                            <option value="98">Japanese</option>
-                            <option value="13">Norwegian</option>
-                            <option value="8">Polish</option>
-                            <option value="5">Portuguese</option>
-                            <option value="16">Romanian</option>
-                            <option value="15">Slovak</option>
-                            <option value="0">Spanish</option>
-                            <option value="9">Swedish</option>
-                            <option value="14">Turkish</option>
-                        </select>
-                    </div>
-                    <div data-role="fieldcontain">
-                        <label for="font">Theme</label>
-                        <select name="font" id="font" data-theme="c" data-track-theme="d">
-                            <option value="0">Classic</option>
-                            <option value="1">Simple</option>
-                            <option value="2">Teen</option>
-                        </select>
-                    </div>
-                    <div data-role="fieldcontain">
-                        <label for="gps_switch">Use GPS</label>
-                        <select name="gps_switch" id="gps_switch" data-theme="c" data-role="slider" data-track-theme="d">
-                            <option value="false">No</option>
-                            <option value="true">Yes</option>
-                        </select>
-                    </div>
-                    <div data-role="fieldcontain">
-                        <label for="location">Location</label>
-                        <input type="text" name="location" id="location" value="" />
-                    </div>
-                    <div data-role="fieldcontain">
-                        <fieldset data-role="controlgroup" data-type="horizontal">
-                            <legend>Units:</legend>
-                            <label for="celsius">Metric</label>
-                            <input type="radio" id="celsius" name="units" value="celsius" data-theme="c">
-                            <label for="fahrenheit">Imperial</label>
-                            <input type="radio" id="fahrenheit" name="units" value="fahrenheit" data-theme="c">
-                        </fieldset>
-                    </div>
-                    <div data-role="fieldcontain">
-                        <label for="invert_color">Invert Colors</label>
-                        <select name="invert_color" id="invert_color" data-theme="c" data-role="slider" data-track-theme="d">
-                            <option value="false">No</option>
-                            <option value="true">Yes</option>
-                        </select>
-                    </div>
-                    <div data-role="fieldcontain">
-                        <label for="hide_bat">Display Battery Level</label>
-                        <select name="hide_bat" id="hide_bat" data-theme="c" data-role="slider" data-track-theme="d">
-                            <option value="false">Low Batt</option>
-                            <option value="true">Always</option>
-                        </select>
-                    </div>
-        
-                      <div data-role="fieldcontain">
-                        <label for="vibes">Vibes on disconnect</label>
-                        <select name="vibes" id="vibes" data-theme="c" data-track-theme="d">
-                            <option value="0">No</option>
-                            <option value="1">Vibes Once</option>
-                            <option value="2">Vibes until reconnect</option>
-                        </select>
-                    </div>
-                   
-                    <div data-role="fieldcontain">
-                        <label for="seconds">Display Seconds</label>
-                        <select name="seconds" id="seconds" data-theme="c" data-role="slider" data-track-theme="d">
-                            <option value="false">No</option>
-                            <option value="true">Yes</option>
-                        </select>
-                    </div>
-                    <div data-role="fieldcontain">
-                        <label for="hourly_vibe">Hourly Vibe</label>
-                        <select name="hourly_vibe" id="hourly_vibe" data-theme="c" data-role="slider" data-track-theme="d">
-                            <option value="false">No</option>
-                            <option value="true">Yes</option>
-                        </select>
-                    </div>
-                    <div data-role="fieldcontain">
-                        <label for="alerts">Display YWeather alerts</label>
-                        <select name="alerts" id="alerts" data-theme="c" data-role="slider" data-track-theme="d">
-                            <option value="false">No</option>
-                            <option value="true">Yes</option>
-                        </select>
-                    </div>
-                    <h1>EXTRA FEATURES (For backers only)</h1>
-                    <div data-role="content">
-                        <label for="lt"></label>
-                        <input type="text" name="lt" id="lt" value="" />
-                    </div>
-                    <h3>If you support with 1€ or more, you unlock:</h3>
-                    <div data-role="fieldcontain">
-                        <label for="feelslike">Display Feels Like (instead of real temperature)</label>
-                        <select name="feelslike" id="feelslike" data-theme="c" data-role="slider" data-track-theme="d">
-                            <option value="false">No</option>
-                            <option value="true">Yes</option>
-                        </select>
-                    </div>
-                    <div data-role="fieldcontain">
-                        <label for="ESDuration">Forecast screen duration</label>
-                        <select name="ESDuration" id="ESDuration" data-theme="c" data-track-theme="d">
-                            <option value="0">Off - No forecast</option>
-                            <option value="5">5 seconds</option>
-                            <option value="8">8 seconds</option>
-                            <option value="10">10 seconds</option>
-                            <option value="15">15 seconds</option>
-                        </select>
-                    </div>
-                    
-                    <div data-role="fieldcontain">
-                        <label for="backlight">Extend backlight duration</label>
-                        <select name="backlight" id="backlight" data-theme="c" data-role="slider" data-track-theme="d">
-                            <option value="false">No</option>
-                            <option value="true">Yes</option>
-                        </select>
-                    </div>
-                    
-                    <b>*NOTE:</b> Extending the backlight duration will impact your battery life. Please use this carefully.
-                    
-                    <div data-role="fieldcontain">
-                        <label for="wspeed">Wind Speed Unit</label>
-                        <select name="wspeed" id="wspeed" data-theme="c" data-track-theme="d">
-                            <option value="0">km/h - mi/h</option>
-                            <option value="1">m/s</option>
-                            <option value="2">knots</option>
-                            <option value="3">beaufort</option>
-                        </select>
-                    </div>
-                    
+		<!--Create the Jumbotron with the Instructions -->
+		<div class="container">
+			<div class ="jumbotron">
+				<h3 class="text-warning"><b>YWeather Settings</b></h3>
+				<h4>Please, select your settings and click on Submit</h4>
+			</div>
+		</div>
 
-                    <div data-role="fieldcontain">
-                        <label for="donotdisturb">Hourly Vibe Quiet Hours</label>
-                         <fieldset class='ui-grid-a'>
-                            <div class='ui-block-a'>
-                               <select name="start" id="start" data-role="time">
-                                    <option value="0">0:00 (12:00am)</option>
-                                    <option value="1">1:00 (1:00am)</option>
-                                    <option value="2">2:00 (2:00am)</option>
-                                    <option value="3">3:00 (3:00am)</option>
-                                    <option value="4">4:00 (4:00am)</option>
-                                    <option value="5">5:00 (5:00am)</option>
-                                    <option value="6">6:00 (6:00am)</option>
-                                    <option value="7">7:00 (7:00am)</option>
-                                    <option value="8">8:00 (8:00am)</option>
-                                    <option value="9">9:00 (9:00am)</option>
-                                    <option value="10">10:00 (10:00am)</option>
-                                    <option value="11">11:00 (11:00am)</option>
-                                    <option value="12">12:00 (12:00pm)</option>
-                                    <option value="12">13:00 (1:00pm)</option>
-                                    <option value="14">14:00 (2:00pm)</option>
-                                    <option value="15">15:00 (3:00pm)</option>
-                                    <option value="16">16:00 (4:00pm)</option>
-                                    <option value="17">17:00 (5:00pm)</option>
-                                    <option value="18">18:00 (6:00pm)</option>
-                                    <option value="19">19:00 (7:00pm)</option>
-                                    <option value="20">20:00 (8:00pm)</option>
-                                    <option value="21">21:00 (9:00pm)</option>
-                                    <option value="22">22:00 (10:00pm)</option>
-                                    <option value="23">23:00 (11:00pm)</option>
-                                </select>
-                            </div>
-                            <div class='ui-block-b'>
-                                <select name="end" id="end" data-role="time">
-                                    <option value="0">0:00 (12:00am)</option>
-                                    <option value="1">1:00 (1:00am)</option>
-                                    <option value="2">2:00 (2:00am)</option>
-                                    <option value="3">3:00 (3:00am)</option>
-                                    <option value="4">4:00 (4:00am)</option>
-                                    <option value="5">5:00 (5:00am)</option>
-                                    <option value="6">6:00 (6:00am)</option>
-                                    <option value="7">7:00 (7:00am)</option>
-                                    <option value="8">8:00 (8:00am)</option>
-                                    <option value="9">9:00 (9:00am)</option>
-                                    <option value="10">10:00 (10:00am)</option>
-                                    <option value="11">11:00 (11:00am)</option>
-                                    <option value="12">12:00 (12:00pm)</option>
-                                    <option value="12">13:00 (1:00pm)</option>
-                                    <option value="14">14:00 (2:00pm)</option>
-                                    <option value="15">15:00 (3:00pm)</option>
-                                    <option value="16">16:00 (4:00pm)</option>
-                                    <option value="17">17:00 (5:00pm)</option>
-                                    <option value="18">18:00 (6:00pm)</option>
-                                    <option value="19">19:00 (7:00pm)</option>
-                                    <option value="20">20:00 (8:00pm)</option>
-                                    <option value="21">21:00 (9:00pm)</option>
-                                    <option value="22">22:00 (10:00pm)</option>
-                                    <option value="23">23:00 (11:00pm)</option>
-                                </select>
-                            </div>
-                        </fieldset>
-                        <div data-role="time">
 
-                        </div>
-                    </div>
-                    <h3>If you support with 3€ or more, you unlock:</h3>
-                    <div data-role="fieldcontain">
-                        <label for="accuracy">Weather Accuracy</label>
-                        <select name="accuracy" id="accuracy" data-theme="c" data-track-theme="d">
-                            <option value="16">Neighborhood</option>
-                            <option value="11">City</option>
-                            <option value="6">Region</option>
-                        </select>
-                    </div>
-                    <div data-role="fieldcontain">
-                        <label for="timer">Weather updates every</label>
-                        <select name="timer" id="timer" data-theme="c" data-track-theme="d">
-                            <option value="5">5 minutes</option>
-                            <option value="15">15 minutes</option>
-                            <option value="30">30 minutes</option>
-                            <option value="45">45 minutes</option>
-                            <option value="60">60 minutes</option>
-                        </select>
-                    </div>
-                    <h3>If you support with 5€ or more, you unlock:</h3>
-                    *NOTE: Triple shake your watch to display the extended weather info!
-                    <div data-role="fieldcontain">
-                        <label for="forecast">Display 3 day forecast</label>
-                        <select name="forecast" id="forecast" data-theme="c" data-role="slider" data-track-theme="d">
-                            <option value="false">No</option>
-                            <option value="true">Yes</option>
-                        </select>
-                    </div>
-                     <div data-role="fieldcontain">
-                        <label for="weatherprovider">Weather Provider</label>
-                        <select name="weatherprovider" id="weatherprovider" data-theme="c" data-track-theme="d">
-                            <option value="0">Yahoo! Weather</option>
-                            <option value="1">The Weather Underground</option>
-                            <option value="2">forecast.io</option>
-                            <option value="3">OpenWeatherMap</option>
-                        </select>
-                    </div>
-                    
-                     <div data-role="fieldcontain">
-                        <label for="CustomAPIKey">Custom API Key</label>
-                        <input type="text" name="CustomAPIKey" id="CustomAPIKey" value="" />
-                    </div>
-                    <b>NOTE:</b> If you changed your weather provider to other than Yahoo! Weather you need to provide here your personal API key. Please go to the weather provider site to sign up and get yours. Otherwise YWeather won't be able to connect to the service and you won't get weather info at all.
-                    <br>
-                    <div class='ui-body ui-body-b'>
-                        <fieldset class='ui-grid-a'>
-                            <div class='ui-block-a'><button type='submit' data-theme='d' id='b-cancel'>Cancel</button></div>
-                            <div class='ui-block-b'><button type='submit' data-theme='b' id='b-submit'>Submit</button></div>
-                        </fieldset>
-                    </div>
-                    This settings page is compatible with YWeather v2.6 or higher
-                </div>
-            </div>
-            <script>
+		<!-- Create the two tabs to group the different subset of settings -->
+		<div class="container">
+			<!-- Tabs -->
+			<ul class="nav nav-tabs" role="tablist">
+		 		<li class="active"><a href="#common-tab" role="tab" data-toggle="tab">Common Settings</a></li>
+				<li><a href="#extras-tab" role="tab" data-toggle="tab">Extra Features</a></li>
+			</ul>
+		 
+			<!-- Tab Content -->
+		 	<div class="tab-content">
+				<div class="active tab-pane fade in" id="common-tab">
+
+
+					<div class="panel-group" id="accordion-common">
+					   <div class="panel panel-default">
+					     <div class="panel-heading">
+					       <h4 class="panel-title">
+					         <a data-toggle="collapse" data-parent="#accordion-common" href="#accordion-miscellaneous">
+					           Miscellaneous
+					         </a>
+					       </h4>
+					     </div>
+					     <div id="accordion-miscellaneous" class="panel-collapse collapse in">
+					       <div class="panel-body">
+					         <div class="container">
+								<form class="form-horizontal">
+
+									<!-- Select the language to display the weekday and date -->
+					  				<div class="form-group">
+					    				<label for="language" class="control-label col-md-3">Language</label>
+					    				<div class="col-sm-6">
+					       					<select type="text" name="language" id="language" class="form-control" />
+					       						<option value="11">Catalan</option>
+					                            <option value="99">Chinese</option>
+					                            <option value="3">Czech</option>
+					                            <option value="10">Danish</option>
+					                            <option value="7">Dutch</option>
+					                            <option value="100">English (U.S.)</option>
+					                            <option value="97">English (Non-U.S.)</option>
+					                            <option value="6">Finnish</option>
+					                            <option value="4">French</option>
+					                            <option value="2">German</option>
+					                            <option value="12">Hungarian</option>
+					                            <option value="1">Italian</option>
+					                            <option value="98">Japanese</option>
+					                            <option value="13">Norwegian</option>
+					                            <option value="8">Polish</option>
+					                            <option value="5">Portuguese</option>
+					                            <option value="16">Romanian</option>
+					                            <option value="15">Slovak</option>
+					                            <option value="0">Spanish</option>
+					                            <option value="9">Swedish</option>
+					                            <option value="14">Turkish</option>
+					                        </select>
+					    				</div>
+					    			</div>
+
+					    			<!-- Select the units in which the weather and wind speed will be expressed. Metric = ºC and Km/h; Imperial = ºF and mi/h -->
+									<div class="form-group">
+						    			<label for="units" class="control-label col-md-3">Units</label>
+						    			<div class="col-sm-6">
+						    				<div class="btn-group" data-toggle="buttons">
+										      <label class="btn btn-primary">
+										         <input type="radio" id="celsius" value ="celsius" name="units" />
+										        Metric
+										      </label>
+										      <label class="btn btn-primary">
+										        <input type="radio" id="farenheith" value="fahrenheit" name="units" />
+										        Imperial
+										      </label>
+										    </div>
+						    			</div>
+					  				</div>	
+
+					  				<!-- Default color scheme (Original Pebble and Steel) is black with white fonts. By inverting colors the theme will be white with black fonts -->
+									<div class="form-group">
+						    			<label for="invert_color" class="control-label col-md-3">Invert Colors</label>
+						    			<div class="col-sm-6">
+						    				<div class="btn-group" data-toggle="buttons">
+										      <label class="btn btn-primary">
+										         <input type="radio" id="false" value="false" name="invert_color" />
+										        No
+										      </label>
+										      <label class="btn btn-primary">
+										        <input type="radio" id="true" value="true" name="invert_color" />
+										        Yes
+										      </label>
+										    </div>
+						    			</div>
+					  				</div>	
+
+					  				<!-- Select when the battery icon will be displayed on the UI -->
+									<div class="form-group">
+						    			<label for="hide_bat" class="control-label col-md-3">Display Battery Level</label>
+						    			<div class="col-sm-6">
+						    				<div class="btn-group" data-toggle="buttons">
+										      <label class="btn btn-primary">
+										         <input type="radio" id="false" value="false" name="hide_bat" />
+										        When running low
+										      </label>
+										      <label class="btn btn-primary">
+										        <input type="radio" id="true" value="true" name="hide_bat" />
+										        Always
+										      </label>
+										    </div>
+						    			</div>
+					  				</div>	
+
+					  				<!-- Select when the battery icon will be displayed on the UI -->
+									<div class="form-group">
+						    			<label for="seconds" class="control-label col-md-3">Display Seconds</label>
+						    			<div class="col-sm-6">
+						    				<div class="btn-group" data-toggle="buttons">
+										      <label class="btn btn-primary">
+										         <input type="radio" id="false" value="false" name="seconds" />
+										        No
+										      </label>
+										      <label class="btn btn-primary">
+										        <input type="radio" id="true" value="true" name="seconds" />
+										        Yes
+										      </label>
+										    </div>
+						    			</div>
+					  				</div>	
+
+								</form>
+							</div>
+					       </div>
+					     </div>
+					   </div>
+					   <div class="panel panel-default">
+					     <div class="panel-heading">
+					       <h4 class="panel-title">
+					         <a data-toggle="collapse" data-parent="#accordion-common" href="#accordion-weather">
+					           Weather
+					         </a>
+					       </h4>
+					     </div>
+
+					   <div id="accordion-weather" class="panel-collapse collapse">
+					     <div class="panel-body">
+					       	<div class="container">
+								<form class="form-horizontal">
+
+									<!-- Choose if use GPS or not-->
+					  				<div class="form-group">
+						    			<label for="use_gps" class="control-label col-md-3">Location Method</label>
+						    			<div class="col-sm-6">
+						    				<div class="btn-group" data-toggle="buttons">
+										      <label class="btn btn-primary">
+										         <input type="radio" id="false" value="false" name="use_gps" />
+										        Manual Input
+										      </label>
+										      <label class="btn btn-primary">
+										        <input type="radio" id="true" value="true" name="use_gps" />
+										        Use GPS
+										      </label>
+										    </div>
+						    			</div>
+					  				</div>	
+
+					  				<!-- If manual location is selected, enter the city name -->
+					  				<div class="form-group">
+					  					<label for="location" class="control-label col-md-3">Location</label>
+					  					<div class="col-sm-6">
+								     		<input type="text" class="col-md-6" id="location" name="location" Placeholder="e.j. 'Chicago'">
+								     	</div>
+								  </div>
+
+					  			</form>
+					  		</div>
+					     </div>
+					   </div>
+
+					   </div>
+
+					   <div class="panel panel-default">
+					     <div class="panel-heading">
+					       <h4 class="panel-title">
+					         <a data-toggle="collapse" data-parent="#accordion-common" href="#accordion-alerts">
+					           Alerts
+					         </a>
+					       </h4>
+					     </div>
+
+					  	<div id="accordion-alerts" class="panel-collapse collapse">
+					     	<div class="panel-body">
+					       		<div class="container">
+					       			<form class="form-horizontal">
+
+										<!-- Vibes on disconnection -->
+						  				<div class="form-group">
+							    			<label for="vibes" class="control-label col-md-3">Vibes on disconnection</label>
+							    			<div class="col-sm-6">
+							    				<div class="btn-group" data-toggle="buttons">
+											      <label class="btn btn-primary">
+											      <input type="radio" id="0" value="0" name="vibes" />
+											        Do not vibe
+											      </label>
+											      <label class="btn btn-primary">
+											      <input type="radio" id="1" value="1" name="vibes" />
+											        Vibes once
+											      </label>
+											      <label class="btn btn-primary">
+											      <input type="radio" id="2" value="2" name="vibes" />
+											        Vibes until reconnect
+											      </label>
+											    </div>
+							    			</div>
+						  				</div>	
+
+						  				<!-- Hourly Vibe-->
+						  				<div class="form-group">
+							    			<label for="hourly_vibe" class="control-label col-md-3">Hourly Vibe</label>
+							    			<div class="col-sm-6">
+							    				<div class="btn-group" data-toggle="buttons">
+											      <label class="btn btn-primary">
+											         <input type="radio" id="false" value="false" name="hourly_vibe" />
+											        No
+											      </label>
+											      <label class="btn btn-primary">
+											        <input type="radio" id="true" value="true" name="hourly_vibe" />
+											        Yes
+											      </label>
+											    </div>
+							    			</div>
+					  					</div>	
+
+					  					<!-- YWeather Alerts-->
+						  				<div class="form-group">
+							    			<label for="alerts" class="control-label col-md-3">Display YWeather Alerts</label>
+							    			<div class="col-sm-6">
+							    				<div class="btn-group" data-toggle="buttons">
+											      <label class="btn btn-primary">
+											         <input type="radio" id="false" value="false" name="alerts" />
+											        No
+											      </label>
+											      <label class="btn btn-primary">
+											        <input type="radio" id="true" value="true" name="alerts" />
+											        Yes
+											      </label>
+											    </div>
+							    			</div>
+					  					</div>	
+
+						  			</form>
+					       		</div>
+					     	</div>
+					 	</div>			
+					</div>
+				</div>
+				</div>
+
+				<div class="tab-pane fade" id="extras-tab">
+
+					<!-- Add an alert to ensure no BB nor WP users make a payment (which I'd need to refund... and that sucks) -->
+
+
+						<div class="alert alert-warning alert-dismissable">
+							<button type="button" class="close" data-dismiss="alert" aria-hidden="true">x</button>
+						    <h3>WARNING</h3>
+						    <div>Only Android and iOS devices are supported at this time. Extra features may not work on any BlackBerry nor Windows Phone device until Pebble gives official support.</div>
+						</div>
+
+
+		 			
+					<div class="panel-group" id="accordion-extras">
+					   	<div class="panel panel-default">
+					     	<div class="panel-heading">
+					       		<h4 class="panel-title">
+					         		<a data-toggle="collapse" data-parent="#accordion-extras" href="#accordion-account">
+					           		Account
+					         		</a>
+					       		</h4>
+					     	</div>
+					    
+					    	<div id="accordion-account" class="panel-collapse collapse in">
+					    
+					    		<div class="panel-body">
+
+					    			<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+					                        <input type="hidden" name="cmd" value="_xclick">
+					                        <input type="hidden" name="business" value="yweather.pebble@gmail.com">
+					                        <input type="hidden" name="lc" value="US">
+					                        <input type="hidden" name="item_name" value="YWeather">
+					                        <input type="hidden" name="button_subtype" value="services">
+					                        <input type="hidden" name="no_note" value="0">
+					                        <input type="hidden" name="currency_code" value="EUR">
+					                        <input type="hidden" name="tax_rate" value="0.000">
+					                        <input type="hidden" name="shipping" value="0.00">
+					                        <input type="hidden" name="bn" value="PP-BuyNowBF:btn_paynowCC_LG.gif:NonHostedGuest">
+					                        <input type="hidden" name="on0" value="USER ID">
+					                        <input type="hidden" name="os0" id="os0">
+
+					                        <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_paynowCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+					                        <img alt="" border="0" src="https://www.paypalobjects.com/es_ES/i/scr/pixel.gif" width="1" height="1">
+					                </form>
+					         	
+
+									<form class="form-horizontal">
+
+						  				<!-- User ID: getAccountToken() from the Pebble application-->
+						  				<div class="form-group">
+						  					<label for="UUID" class="control-label col-sm-3">User ID</label>
+						  					<div class="col-sm-9">
+									     		<input type="text" class="col-sm-9" id="UUID" name="UUID">
+									     	</div>
+								  		</div>
+
+								  		<!-- User Key: generated based on the User ID (unique)-->
+						  				<div class="form-group">
+						  					<label for="key" class="control-label col-sm-3">User Key</label>
+						  					<div class="col-sm-9">
+									     		<input type="text" class="col-sm-9" id="key" name="key">
+									     	</div>
+								  		</div>
+
+								  		<!-- License Type: generated based on the User key-->
+						  				<div class="form-group">
+						  					<label for="lt" class="control-label col-sm-3">License Type</label>
+						  					<div class="col-sm-3">
+									     		<input type="text" class="col-sm-3" id="lt" name="lt">
+									     	</div>
+								  		</div>
+
+								  		<div class="alert alert-success alert-dismissable">
+											<button type="button" class="close" data-dismiss="alert" aria-hidden="true">x</button>
+										    <h3>Choose the right License Type</h3>
+										    <div>Back the project with 1 euro to get a LT1 key. <br>
+										    	 Back the project with 3 euros to get a LT2 key.<br>
+										    	 Back the project with 5 euros or more to get a LT3 key.<br>
+										    	 <br>License types are cumulative. LT3 includes LT2 and LT1 features.
+										    </div>
+										</div>
+
+
+						  			</form>
+
+
+
+					    		</div>
+					    	</div>
+					   	</div>
+					   
+					   	<div class="panel panel-default">
+					     	<div class="panel-heading">
+					       		<h4 class="panel-title">
+					         		<a data-toggle="collapse" data-parent="#accordion-extras" href="#accordion-misc">
+					           		Miscellaneous
+					         		</a>
+					       		</h4>
+					     	</div>
+					   	<div id="accordion-misc" class="panel-collapse collapse">
+					     
+						   	<div class="panel-body">
+
+						       
+						       	<form class="form-horizontal">
+
+					  				<!-- Forecast Screen Duration-->
+									<div class="form-group">
+									    <label for="ESDuration" class="control-label col-md-3">Forecast Screen Duration</label>
+									    <div class="col-md-6">
+									       <div class="input-group">
+									        <div class="input-group-addon">
+									          <span class="text-warning">LT1</span>
+									        </div>
+					       					<select type="text" name="ESDuration" id="ESDuration" class="form-control" />
+					                            <option value="0">Off - No forecast</option>
+					                            <option value="5">5 seconds</option>
+					                            <option value="8">8 seconds</option>
+					                            <option value="10">10 seconds</option>
+					                            <option value="15">15 seconds</option>
+					                        </select>
+									       </div>
+									    </div>
+									</div>
+
+
+					  				<!-- Extend Backligth-->
+									<div class="form-group">
+									    <label for="backlight" class="control-label col-md-3">Extend Backlight</label>
+									    <div class="col-md-6">
+									       <div class="input-group">
+									        <div class="input-group-addon">
+									          <span class="text-warning">LT1</span>
+									        </div>
+												<div class="btn-group" data-toggle="buttons">
+											      <label class="btn btn-primary">
+											         <input type="radio" id="false" value="false" name="backlight" />
+											        No
+											      </label>
+											      <label class="btn btn-primary">
+											        <input type="radio" id="true" value="true" name="backlight" />
+											        Yes
+											      </label>
+											    </div>
+									       </div>
+									    </div>
+									</div>
+
+
+					  				<!-- Hourly Vibe quiet Hours-->
+									<div class="form-group">
+									    <label for="donotdisturb" class="control-label col-md-3">Hourly Vibe quiet Hours</label>
+									    <div class="col-md-9">
+										    <div>
+										       <div class="input-group">
+										        <div class="input-group-addon">
+										          <span class="text-warning">LT1</span>
+										        </div>
+										        <label for="start">Start</label>
+						       					<select type="text" name="start" id="start" class="form-control" />
+				                                    <option value="0">0:00 (12:00am)</option>
+				                                    <option value="1">1:00 (1:00am)</option>
+				                                    <option value="2">2:00 (2:00am)</option>
+				                                    <option value="3">3:00 (3:00am)</option>
+				                                    <option value="4">4:00 (4:00am)</option>
+				                                    <option value="5">5:00 (5:00am)</option>
+				                                    <option value="6">6:00 (6:00am)</option>
+				                                    <option value="7">7:00 (7:00am)</option>
+				                                    <option value="8">8:00 (8:00am)</option>
+				                                    <option value="9">9:00 (9:00am)</option>
+				                                    <option value="10">10:00 (10:00am)</option>
+				                                    <option value="11">11:00 (11:00am)</option>
+				                                    <option value="12">12:00 (12:00pm)</option>
+				                                    <option value="12">13:00 (1:00pm)</option>
+				                                    <option value="14">14:00 (2:00pm)</option>
+				                                    <option value="15">15:00 (3:00pm)</option>
+				                                    <option value="16">16:00 (4:00pm)</option>
+				                                    <option value="17">17:00 (5:00pm)</option>
+				                                    <option value="18">18:00 (6:00pm)</option>
+				                                    <option value="19">19:00 (7:00pm)</option>
+				                                    <option value="20">20:00 (8:00pm)</option>
+				                                    <option value="21">21:00 (9:00pm)</option>
+				                                    <option value="22">22:00 (10:00pm)</option>
+				                                    <option value="23">23:00 (11:00pm)</option>
+						                        </select>
+										       </div>
+										    </div>
+										    <div>
+										       <div class="input-group">
+										        <div class="input-group-addon">
+										          <span class="text-warning">LT1</span>
+										        </div>
+										        <label for="end">End</label>
+						       					<select type="text" name="end" id="end" class="form-control" />
+				                                    <option value="0">0:00 (12:00am)</option>
+				                                    <option value="1">1:00 (1:00am)</option>
+				                                    <option value="2">2:00 (2:00am)</option>
+				                                    <option value="3">3:00 (3:00am)</option>
+				                                    <option value="4">4:00 (4:00am)</option>
+				                                    <option value="5">5:00 (5:00am)</option>
+				                                    <option value="6">6:00 (6:00am)</option>
+				                                    <option value="7">7:00 (7:00am)</option>
+				                                    <option value="8">8:00 (8:00am)</option>
+				                                    <option value="9">9:00 (9:00am)</option>
+				                                    <option value="10">10:00 (10:00am)</option>
+				                                    <option value="11">11:00 (11:00am)</option>
+				                                    <option value="12">12:00 (12:00pm)</option>
+				                                    <option value="12">13:00 (1:00pm)</option>
+				                                    <option value="14">14:00 (2:00pm)</option>
+				                                    <option value="15">15:00 (3:00pm)</option>
+				                                    <option value="16">16:00 (4:00pm)</option>
+				                                    <option value="17">17:00 (5:00pm)</option>
+				                                    <option value="18">18:00 (6:00pm)</option>
+				                                    <option value="19">19:00 (7:00pm)</option>
+				                                    <option value="20">20:00 (8:00pm)</option>
+				                                    <option value="21">21:00 (9:00pm)</option>
+				                                    <option value="22">22:00 (10:00pm)</option>
+				                                    <option value="23">23:00 (11:00pm)</option>
+						                        </select>
+										       </div>
+										    </div>
+										</div>
+									</div>
+
+						  		</form>
+
+						       
+
+						     </div>
+						   </div>
+						</div>
+
+						<div class="panel panel-default">
+					     	<div class="panel-heading">
+					       		<h4 class="panel-title">
+					         		<a data-toggle="collapse" data-parent="#accordion-extras" href="#accordion-extras-weather">
+					           		Weather
+					         		</a>
+					       		</h4>
+					     	</div>
+					   	<div id="accordion-extras-weather" class="panel-collapse collapse">
+					     
+						   	<div class="panel-body">
+
+						       
+						       	<form class="form-horizontal">
+
+						       		<!-- Display Feels Like -->
+									<div class="form-group">
+									    <label for="feelslike" class="control-label col-md-3">Displayed Temperature</label>
+									    <div class="col-md-6">
+									       <div class="input-group">
+									        <div class="input-group-addon">
+									          <span class="text-warning">LT1</span>
+									        </div>
+												<div class="btn-group" data-toggle="buttons">
+											      <label class="btn btn-primary">
+											         <input type="radio" id="false" value="false" name="feelslike" />
+											        Real Temperature
+											      </label>
+											      <label class="btn btn-primary">
+											        <input type="radio" id="true" value="true" name="feelslike" />
+											        Feels Like 
+											      </label>
+											    </div>
+									       </div>
+									    </div>
+									</div>
+
+					  				<!-- Wind Speed units-->
+									<div class="form-group">
+									    <label for="wspeed" class="control-label col-md-3">Wind Speed Units</label>
+									    <div class="col-md-6">
+									       <div class="input-group">
+									        <div class="input-group-addon">
+									          <span class="text-warning">LT1</span>
+									        </div>
+					       					<select type="text" name="wspeed" id="wspeed" class="form-control" />
+												<option value="0">km/h - mi/h</option>
+					                            <option value="1">m/s</option>
+					                            <option value="2">knots</option>
+					                            <option value="3">beaufort</option>
+					                        </select>
+									       </div>
+									    </div>
+									</div>
+
+
+					  				<!-- Weather Accuracy -->
+									<div class="form-group">
+									    <label for="accuracy" class="control-label col-md-3">Accuracy</label>
+									    <div class="col-md-6">
+									       <div class="input-group">
+									        <div class="input-group-addon">
+									          <span class="text-success">LT2</span>
+									        </div>
+					       					<select type="text" name="accuracy" id="accuracy" class="form-control" />
+					                            <option value="16">Neighborhood</option>
+					                            <option value="11">City</option>
+					                            <option value="6">Region</option>
+					                        </select>
+									       </div>
+									    </div>
+									</div>
+
+
+									<!-- Weather refresh frequency -->
+									<div class="form-group">
+									    <label for="timer" class="control-label col-md-3">Refresh Frequency</label>
+									    <div class="col-md-6">
+									       <div class="input-group">
+									        <div class="input-group-addon">
+									          <span class="text-success">LT2</span>
+									        </div>
+					       					<select type="text" name="timer" id="timer" class="form-control" />
+					                            <option value="5">5 minutes</option>
+					                            <option value="15">15 minutes</option>
+					                            <option value="30">30 minutes</option>
+					                            <option value="45">45 minutes</option>
+					                            <option value="60">60 minutes</option>
+					                        </select>
+									       </div>
+									    </div>
+									</div>
+
+									<!-- Enable 3 day forecast-->
+
+									<!--
+									<div class="form-group">
+									    <label for="forecast" class="control-label col-md-3">3 Day Forecast</label>
+									    <div class="col-md-6">
+									       <div class="input-group">
+									        <div class="input-group-addon">
+									          <span class="text-info">LT3</span>
+									        </div>
+												<div class="btn-group" data-toggle="buttons">
+											      <label class="btn btn-primary">
+											         <input type="radio" id="forecast" value="false" name="forecast"/>
+											        No
+											      </label>
+											      <label class="btn btn-primary">
+											        <input type="radio" id="forecast" value="true" name="forecast"/>
+											        Yes
+											      </label>
+											    </div>
+									       </div>
+									    </div>
+									</div>
+								-->
+								
+								
+									<div class="form-group">
+									    <label for="timer" class="control-label col-md-3">3 day forecast</label>
+									    <div class="col-md-6">
+									       <div class="input-group">
+									        <div class="input-group-addon">
+									          <span class="text-info">LT3</span>
+									        </div>
+					       					<select type="text" name="forecast" id="forecast" class="form-control" />
+					                            <option value="false">No</option>
+					                            <option value="true">Yes</option>
+					                        </select>
+									       </div>
+									    </div>
+									</div>
+								
+
+
+
+									<!-- Weather Provider-->
+									<div class="form-group">
+									    <label for="weatherprovider" class="control-label col-md-3">Provider</label>
+									    <div class="col-md-6">
+									       <div class="input-group">
+									        <div class="input-group-addon">
+									          <span class="text-info">LT3</span>
+									        </div>
+					       					<select type="text" name="weatherprovider" id="weatherprovider" class="form-control" />
+					                            <option value="0">Yahoo! Weather</option>
+					                            <option value="1">The Weather Underground</option>
+					                            <option value="2">forecast.io</option>
+					                        </select>
+									       </div>
+									    </div>
+									</div>
+
+
+
+					  				<!-- Custom API key -->
+									<div class="form-group">
+									    <label for="CustomAPIKey" class="control-label col-md-3">Custom API Key</label>
+									    <div class="col-md-6">
+									       <div class="input-group">
+									        <div class="input-group-addon">
+									          <span class="text-info">LT3</span>
+									        </div>
+					       					<input type="text" name="CustomAPIKey" id="CustomAPIKey" value="" Placeholder="Enter your custom API key here">
+									       </div>
+									    </div>
+									</div>
+
+
+									<div class="form-group">
+									    <label for="find" class="control-label col-md-3">Find my Pebble</label>
+									    <div class="col-md-6">
+									       <div class="input-group">
+									        <div class="input-group-addon">
+									          <span class="text-info">LT3</span>
+									        </div>
+					       					<select type="text" name="find" id="find" class="form-control" />
+					                            <option value="false">No</option>
+					                            <option value="true">Yes</option>
+					                        </select>
+									       </div>
+									    </div>
+									</div>
+
+									<!-- Last seen-->
+									<div class="form-group">
+									    <label for="latlong" class="control-label col-md-3">Last seen</label>
+									    <div class="col-md-6">
+									       <div class="input-group">
+									        <div class="input-group-addon">
+									          <span class="text-info">LT3</span>
+									        </div>
+					       					<input type="text" name="latlong" id="latlong" value="">
+									       </div>
+									    </div>
+									</div>
+
+									<div class="alert alert-success alert-dismissable">
+											<button type="button" class="close" data-dismiss="alert" aria-hidden="true">x</button>
+										    <h3>What is a custom API Key?</h3>
+										    <div>If you want to change the weather provider you must get your own API key.<br><br>
+										    	To get a The Weather Underground API key follow this <span><a href="http://deutsch.wunderground.com/weather/api/d/login.html">(link)</a></span>
+										    	<br><br>
+										    	To get a forecast.io API key follow this <span><a href="https://developer.forecast.io/register">(link)</a>
+										    </span>
+										    </div>
+										</div>
+
+						  		</form>
+
+						       
+
+						     </div>
+						   </div>
+						</div>
+
+
+
+
+					</div>
+
+
+				</div>
+			</div>
+		</div>
+
+		<!-- Submit buttons -->
+		<div class="container" align="center">
+			<button class="btn btn-danger" type="submit" id="b-cancel">Cancel</button>
+			<button class="btn btn-success" type="submit" id="b-submit">Submit</button>
+		</div>
+
+
+
+		<script>
                 /*
                 $("#units").change(function() {
                     fillWindSpeed(getQueryVariable("#units"));
@@ -334,15 +773,15 @@
                     var options = {
                         'language': $('#language').val(),
                         'font': $('#font').val(),
-                        'use_gps': $('#gps_switch').val(),
+                        'use_gps': $('input:radio[name=use_gps]:checked').val(),
                         'location': $('#location').val(),
                         'units': $('input:radio[name=units]:checked').val(),
-                        'invert_color': $('#invert_color').val(),
-                        'vibes': $('#vibes').val(),
+                        'invert_color': $('input:radio[name=invert_color]:checked').val(),
+                        'vibes': $('input:radio[name=vibes]:checked').val(),
                         'accuracy': $('#accuracy').val(),
-                        'feelslike': $('#feelslike').val(),
+                        'feelslike': $('input:radio[name=feelslike]:checked').val(),
                         'ESDuration': $('#ESDuration').val(),
-                        'backlight': $('#backlight').val(),
+                        'backlight': $('input:radio[name=backlight]:checked').val(),
                         'wspeed': $('#wspeed').val(),
                         'start': $('#start').val(),
                         'end': $('#end').val(),
@@ -350,14 +789,19 @@
                         'UUID': $('#UUID').val(),
                         'lt': $('#lt').val(),
                         'key': $.trim($('#key').val()),
+                        //'forecast': $('input:radio[name=forecast]:checked').val(),
                         'forecast': $('#forecast').val(),
-                        'seconds': $('#seconds').val(),
-                        'hourly_vibe': $('#hourly_vibe').val(),
-                        'alerts': $('#alerts').val(),
+                        'seconds': $('input:radio[name=seconds]:checked').val(),
+                        'hourly_vibe': $('input:radio[name=hourly_vibe]:checked').val(),
+                        'alerts': $('input:radio[name=alerts]:checked').val(),
                         'weatherprovider': $('#weatherprovider').val(),
                         'CustomAPIKey': $('#CustomAPIKey').val(),
-                        'hide_bat': $('#hide_bat').val(),
-                        'version' : "2.6"
+
+						'find': $('#find').val(),
+                        'latlong': $('#latlong').val(),
+
+                        'hide_bat': $('input:radio[name=hide_bat]:checked').val(),
+                        'version' : "3.0"
                     }
                     return options;
                 }
@@ -371,7 +815,7 @@
                     //Disable the UUID. this is merely informational
                     //$('#UUID').prop('disabled', true);
                     $('#lt').prop('disabled', true);
-                    $("#lt").hide();
+                    //$("#lt").hide();
                     //Disable all the Extra Features to enable them based on LT
                     $('#accuracy').prop('disabled', true);
                     $('#feelslike').prop('disabled', true);
@@ -412,19 +856,44 @@
                     });
                     $('#language').val(getQueryVariable('language')).change();
                     $('#font').val(getQueryVariable('font')).change();
-                    $('#gps_switch').val(getQueryVariable('use_gps')).change();
+                    if (getQueryVariable('use_gps') == "false") {
+                        $('input:radio[name=use_gps][value=false]').prop('checked', true).trigger("click");
+                    } else {
+                        $('input:radio[name=use_gps][value=true]').prop('checked', true).trigger("click");
+                    }
                     $('#location').val(getQueryVariable('location'));
                     if (getQueryVariable('units') == "celsius") {
                         $('input:radio[name=units][value=celsius]').prop('checked', true).trigger("click");
                     } else {
                         $('input:radio[name=units][value=fahrenheit]').prop('checked', true).trigger("click");
                     }
-                    $('#invert_color').val(getQueryVariable('invert_color')).change();
-                    $('#vibes').val(getQueryVariable('vibes')).change();
+                    if (getQueryVariable('invert_color') == "false") {
+                        $('input:radio[name=invert_color][value=false]').prop('checked', true).trigger("click");
+                    } else {
+                        $('input:radio[name=invert_color][value=true]').prop('checked', true).trigger("click");
+                    }
+          
+                    if (getQueryVariable('vibes') == "0") {
+                        $('input:radio[name=vibes][value=0]').prop('checked', true).trigger("click");
+                    }
+                    else if (getQueryVariable('vibes') == "1"){
+ 						$('input:radio[name=vibes][value=1]').prop('checked', true).trigger("click");
+                    } 
+                    else {
+                        $('input:radio[name=vibes][value=2]').prop('checked', true).trigger("click");
+                    }
                     $('#accuracy').val(getQueryVariable('accuracy')).change();
-                    $('#feelslike').val(getQueryVariable('feelslike')).change();
+                    if (getQueryVariable('feelslike') == "false") {
+                        $('input:radio[name=feelslike][value=false]').prop('checked', true).trigger("click");
+                    } else {
+                        $('input:radio[name=feelslike][value=true]').prop('checked', true).trigger("click");
+                    }
                     $('#ESDuration').val(getQueryVariable('ESDuration')).change();
-                    $('#backlight').val(getQueryVariable('backlight')).change();
+                    if (getQueryVariable('backlight') == "false") {
+                        $('input:radio[name=backlight][value=false]').prop('checked', true).trigger("click");
+                    } else {
+                        $('input:radio[name=backlight][value=true]').prop('checked', true).trigger("click");
+                    }
                     $('#wspeed').val(getQueryVariable('wspeed')).change();
                     $('#start').val(getQueryVariable('start')).change();
                     $('#end').val(getQueryVariable('end')).change();
@@ -432,20 +901,61 @@
                     $('#UUID').val(getQueryVariable('UUID'));
                     $('#lt').val(getQueryVariable('lt'));
                     $('#key').val($.trim(getQueryVariable('key')));
-                    $('#forecast').val(getQueryVariable('forecast')).change();
-                    $('#seconds').val(getQueryVariable('seconds')).change();
-                    $('#hourly_vibe').val(getQueryVariable('hourly_vibe')).change();
-                    $('#alerts').val(getQueryVariable('alerts')).change();
+                    /*
+                    if (getQueryVariable('forecast') == "false") {
+                        $('input:radio[name=forecast][value=false]').prop('checked', true).trigger("click");
+                    } else {
+                        $('input:radio[name=forecast][value=true]').prop('checked', true).trigger("click");
+                    }
+                    */
+                     $('#forecast').val(getQueryVariable('forecast')).change();
+                    if (getQueryVariable('seconds') == "false") {
+                        $('input:radio[name=seconds][value=false]').prop('checked', true).trigger("click");
+                    } else {
+                        $('input:radio[name=seconds][value=true]').prop('checked', true).trigger("click");
+                    }
+                    if (getQueryVariable('hourly_vibe') == "false") {
+                        $('input:radio[name=hourly_vibe][value=false]').prop('checked', true).trigger("click");
+                    } else {
+                        $('input:radio[name=hourly_vibe][value=true]').prop('checked', true).trigger("click");
+                    }
+                    if (getQueryVariable('alerts') == "false") {
+                        $('input:radio[name=alerts][value=false]').prop('checked', true).trigger("click");
+                    } else {
+                        $('input:radio[name=alerts][value=true]').prop('checked', true).trigger("click");
+                    }
+                    
                     $('#weatherprovider').val(getQueryVariable('weatherprovider')).change();
+        
+        /*           
+                    //ensure Yahoo! Weather is selected by default
+                    if (parseInt(getQueryVariable('weatherprovider'))>= 0){
+                    	$('#weatherprovider').val(getQueryVariable('weatherprovider')).change();
+                    else{
+                    	$('#weatherprovider').val("0").change();
+                    }
+                    */
                     $('#CustomAPIKey').val(getQueryVariable('CustomAPIKey')).change();
-                    $('#hide_bat').val(getQueryVariable('hide_bat')).change();
+                    if (getQueryVariable('hide_bat') == "false") {
+                        $('input:radio[name=hide_bat][value=false]').prop('checked', true).trigger("click");
+                    } else {
+                        $('input:radio[name=hide_bat][value=true]').prop('checked', true).trigger("click");
+                    }
                     $('#os0').val(getQueryVariable('UUID'));
+
+					$('#find').val(getQueryVariable('find')).change();
+                    $('#latlong').val(getQueryVariable('latlong')).change();
                     // Disable location field based on GPS toggle
-                    $('#location').prop('disabled', $('#gps_switch').val() == "true");
-                    $('#gps_switch').change(function() {
-                        $('#location').prop('disabled', $('#gps_switch').val() == "true");
-                    });
+                    //$('#location').prop('disabled', $('#gps_switch').val() == "true");
+                    //$('#gps_switch').change(function() {
+                      //  $('#location').prop('disabled', $('#gps_switch').val() == "true");
+                    //});
                 });
             </script>
-            </body>
-        </html>
+
+	</body>
+	<footer>
+
+		
+	</footer>
+</html>
