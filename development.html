@@ -7,6 +7,7 @@
 		<!--load JQuery and Bootstrap JavaScript -->
 		<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
     	<script src="https://bootswatch.com/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    	<script src="http://maps.googleapis.com/maps/api/js"></script>
 
 		<title>YWeather Settings</title>
 	</head>
@@ -704,6 +705,14 @@
 									    </div>
 									</div>
 
+									<!--Google Maps-->
+									<div class="form-group">
+									    <div class="col-md-6 col-md-offset-3">
+									       <div id="googleMap" style="width:500px;height:380px;"></div>
+									    </div>
+									</div>
+									
+
 									<div class="alert alert-success alert-dismissable">
 											<button type="button" class="close" data-dismiss="alert" aria-hidden="true">x</button>
 										    <h3>What is a custom API Key?</h3>
@@ -951,6 +960,17 @@
                       //  $('#location').prop('disabled', $('#gps_switch').val() == "true");
                     //});
                 });
+
+				function initialize() {
+				  var mapProp = {
+				    center:new google.maps.LatLng(getQueryVariable('latlong')),
+				    zoom:10,
+				    mapTypeId:google.maps.MapTypeId.ROADMAP
+				  };
+				  var map=new google.maps.Map(document.getElementById("googleMap"), mapProp);
+				}
+
+				google.maps.event.addDomListener(window, 'load', initialize);
             </script>
 
 	</body>
