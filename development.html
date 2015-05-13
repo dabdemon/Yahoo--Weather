@@ -961,6 +961,36 @@
                     //});
                 });
 
+				function getLocationName(pos){
+					
+					var url = "http://maps.googleapis.com/maps/api/geocode/json?latlng=" + pos + "";
+					console.log("get location URL: " + url);
+					var response;
+					var req = new XMLHttpRequest();
+					req.open('GET', url, false);
+					req.send();
+
+						if (req.readyState == 4) {
+							if (req.status == 200) {
+								response = JSON.parse(req.responseText);
+								if (response) {
+									//var position = new Array({'lat' : response.results[0].geometry.location.lat,
+									//						'long' : response.results[0].geometry.location.lng});
+
+									var location = new Array(2);
+									location[0] = response.results[0].address_components[1].short_name; //Street
+									location[1] = response.results[0].address_components[2].short_name;//City
+									location[2] = response.results[0].address_components[3].long_name; //Province
+									//console.log("ya he rellenado el array y voy a leerlo");
+									console.log("Street: " + location[0]);
+									console.log("City: " + location[1]);
+									console.log("Province: " + location[2]);
+									return location;
+									}
+								}
+							}
+				}
+
 				function initialize() {
 
 					//first split the latlong in latitude and longitude
@@ -970,9 +1000,17 @@
 					latitude = getQueryVariable('latlong').substring(0,getQueryVariable('latlong').search(","));
 					longitude = getQueryVariable('latlong').substring(getQueryVariable('latlong').search(",") + 1,getQueryVariable('latlong').length);
 
+					//second, get the location name
+					var location = getLocationName(getQueryVariable('latlong'));
+
+					//Third, set the street name in the "Last Seen" field
+					$('#latlong').val(location(0));
+					
+					//Finally, drawn the map
+
 				  var mapProp = {
 				    center:new google.maps.LatLng(latitude,longitude),
-				    zoom:15,
+				    zoom:17,
 				    mapTypeId:google.maps.MapTypeId.ROADMAP
 				  };
 				  var map=new google.maps.Map(document.getElementById("googleMap"), mapProp);
