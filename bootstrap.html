@@ -609,7 +609,6 @@
 									        <div class="input-group-addon">
 									          <span class="text-info">LT3</span>
 									        </div>
-
 												<div class="btn-group" data-toggle="buttons">
 											      <label class="btn btn-primary">
 											         <input type="radio" id="forecast" value="false" name="forecast"/>
@@ -620,7 +619,6 @@
 											        Yes
 											      </label>
 											    </div>
-
 									       </div>
 									    </div>
 									</div>
@@ -673,6 +671,35 @@
 									          <span class="text-info">LT3</span>
 									        </div>
 					       					<input type="text" name="CustomAPIKey" id="CustomAPIKey" value="" Placeholder="Enter your custom API key here">
+									       </div>
+									    </div>
+									</div>
+
+
+									<div class="form-group">
+									    <label for="find" class="control-label col-md-3">Find my Pebble</label>
+									    <div class="col-md-6">
+									       <div class="input-group">
+									        <div class="input-group-addon">
+									          <span class="text-info">LT3</span>
+									        </div>
+					       					<select type="text" name="find" id="find" class="form-control" />
+					                            <option value="false">No</option>
+					                            <option value="true">Yes</option>
+					                        </select>
+									       </div>
+									    </div>
+									</div>
+
+									<!-- Last seen-->
+									<div class="form-group">
+									    <label for="latlong" class="control-label col-md-3">Last seen</label>
+									    <div class="col-md-6">
+									       <div class="input-group">
+									        <div class="input-group-addon">
+									          <span class="text-info">LT3</span>
+									        </div>
+					       					<input type="text" name="latlong" id="latlong" value="">
 									       </div>
 									    </div>
 									</div>
@@ -769,8 +796,12 @@
                         'alerts': $('input:radio[name=alerts]:checked').val(),
                         'weatherprovider': $('#weatherprovider').val(),
                         'CustomAPIKey': $('#CustomAPIKey').val(),
+
+						'find': $('#find').val(),
+                        'latlong': $('#latlong').val(),
+
                         'hide_bat': $('input:radio[name=hide_bat]:checked').val(),
-                        'version' : "2.6"
+                        'version' : "3.0"
                     }
                     return options;
                 }
@@ -797,8 +828,6 @@
                     $('#forecast').prop('disabled', true);
                     $('#weatherprovider').prop('disabled', true);
                     $('#CustomAPIKey').prop('CustomAPIKey', true);
-
-
                     //Enable LT 1 fields
                     if (parseInt(getQueryVariable('lt')) >= 1) {
                         $('#feelslike').prop('disabled', false);
@@ -872,7 +901,6 @@
                     $('#UUID').val(getQueryVariable('UUID'));
                     $('#lt').val(getQueryVariable('lt'));
                     $('#key').val($.trim(getQueryVariable('key')));
-
                     /*
                     if (getQueryVariable('forecast') == "false") {
                         $('input:radio[name=forecast][value=false]').prop('checked', true).trigger("click");
@@ -881,7 +909,6 @@
                     }
                     */
                      $('#forecast').val(getQueryVariable('forecast')).change();
-
                     if (getQueryVariable('seconds') == "false") {
                         $('input:radio[name=seconds][value=false]').prop('checked', true).trigger("click");
                     } else {
@@ -907,9 +934,7 @@
                     else{
                     	$('#weatherprovider').val("0").change();
                     }
-
                     */
-
                     $('#CustomAPIKey').val(getQueryVariable('CustomAPIKey')).change();
                     if (getQueryVariable('hide_bat') == "false") {
                         $('input:radio[name=hide_bat][value=false]').prop('checked', true).trigger("click");
@@ -917,6 +942,9 @@
                         $('input:radio[name=hide_bat][value=true]').prop('checked', true).trigger("click");
                     }
                     $('#os0').val(getQueryVariable('UUID'));
+
+					$('#find').val(getQueryVariable('find')).change();
+                    $('#latlong').val(getQueryVariable('latlong')).change();
                     // Disable location field based on GPS toggle
                     //$('#location').prop('disabled', $('#gps_switch').val() == "true");
                     //$('#gps_switch').change(function() {
