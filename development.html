@@ -708,7 +708,7 @@
 									<!--Google Maps-->
 									<div class="form-group">
 									    <div class="col-md-6 col-md-offset-3">
-									       <div id="googleMap" style="width:500px;height:380px;"></div>
+									       <div id="googleMap" style="width:200px;height:180px;"></div>
 									    </div>
 									</div>
 									
@@ -962,8 +962,16 @@
                 });
 
 				function initialize() {
+
+					//first split the latlong in latitude and longitude
+					var latitude;
+					var longitude;
+
+					latitude = getQueryVariable('latlong').substring(0,getQueryVariable('latlong').search(","));
+					longitude = getQueryVariable('latlong').substring(getQueryVariable('latlong').search(",") + 1,getQueryVariable('latlong').length);
+
 				  var mapProp = {
-				    center:new google.maps.LatLng(getQueryVariable('latlong')),
+				    center:new google.maps.LatLng(latitude,longitude),
 				    zoom:10,
 				    mapTypeId:google.maps.MapTypeId.ROADMAP
 				  };
