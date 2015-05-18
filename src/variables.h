@@ -78,7 +78,7 @@ enum WeatherKey {
 	//static AppTimer *tap_timer;
 	
 	
-	InverterLayer *inv_layer;
+	//InverterLayer *inv_layer;
 	
 	//Date & Time        
 	static char last_update[]="00:00 ";

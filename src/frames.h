@@ -2,7 +2,7 @@
 	
 #define WEEKDAY_FRAME    (GRect(5, 2, 102, 168-145)) //,,95,
 #define BATT_FRAME       (GRect(103, 3, 40, 168-146)) //98,,
-#define BT_FRAME         (GRect(127, 4, 23, 168-146))
+#define BT_FRAME         (GRect(127, 3, 23, 168-146))
 #define TIME_FRAME       (GRect(0, 15, 144, 168-16))
 #define DATE_FRAME       (GRect(1, 70, 139, 168-62))
 	//YWeather 2.3 - REQ01. Display Seconds - START

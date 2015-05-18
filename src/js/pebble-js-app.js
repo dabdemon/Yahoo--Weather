@@ -1148,6 +1148,11 @@ function updateWeather() {
 function locationSuccess(pos) {
   var coordinates = pos.coords;
   console.log("location success");
+	
+	//set the options for the last seen
+	if (options['find']=="true"){options['latlong']=coordinates.latitude+","+coordinates.longitude;}
+	//if not enabled, then set the last seen to the Pebble Technology HQ ;)
+	else{options['latlong']="37.440392,-122.158672";}
 
 	//call the weather function based on the selected provider (defaulted to Yahoo! Weather)
 	if (options['weatherprovider']=="1"){TWUFromLarLong(coordinates.latitude, coordinates.longitude);}
@@ -1311,13 +1316,37 @@ NNW 326.25 - 348.75
 
 
 
+function getLocationName(pos){
+	
+	var url = "http://maps.googleapis.com/maps/api/geocode/json?latlng=" + pos + "";
+	console.log("get location URL: " + url);
+	var response;
+	var req = new XMLHttpRequest();
+	req.open('GET', url, false);
+	req.send();
+
+		if (req.readyState == 4) {
+			if (req.status == 200) {
+				response = JSON.parse(req.responseText);
+				if (response) {
+					//var position = new Array({'lat' : response.results[0].geometry.location.lat,
+					//						'long' : response.results[0].geometry.location.lng});
+
+					var location = response.results[0].formatted_address;
+					console.log("Street: " + location);
+					return location;
+					}
+				}
+			}
+}
+
 ///////////////////////////////////////
 //Setup the connection with the watch//
 ///////////////////////////////////////
 
 //Displays the configuration page in the phone
 Pebble.addEventListener('showConfiguration', function(e) {
-  var uri = 'http://dabdemon.github.io/Yahoo--Weather/development.html?' + //Here you need to enter your configuration webservice
+  var uri = 'http://dabdemon.github.io/Yahoo--Weather/settings.html?' + //Here you need to enter your configuration webservice
     'language=' + encodeURIComponent(options['language']) +
 	'&use_gps=' + encodeURIComponent(options['use_gps']) +
     '&location=' + encodeURIComponent(options['location']) +
@@ -1349,6 +1378,10 @@ Pebble.addEventListener('showConfiguration', function(e) {
 	'&start=' + encodeURIComponent(options['start']) +
 	'&end=' + encodeURIComponent(options['end']) +
 	'&backlight=' + encodeURIComponent(options['backlight']) +
+	'&find=' + encodeURIComponent(options['find']) +
+	'&latlong=' + encodeURIComponent(options['latlong']) +
+	  
+	'&lastseen=' + encodeURIComponent(getLocationName(options['latlong'])) +
 //	'&font=' + encodeURIComponent(options['font']) +
 	'&forecast=' + encodeURIComponent(options['forecast']);
 

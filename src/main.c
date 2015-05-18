@@ -30,14 +30,24 @@ static void handle_battery(BatteryChargeState charge_state) {
 	
 	//kill previous batt_image to avoid invalid ones.
 	//if (Batt_image !=NULL) {gbitmap_destroy(Batt_image);}
-	Batt_image = NULL;
+	//Batt_image = NULL;
     bitmap_layer_set_bitmap(Batt_icon_layer, NULL);
+	
+	//dev hardcore - REMOVE!!
+	//batt_status = true;
 
   if (charge_state.is_charging) {
     //snprintf(battery_text, sizeof(battery_text), "charging");
 	  		//Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_CHAR);
+	  		if (Batt_image !=NULL) {gbitmap_destroy(Batt_image);}
 	  		Batt_image = gbitmap_create_with_resource(BATTERY_ICON[0]);
             bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
+			
+	  		#ifdef PBL_PLATFORM_APLITE
+			  bitmap_layer_set_compositing_mode(Batt_icon_layer, GCompOpAssign);
+			#elif PBL_PLATFORM_BASALT
+			  bitmap_layer_set_compositing_mode(Batt_icon_layer, GCompOpSet);
+			#endif
   } else {
 	  //snprintf(battery_text, sizeof(battery_text), "%d%%", charge_state.charge_percent);
 
@@ -48,14 +58,28 @@ static void handle_battery(BatteryChargeState charge_state) {
          if (charge_state.charge_percent <=10) //If the charge is between 0% and 10%
          {
 			 //Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_EMPTY);
+			 if (Batt_image !=NULL) {gbitmap_destroy(Batt_image);}
 			 Batt_image = gbitmap_create_with_resource(BATTERY_ICON[1]);
              bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
+			 
+			#ifdef PBL_PLATFORM_APLITE
+			  bitmap_layer_set_compositing_mode(Batt_icon_layer, GCompOpAssign);
+			#elif PBL_PLATFORM_BASALT
+			  bitmap_layer_set_compositing_mode(Batt_icon_layer, GCompOpSet);
+			#endif
          }
 	  //CHECK IF BATTERY STATUS SHOULD DISPLAY ALL THE TIME OR JUST WHILE RUNNING LOW
 	  else if (batt_status){
 		  
+		  if (Batt_image !=NULL) {gbitmap_destroy(Batt_image);}
 		  Batt_image = gbitmap_create_with_resource(BATTERY_ICON[charge_state.charge_percent/10]);
           bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
+		  
+		  	#ifdef PBL_PLATFORM_APLITE
+			  bitmap_layer_set_compositing_mode(Batt_icon_layer, GCompOpAssign);
+			#elif PBL_PLATFORM_BASALT
+			  bitmap_layer_set_compositing_mode(Batt_icon_layer, GCompOpSet);
+			#endif
 		  
 	  }
 
@@ -128,6 +152,12 @@ static void handle_bluetooth(bool connected)
 			if (BT_image !=NULL) {gbitmap_destroy(BT_image);}
 			BT_image = gbitmap_create_with_resource(RESOURCE_ID_BT_CONNECTED);
             bitmap_layer_set_bitmap(BT_icon_layer, BT_image);
+			
+			#ifdef PBL_PLATFORM_APLITE
+			  bitmap_layer_set_compositing_mode(BT_icon_layer, GCompOpAssign);
+			#elif PBL_PLATFORM_BASALT
+			  bitmap_layer_set_compositing_mode(BT_icon_layer, GCompOpSet);
+			#endif
 			//if (BTConnected == false){
 			//setup the timer to catch false disconnections (5 secs)
          	//timer = app_timer_register(5000, vibes, NULL);
@@ -154,6 +184,8 @@ static void handle_bluetooth(bool connected)
 /////////////////	
 //Invert colors//
 /////////////////
+
+/*
 void InvertColors(bool inverted)
 {
 	
@@ -161,7 +193,7 @@ void InvertColors(bool inverted)
 		//Inverter layer
 		if (blninverted == false){		
 			inv_layer = inverter_layer_create(GRect(0, 0, 144, 168));
-			layer_add_child(window_get_root_layer(my_window), (Layer*) inv_layer);
+			layer_add_child(window_get_root_layer(my_window), (Layer*) f);
 			blninverted =  true;
 	    }
 	}
@@ -174,7 +206,7 @@ void InvertColors(bool inverted)
 	
 }// END - Invert colors
 
-
+*/
 
 //**************************//
 //** Get the current date **//
@@ -184,7 +216,7 @@ void getDate()
 
 	//Get the date
 	time_t actualPtr = time(NULL);
-	struct tm *tz1Ptr = gmtime(&actualPtr);
+	struct tm *tz1Ptr = localtime(&actualPtr);
 
 	//get day, month and year for moon phase
 	intday = tz1Ptr->tm_mday;
@@ -336,7 +368,7 @@ void getTime()
 	{
 	
 	time_t actualPtr = time(NULL);
-	struct tm *tz1Ptr = gmtime(&actualPtr);
+	struct tm *tz1Ptr = localtime(&actualPtr);
 	
 	if (clock_is_24h_style()){strftime(time_text, sizeof(time_text), "%H:%M", tz1Ptr);}
 	else {strftime(time_text, sizeof(time_text), "%I:%M", tz1Ptr);}	
@@ -482,7 +514,7 @@ void SubscribeTickEvent(){
 		  persist_write_bool(INVERT_COLOR_KEY, color_inverted);
 
 	  	  //refresh the layout
-	  	  InvertColors(color_inverted);
+	  	  //InvertColors(color_inverted);
 		  break;
 	  
 	  case language_key:
@@ -707,10 +739,10 @@ void LoadTemperature()
 {	
 	//If the backlight is on, turn it off and cancel the timer
 	app_timer_cancel(BackLightTimer);
-	light_enable(false);
+	//light_enable(false); //this was causing an issue about the backlight suddently stop when the user was navigating thru apps.
 	
 	//remove the inverted layer (if any) before creating the new text layers
-	if(blninverted){inverter_layer_destroy(inv_layer);	blninverted = false;}
+	//if(blninverted){inverter_layer_destroy(inv_layer);	blninverted = false;}
 	//Track that we are displaying the primary screen
 	blnForecast = false;
 	
@@ -718,6 +750,13 @@ void LoadTemperature()
 	weather_icon_layer = bitmap_layer_create(WEATHER_FRAME);
 	bitmap_layer_set_bitmap(weather_icon_layer, weather_image);
     layer_add_child(window_get_root_layer(my_window), bitmap_layer_get_layer(weather_icon_layer));
+	
+	//check the Pebble model to determine if the image is colored or not
+	#ifdef PBL_PLATFORM_APLITE
+		bitmap_layer_set_compositing_mode(weather_icon_layer, GCompOpAssign);
+	#elif PBL_PLATFORM_BASALT
+		bitmap_layer_set_compositing_mode(weather_icon_layer, GCompOpSet);
+	#endif
 	
 	//Create the Temperature Layer
 	Temperature_Layer = text_layer_create(TEMPERATURE_FRAME);
@@ -756,7 +795,7 @@ void LoadTemperature()
 	text_layer_set_text(Last_Update, last_update);
 	
 	//if color inverted, then create the inverted layer
-	InvertColors(color_inverted);
+	//InvertColors(color_inverted);
 	
 } //LoadTemperature - END
 
@@ -827,7 +866,7 @@ void Load3Days()
 {
 
 	//remove the inverted layer (if any) before creating the new text layers
-	if(blninverted){inverter_layer_destroy(inv_layer);	blninverted = false;}
+	//if(blninverted){inverter_layer_destroy(inv_layer);	blninverted = false;}
 //DAY 1
 	//Weekday
 		Day1_Layer = text_layer_create(FORECAST_DAY1_FRAME);	
@@ -955,7 +994,7 @@ void Load3Days()
 	text_layer_set_text(Low3_Layer,day3L);
 	
 	//if color inverted, then create the inverted layer
-	InvertColors(color_inverted);
+	//InvertColors(color_inverted);
 	//setup the timer to set back the temperature after 5sec
 	weather = app_timer_register(ESDuration_ms, forecast3Days_callback, NULL);
 	
@@ -989,7 +1028,7 @@ static void forecast_callback(void *context) {
 void LoadForecast()
 {
 	//remove the inverted layer (if any) before creating the new text layers
-	if(blninverted){inverter_layer_destroy(inv_layer);	blninverted = false;}
+	//if(blninverted){inverter_layer_destroy(inv_layer);	blninverted = false;}
 	//Track that we are displaying the secondary screen
 	blnForecast = true;
 
@@ -1133,7 +1172,7 @@ void LoadForecast()
 	
 	
 	//if color inverted, then create the inverted layer
-	InvertColors(color_inverted);
+	//InvertColors(color_inverted);
 	
 	//refresh the tap counter 
 	TapCount = 0;
@@ -1208,12 +1247,18 @@ void LoadMainWindow(){
         
                 //Display the Time layer
 			
-			if (blnseconds){Time_Layer = text_layer_create(TIME_FRAME2);
+			if ((blnseconds)||(!clock_is_24h_style())){Time_Layer = text_layer_create(TIME_FRAME2);
 						   text_layer_set_text_alignment(Time_Layer, GTextAlignmentRight);}
 			else{Time_Layer = text_layer_create(TIME_FRAME);
 				text_layer_set_text_alignment(Time_Layer, GTextAlignmentCenter);}
-					
-				text_layer_set_text_color(Time_Layer, GColorWhite);
+				
+				//Define the text color based on the Pebble model
+				#ifdef PBL_COLOR
+				  text_layer_set_text_color(Time_Layer, GColorChromeYellow);
+				#else
+				  text_layer_set_text_color(Time_Layer, GColorWhite);
+				#endif
+				
 	            text_layer_set_background_color(Time_Layer, GColorClear);
                 text_layer_set_font(Time_Layer, font_time);
                 layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Time_Layer));
@@ -1263,9 +1308,9 @@ void SetupMessages(){
                 TupletInteger(WEATHER_ICON_KEY, ICON_CODE), //INITIALIZE TO "N/A"
 				MyTupletCString(WEATHER_TEMPERATURE_KEY, temp),
 				//MyTupletCString(WEATHER_TEMPERATURE_KEY,low), //Init to something
-                MyTupletCString(WEATHER_CITY_KEY, "YWeather v2.6"), //display app version on load
+                MyTupletCString(WEATHER_CITY_KEY, "YWeather 3.0"), //display app version on load
 				TupletInteger(INVERT_COLOR_KEY, color_inverted),
-				TupletInteger(language_key, language), //INITIALIZE TO LAST SAVED
+				TupletInteger(language_key, language), //INITIALIZE TO LAST SAVED	
 				TupletInteger(VIBES_KEY, blnvibes),
 				MyTupletCString(WEATHER_HIGH_KEY,high),
 				MyTupletCString(WEATHER_LOW_KEY,low),
@@ -1315,7 +1360,8 @@ static void init_callback(void *context) {
 
 void handle_init(void)
 {
-	
+		//Use the internationalization API to detect the user's language
+		setlocale(LC_ALL, i18n_get_system_locale());
 
         //Define Resources
     	ResHandle res_d;
@@ -1366,9 +1412,18 @@ void handle_init(void)
 
         //Create the main window
         my_window = window_create();
-        window_stack_push(my_window, true /* Animated */);
-		window_set_background_color(my_window, GColorBlack);          
-        
+        window_stack_push(my_window, true /* Animated */);  
+	
+		window_set_background_color(my_window, GColorBlack);
+	
+		//Check the Pebble model to determine the background color
+	/*
+		#ifdef PBL_COLOR
+		  window_set_background_color(my_window, GColorDarkGray );
+		#else
+		  window_set_background_color(my_window, GColorBlack);
+		#endif
+     */
 
 		res_t = resource_get_handle(RESOURCE_ID_FUTURA_CONDENSED_53); // Time font
 		res_d = resource_get_handle(RESOURCE_ID_FUTURA_17); // Date font
