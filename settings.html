@@ -324,7 +324,7 @@
 						  				<div class="form-group">
 						  					<label for="key" class="control-label col-sm-3">User Key</label>
 						  					<div class="col-sm-9">
-									     		<input type="text" class="col-sm-9" id="key" name="key">
+									     		<input type="text" class="col-sm-9" id="key" name="key" value=" ">
 									     	</div>
 								  		</div>
 
@@ -877,10 +877,10 @@
                     } else {
                         $('input:radio[name=hourly_vibe][value=true]').prop('checked', true).trigger("click");
                     }
-                    if (getQueryVariable('alerts') == "false") {
-                        $('input:radio[name=alerts][value=false]').prop('checked', true).trigger("click");
-                    } else {
+                    if (getQueryVariable('alerts') == "true") {
                         $('input:radio[name=alerts][value=true]').prop('checked', true).trigger("click");
+                    } else {
+                        $('input:radio[name=alerts][value=false]').prop('checked', true).trigger("click");
                     }
                     
                     $('#weatherprovider').val(getQueryVariable('weatherprovider')).change();
