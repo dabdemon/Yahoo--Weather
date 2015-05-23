@@ -67,14 +67,7 @@
                             <option value="14">Turkish</option>
                         </select>
                     </div>
-                    <div data-role="fieldcontain">
-                        <label for="font">Theme</label>
-                        <select name="font" id="font" data-theme="c" data-track-theme="d">
-                            <option value="0">Classic</option>
-                            <option value="1">Simple</option>
-                            <option value="2">Teen</option>
-                        </select>
-                    </div>
+                    
                     <div data-role="fieldcontain">
                         <label for="gps_switch">Use GPS</label>
                         <select name="gps_switch" id="gps_switch" data-theme="c" data-role="slider" data-track-theme="d">
@@ -333,7 +326,7 @@
                 function saveOptions() {
                     var options = {
                         'language': $('#language').val(),
-                        'font': $('#font').val(),
+                        
                         'use_gps': $('#gps_switch').val(),
                         'location': $('#location').val(),
                         'units': $('input:radio[name=units]:checked').val(),
@@ -411,7 +404,7 @@
                         document.location = 'pebblejs://close#' + encodeURIComponent(JSON.stringify(saveOptions()));
                     });
                     $('#language').val(getQueryVariable('language')).change();
-                    $('#font').val(getQueryVariable('font')).change();
+                   
                     $('#gps_switch').val(getQueryVariable('use_gps')).change();
                     $('#location').val(getQueryVariable('location'));
                     if (getQueryVariable('units') == "celsius") {
