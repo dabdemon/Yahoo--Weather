@@ -750,7 +750,6 @@
                 function saveOptions() {
                     var options = {
                         'language': $('#language').val(),
-                        'font': $('#font').val(),
                         'use_gps': $('input:radio[name=use_gps]:checked').val(),
                         'location': $('#location').val(),
                         'units': $('input:radio[name=units]:checked').val(),
@@ -829,7 +828,6 @@
                         document.location = 'pebblejs://close#' + encodeURIComponent(JSON.stringify(saveOptions()));
                     });
                     $('#language').val(getQueryVariable('language')).change();
-                    $('#font').val(getQueryVariable('font')).change();
                     if (getQueryVariable('use_gps') == "false") {
                         $('input:radio[name=use_gps][value=false]').prop('checked', true).trigger("click");
                     } else {
