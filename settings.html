@@ -5,9 +5,9 @@
 		<!--load the Bootstrap "Superhero" theme-->
 		<link rel="stylesheet" href="https://bootswatch.com/superhero/bootstrap.min.css">
 		<!--load JQuery and Bootstrap JavaScript -->
-		<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-    	<script src="https://bootswatch.com/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-    	<!--><script src="http://maps.googleapis.com/maps/api/js"></script><-->
+		<script src='http://code.jquery.com/jquery-1.9.1.min.js'></script>
+        	<script src='http://code.jquery.com/mobile/1.4.2/jquery.mobile-1.4.2.min.js'></script>
+    		<script src="https://bootswatch.com/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 
 		<title>YWeather Settings</title>
 	</head>
@@ -616,7 +616,7 @@
 								
 								
 									<div class="form-group">
-									    <label for="timer" class="control-label col-md-3">3 day forecast</label>
+									    <label for="forecast" class="control-label col-md-3">3 day forecast</label>
 									    <div class="col-md-6">
 									       <div class="input-group">
 									        <div class="input-group-addon">
@@ -711,22 +711,6 @@
 
 
 		<script>
-                /*
-                $("#units").change(function() {
-                    fillWindSpeed(getQueryVariable("#units"));
-                });
-                function fillWindSpeed(units){
-                    //first remove all the existing values (if any)
-                     $('#wspeed').empty();
-                    //Dynamically set the mi/h or km/h
-                    if(units=="c"){$('#wspeed').append(new Option('km/h', '0'));}
-                    else{   $('#wspeed').append(new Option('mi/h', '0'));}
-                    //Finally set the static values
-                    $('#wspeed').append(new Option('m/s', '1'));
-                    $('#wspeed').append(new Option('knots', '2'));
-                    $('#wspeed').append(new Option('beaufort', '3'));
-                }
-                */
                 
                 function getQueryVariable(variable) {
                     var query = location.search.substring(1);
