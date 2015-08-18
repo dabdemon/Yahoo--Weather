@@ -43,6 +43,16 @@
     "resources": {
         "media": [
             {
+                "file": "fonts/MCTIME.TTF",
+                "name": "RUSSIAN_14",
+                "type": "font"
+            },
+            {
+                "file": "fonts/MCTIME.TTF",
+                "name": "RUSSIAN_17",
+                "type": "font"
+            },
+            {
                 "file": "images/batt_char_bw.png",
                 "name": "BATT_CHAR",
                 "type": "png"
@@ -450,7 +460,7 @@
         "basalt"
     ],
     "uuid": "35a28a4d-0c9f-408f-9c6d-551e65f03186",
-    "versionLabel": "3.0",
+    "versionLabel": "3.2",
     "watchapp": {
         "watchface": true
     }

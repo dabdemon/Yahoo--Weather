@@ -44,6 +44,15 @@ enum WeatherKey {
 	POP_KEY = 31, //CSTRING
 };
 
+        //Define Resources
+    	ResHandle res_d;
+		ResHandle res_d_rus; //for russian
+		ResHandle res_d_rus_forecast; //for russian forecast
+        ResHandle res_u;
+        ResHandle res_t;
+        ResHandle res_temp;
+
+
 	#define TAP_TIME 2000
 	bool is_tapped_waiting = false;
 	int TapCount = 0;
@@ -51,6 +60,8 @@ enum WeatherKey {
 //Define and initialize variables
 	//FONTS
 	GFont font_date; // Font for date
+	GFont font_russian_date; //Font for date in russian
+	GFont font_russian_date_forecast; //Font for date in russian
 	GFont font_time; // Font for time
 	GFont font_update; // Font for last update
 	GFont font_temperature;        // Font for the temperature
@@ -77,8 +88,9 @@ enum WeatherKey {
 	static AppTimer *initialize;
 	//static AppTimer *tap_timer;
 	
-	
-	//InverterLayer *inv_layer;
+	#ifdef PBL_PLATFORM_APLITE
+		InverterLayer *inv_layer;
+	#endif
 	
 	//Date & Time        
 	static char last_update[]="00:00 ";
@@ -140,11 +152,11 @@ enum WeatherKey {
 	int intyear;
 
 	//variable to avoid the app crashing when adding new languages
-	int intLangCounter = 16;
+	int intLangCounter = 17;
 	
 	
 	bool translate_sp = true;
-	int language = 100;
+	int language = 100; //defaulted to English
 	bool color_inverted;
 	int ICON_CODE;
 	bool batt_status = false; //If true, display the battery status all the time; if false, just when running low (<10%)

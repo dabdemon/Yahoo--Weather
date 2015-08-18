@@ -185,15 +185,16 @@ static void handle_bluetooth(bool connected)
 //Invert colors//
 /////////////////
 
-/*
+
 void InvertColors(bool inverted)
 {
+	#ifdef PBL_PLATFORM_APLITE
 	
 	if (inverted){
 		//Inverter layer
 		if (blninverted == false){		
 			inv_layer = inverter_layer_create(GRect(0, 0, 144, 168));
-			layer_add_child(window_get_root_layer(my_window), (Layer*) f);
+			layer_add_child(window_get_root_layer(my_window), (Layer*) inv_layer);
 			blninverted =  true;
 	    }
 	}
@@ -203,10 +204,11 @@ void InvertColors(bool inverted)
 			inverter_layer_destroy(inv_layer);
 			blninverted = false;}
 	}
+	#endif
 	
 }// END - Invert colors
 
-*/
+
 
 //**************************//
 //** Get the current date **//
@@ -514,12 +516,26 @@ void SubscribeTickEvent(){
 		  persist_write_bool(INVERT_COLOR_KEY, color_inverted);
 
 	  	  //refresh the layout
-	  	  //InvertColors(color_inverted);
+	  	#ifdef PBL_PLATFORM_APLITE
+	  	  	InvertColors(color_inverted);
+	 	#endif
 		  break;
 	  
 	  case language_key:
 	  	  language = new_tuple->value->uint8;
 	  	  persist_write_int(language_key, language);
+	  		//set the right font charset
+  
+	  		if (language == 17){
+                text_layer_set_font(date_layer, font_russian_date);
+				text_layer_set_font(Weekday_Layer, font_russian_date);
+			}
+			else{
+				text_layer_set_font(date_layer, font_date);
+				text_layer_set_font(Weekday_Layer, font_date);
+			}
+	  
+
 	  		//Init the date
 			getDate();
 		  break;
@@ -742,7 +758,9 @@ void LoadTemperature()
 	//light_enable(false); //this was causing an issue about the backlight suddently stop when the user was navigating thru apps.
 	
 	//remove the inverted layer (if any) before creating the new text layers
-	//if(blninverted){inverter_layer_destroy(inv_layer);	blninverted = false;}
+	#ifdef PBL_PLATFORM_APLITE
+		if(blninverted){inverter_layer_destroy(inv_layer);	blninverted = false;}
+	#endif
 	//Track that we are displaying the primary screen
 	blnForecast = false;
 	
@@ -795,7 +813,9 @@ void LoadTemperature()
 	text_layer_set_text(Last_Update, last_update);
 	
 	//if color inverted, then create the inverted layer
-	//InvertColors(color_inverted);
+	#ifdef PBL_PLATFORM_APLITE
+		InvertColors(color_inverted);
+	#endif
 	
 } //LoadTemperature - END
 
@@ -866,13 +886,20 @@ void Load3Days()
 {
 
 	//remove the inverted layer (if any) before creating the new text layers
-	//if(blninverted){inverter_layer_destroy(inv_layer);	blninverted = false;}
+	#ifdef PBL_PLATFORM_APLITE
+		if(blninverted){inverter_layer_destroy(inv_layer);	blninverted = false;}
+	#endif
 //DAY 1
 	//Weekday
 		Day1_Layer = text_layer_create(FORECAST_DAY1_FRAME);	
 		text_layer_set_text_color(Day1_Layer, GColorWhite);
 		text_layer_set_background_color(Day1_Layer, GColorClear);
-		text_layer_set_font(Day1_Layer, font_date);
+		if (language == 17){
+        	text_layer_set_font(Day1_Layer, font_russian_date_forecast);
+			}
+		else{
+			text_layer_set_font(Day1_Layer, font_date);
+			}
 		text_layer_set_text_alignment(Day1_Layer, GTextAlignmentLeft);
 		layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Day1_Layer));
 	
@@ -917,7 +944,12 @@ void Load3Days()
 		Day2_Layer = text_layer_create(FORECAST_DAY2_FRAME);	
 		text_layer_set_text_color(Day2_Layer, GColorWhite);
 		text_layer_set_background_color(Day2_Layer, GColorClear);
-		text_layer_set_font(Day2_Layer, font_date);
+		if (language == 17){
+        	text_layer_set_font(Day2_Layer, font_russian_date_forecast);
+			}
+		else{
+			text_layer_set_font(Day2_Layer, font_date);
+			}
 		text_layer_set_text_alignment(Day2_Layer, GTextAlignmentLeft);
 		layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Day2_Layer));
 
@@ -954,7 +986,12 @@ void Load3Days()
 		Day3_Layer = text_layer_create(FORECAST_DAY3_FRAME);	
 		text_layer_set_text_color(Day3_Layer, GColorWhite);
 		text_layer_set_background_color(Day3_Layer, GColorClear);
-		text_layer_set_font(Day3_Layer, font_date);
+		if (language == 17){
+        	text_layer_set_font(Day3_Layer, font_russian_date_forecast);
+			}
+		else{
+			text_layer_set_font(Day3_Layer, font_date);
+			}
 		text_layer_set_text_alignment(Day3_Layer, GTextAlignmentLeft);
 		layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Day3_Layer));
 
@@ -994,7 +1031,9 @@ void Load3Days()
 	text_layer_set_text(Low3_Layer,day3L);
 	
 	//if color inverted, then create the inverted layer
-	//InvertColors(color_inverted);
+	#ifdef PBL_PLATFORM_APLITE
+		InvertColors(color_inverted);
+	#endif
 	//setup the timer to set back the temperature after 5sec
 	weather = app_timer_register(ESDuration_ms, forecast3Days_callback, NULL);
 	
@@ -1028,7 +1067,9 @@ static void forecast_callback(void *context) {
 void LoadForecast()
 {
 	//remove the inverted layer (if any) before creating the new text layers
-	//if(blninverted){inverter_layer_destroy(inv_layer);	blninverted = false;}
+	#ifdef PBL_PLATFORM_APLITE
+		if(blninverted){inverter_layer_destroy(inv_layer);	blninverted = false;}
+	#endif
 	//Track that we are displaying the secondary screen
 	blnForecast = true;
 
@@ -1172,7 +1213,9 @@ void LoadForecast()
 	
 	
 	//if color inverted, then create the inverted layer
-	//InvertColors(color_inverted);
+	#ifdef PBL_PLATFORM_APLITE
+		InvertColors(color_inverted);
+	#endif
 	
 	//refresh the tap counter 
 	TapCount = 0;
@@ -1226,7 +1269,12 @@ void LoadMainWindow(){
                 Weekday_Layer = text_layer_create(WEEKDAY_FRAME);
 				text_layer_set_text_color(Weekday_Layer, GColorWhite);
 	            text_layer_set_background_color(Weekday_Layer, GColorClear);
-                text_layer_set_font(Weekday_Layer, font_date);
+				if (language == 17){
+                	text_layer_set_font(Weekday_Layer, font_russian_date);
+				}
+				else{
+					text_layer_set_font(Weekday_Layer, font_date);
+				}
                 text_layer_set_text_alignment(Weekday_Layer, GTextAlignmentLeft);
                 layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Weekday_Layer));
 	
@@ -1285,7 +1333,12 @@ void LoadMainWindow(){
                 date_layer = text_layer_create(DATE_FRAME);	
 				text_layer_set_text_color(date_layer, GColorWhite);
 	            text_layer_set_background_color(date_layer, GColorClear);
-                text_layer_set_font(date_layer, font_date);
+				if (language == 17){
+                	text_layer_set_font(date_layer, font_russian_date);
+				}
+				else{
+					text_layer_set_font(date_layer, font_date);
+				}
                 text_layer_set_text_alignment(date_layer, GTextAlignmentRight);
                 layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(date_layer));
         
@@ -1296,7 +1349,9 @@ void LoadMainWindow(){
         
  
 	            //Drawn the normal/inverted based on saved settings
-	            //InvertColors(color_inverted);
+				#ifdef PBL_PLATFORM_APLITE
+	            	InvertColors(color_inverted);
+				#endif
 }//LoadMainWindow END
 
 void SetupMessages(){
@@ -1308,7 +1363,7 @@ void SetupMessages(){
                 TupletInteger(WEATHER_ICON_KEY, ICON_CODE), //INITIALIZE TO "N/A"
 				MyTupletCString(WEATHER_TEMPERATURE_KEY, temp),
 				//MyTupletCString(WEATHER_TEMPERATURE_KEY,low), //Init to something
-                MyTupletCString(WEATHER_CITY_KEY, "YWeather 3.0"), //display app version on load
+                MyTupletCString(WEATHER_CITY_KEY, "YWeather 3.2"), //display app version on load
 				TupletInteger(INVERT_COLOR_KEY, color_inverted),
 				TupletInteger(language_key, language), //INITIALIZE TO LAST SAVED	
 				TupletInteger(VIBES_KEY, blnvibes),
@@ -1363,11 +1418,6 @@ void handle_init(void)
 		//Use the internationalization API to detect the user's language
 		setlocale(LC_ALL, i18n_get_system_locale());
 
-        //Define Resources
-    	ResHandle res_d;
-        ResHandle res_u;
-        ResHandle res_t;
-        ResHandle res_temp;
   
 		//load persistent storage options
 		color_inverted = persist_read_bool(INVERT_COLOR_KEY);
@@ -1426,13 +1476,17 @@ void handle_init(void)
      */
 
 		res_t = resource_get_handle(RESOURCE_ID_FUTURA_CONDENSED_53); // Time font
-		res_d = resource_get_handle(RESOURCE_ID_FUTURA_17); // Date font
+		res_d_rus = resource_get_handle(RESOURCE_ID_RUSSIAN_17); // Date font for Russian language
+		res_d_rus_forecast = resource_get_handle(RESOURCE_ID_RUSSIAN_14); // Date font for Russian language
+		res_d = resource_get_handle(RESOURCE_ID_FUTURA_17); // Date font for common ASCII languages
 		res_u = resource_get_handle(RESOURCE_ID_FUTURA_10); // Last Update font
 		res_temp = resource_get_handle(RESOURCE_ID_FUTURA_43); //Temperature  
 			
    
 
 		font_date = fonts_load_custom_font(res_d);
+		font_russian_date = fonts_load_custom_font(res_d_rus);
+		font_russian_date_forecast = fonts_load_custom_font(res_d_rus_forecast);
         font_update = fonts_load_custom_font(res_u);
         font_time = fonts_load_custom_font(res_t);
         font_temperature = fonts_load_custom_font(res_temp);	

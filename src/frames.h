@@ -1,6 +1,7 @@
 #define MyTupletCString(_key, _cstring) ((const Tuplet) { .type = TUPLE_CSTRING, .key = _key, .cstring = { .data = _cstring, .length = strlen(_cstring) + 1 }})
 	
-#define WEEKDAY_FRAME    (GRect(5, 2, 102, 168-145)) //,,95,
+//#define WEEKDAY_FRAME    (GRect(5, 2, 102, 168-145)) //,,95,
+#define WEEKDAY_FRAME    (GRect(5, 2, 110, 168-145)) //,,95,
 #define BATT_FRAME       (GRect(103, 3, 40, 168-146)) //98,,
 #define BT_FRAME         (GRect(127, 3, 23, 168-146))
 #define TIME_FRAME       (GRect(0, 15, 144, 168-16))

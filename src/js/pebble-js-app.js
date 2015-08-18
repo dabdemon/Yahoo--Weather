@@ -241,12 +241,13 @@ if (options === null) options = { "language" : 100, //default to "English"
 								"end" : "0",
 								"timer" : 30,
 								"hourly_vibe" : "false",
-								"alerts" : "true",
+								"alerts" : "false",
 								"seconds" : "false",
 								"forecast" : "false",
 								"weatherprovider" : "0", //Yahoo! Weather
 								"hide_bat" : "false",
 								"backlight" : "false",
+								"CustomAPIKey" : "",
 								//"font" : 0,
 								"key" : ""};
 
@@ -321,7 +322,7 @@ function TWUFromLarLong(latitude, longitude){
 	req.onload = function(e) {
 		if (req.readyState == 4) {
 			if (req.status == 200) {
-				console.log(req.responseText);
+				//console.log(req.responseText);
         		response = JSON.parse(req.responseText);
         if (response) {
 			
@@ -487,9 +488,6 @@ function TWUFromLarLong(latitude, longitude){
         }
       } else {
         console.log("unable to get woeid from The Weather Underground API");
-		if(options['alerts']== "true"){
-			Pebble.showSimpleNotificationOnPebble("YWeather", "unabe to connect with The Weather Underground");
-		}
       }
     }
   }
@@ -638,9 +636,6 @@ function openweatherByLatLong(latitude, longitude)
 			
 		} else {
         console.log("unable to get woeid from The Weather Underground API");
-		if(options['alerts']== "true"){
-			Pebble.showSimpleNotificationOnPebble("YWeather", "unable to connect with forecast.io");
-		}
       }
     }
   }
@@ -824,9 +819,6 @@ function forecastioByLatLong(latitude, longitude)
 			
 		} else {
         console.log("unable to get woeid from The Weather Underground API");
-		if(options['alerts']== "true"){
-			Pebble.showSimpleNotificationOnPebble("YWeather", "unable to connect with forecast.io");
-		}
       }
     }
   }
@@ -841,12 +833,14 @@ function forecastioByLatLong(latitude, longitude)
 
 //Retrieve the WOEID & City name from Yahoo! when GPS is OFF
 function getWeatherFromLatLong(latitude, longitude) {
+	console.log("Retrieving WOEID");
   var response;
   var woeid = -1;
   var accuracy = options['accuracy']; 
   var query = encodeURI("select woeid, county, city, street from geo.placefinder where text=\"" + latitude + "," + longitude +"\" and gflags=\"R\"");
-	console.log("geo query: " + query);
+  console.log("geo query: " + query);
   var url = "http://query.yahooapis.com/v1/public/yql?q=" + query + "&format=json";
+	console.log("fetching woeid from yahoo: " + url);
   var req = new XMLHttpRequest();
   req.open('GET', url, true);
   req.onload = function(e) {
@@ -861,13 +855,11 @@ function getWeatherFromLatLong(latitude, longitude) {
 			if (accuracy==11){city = response.query.results.Result.city;}
 			if (accuracy==16){city = response.query.results.Result.street;}
 			
+			console.log("Call GetWeatherFromWoeid: woeid=" + woeid + " and city=" + city);
 			getWeatherFromWoeid(woeid, city);
         }
       } else {
         console.log("unable to get woeid from Yahoo! API");
-		if(options['alerts']== "true"){
-			Pebble.showSimpleNotificationOnPebble("YWeather", "I cannot retrieve the weather from Yahoo! Weather.");
-		}
       }
     }
   }
@@ -883,6 +875,7 @@ function getWeatherFromLocation(location_name) {
 
 	//The Weather Underground
 	if(options['weatherprovider']=="1"){
+		console.log("Getting weather from TWU");
 		var position;
 		//get the GPS coordinates based on the location and invoke the weather service
 		position = getPosition(location_name);
@@ -893,6 +886,7 @@ function getWeatherFromLocation(location_name) {
 	}
 	//forecast.io
 	else if (options['weatherprovider']=="2"){
+		console.log("Getting weather from forecast.io");
 		var position;
 		//get the GPS coordinates based on the location and invoke the weather service
 		position = getPosition(location_name);
@@ -903,6 +897,7 @@ function getWeatherFromLocation(location_name) {
 	}
 	//Yahoo! Weather	
 	else{
+		  console.log("Getting weather from Yahoo Weather");
 		  var response;
 		  var woeid = -1;
 		  var query = encodeURI("select woeid, name from geo.places(1) where text=\"" + location_name + "\"");
@@ -918,14 +913,11 @@ function getWeatherFromLocation(location_name) {
 					woeid = response.query.results.place.woeid;
 					city = response.query.results.place.name;
 
-
+					console.log("Call GetWeatherFromWoeid: woeid=" + woeid + " and city=" + city);
 					getWeatherFromWoeid(woeid, city);
 				}
 			  } else {
 				console.log("unable to get woeid from Yahoo! API");
-				if(options['alerts']== "true"){
-					Pebble.showSimpleNotificationOnPebble("YWeather", "I cannot retrieve the weather data from Yahoo! Weather");
-				}
 			  }
 			}
 		  }
@@ -944,6 +936,7 @@ function getWeatherFromWoeid(woeid, city) {
 	
   var celsius = options['units'] == 'celsius';
 	
+	console.log("Getting Weather from Woeid (Yahoo Weather)");
 	
 	//get today's conditions	
 	var query = encodeURI("select  item.condition, item.forecast, astronomy, wind, atmosphere from weather.forecast where woeid = " + woeid +
@@ -1087,25 +1080,22 @@ function getWeatherFromWoeid(woeid, city) {
         }
       } else {
         console.log("Error WFW");
-	//YWeather 2.4 - Enable/Disable Alerts - START
-	if(options['alerts']== "true"){
-		Pebble.showSimpleNotificationOnPebble("YWeather", "I cannot fetch the weather data. Are you online?");
-	}
-	//YWeather 2.4 - Enable/Disable Alerts - END
       }
     }
   }
   req.send(null);
 }
 
+
 function getPosition(cityname){
 	
-
+	cityname = encodeURIComponent(cityname);
 	var url = "http://maps.googleapis.com/maps/api/geocode/json?address=[" + cityname.replace(" ","%20") + "]";
 	console.log("get positon URL: " + url);
 	var response;
 	var req = new XMLHttpRequest();
 	req.open('GET', url, false);
+	req.setRequestHeader("Content-Type", "text/plain;charset=UTF-8");
 	req.send();
 
 		if (req.readyState == 4) {
@@ -1132,7 +1122,9 @@ function getPosition(cityname){
 
 
 //Retrieve the weather based on the selected settings (GPS on/off)
-var locationOptions = { timeout: 15000, maximumAge: 0, enableHighAccuracy: true};
+var locationOptions = { enableHighAccuracy: false,
+  						maximumAge: 0};
+
 
 function updateWeather() {
   if (options['use_gps'] == "true") {
@@ -1141,6 +1133,7 @@ function updateWeather() {
                                                     locationError,
                                                     locationOptions);
   } else {
+	console.log("getting weather from manual location: " + options["location"]); 
     getWeatherFromLocation(options["location"]);
   }
 }
@@ -1150,9 +1143,9 @@ function locationSuccess(pos) {
   console.log("location success");
 	
 	//set the options for the last seen
-	if (options['find']=="true"){options['latlong']=coordinates.latitude+","+coordinates.longitude;}
+	//if (options['find']=="true"){options['latlong']=coordinates.latitude+","+coordinates.longitude;}
 	//if not enabled, then set the last seen to the Pebble Technology HQ ;)
-	else{options['latlong']="37.440392,-122.158672";}
+	//else{options['latlong']="37.440392,-122.158672";}
 
 	//call the weather function based on the selected provider (defaulted to Yahoo! Weather)
 	if (options['weatherprovider']=="1"){TWUFromLarLong(coordinates.latitude, coordinates.longitude);}
@@ -1172,13 +1165,6 @@ function locationError(err) {
 //YWeather 2.3 - FIX01. Never blank out a location on disconect - END
 	    //Put here the output parameters to "Main.C"
   });
-//YWeather 2.4 - Enable/Disable Alerts - START
-	if(options['alerts']== "true"){
-//YWeather 2.3 - FIX01. Never blank out a location on disconect - START
-	Pebble.showSimpleNotificationOnPebble("YWeather", "I cannot locate you. Are you inside a building?");
-//YWeather 2.3 - FIX01. Never blank out a location on disconect - END
-	}
-//YWeather 2.4 - Enable/Disable Alerts - END
 }
 
 
@@ -1315,7 +1301,6 @@ NNW 326.25 - 348.75
 
 
 
-
 function getLocationName(pos){
 	
 	var url = "http://maps.googleapis.com/maps/api/geocode/json?latlng=" + pos + "";
@@ -1344,56 +1329,118 @@ function getLocationName(pos){
 //Setup the connection with the watch//
 ///////////////////////////////////////
 
+
 //Displays the configuration page in the phone
 Pebble.addEventListener('showConfiguration', function(e) {
-  var uri = 'http://dabdemon.github.io/Yahoo--Weather/settings.html?' + //Here you need to enter your configuration webservice
-    'language=' + encodeURIComponent(options['language']) +
-	'&use_gps=' + encodeURIComponent(options['use_gps']) +
-    '&location=' + encodeURIComponent(options['location']) +
-    '&units=' + encodeURIComponent(options['units']) +
-    '&invert_color=' + encodeURIComponent(options['invert_color']) +
-	'&vibes=' + encodeURIComponent(options['vibes']) +
-	'&accuracy=' + encodeURIComponent(options['accuracy']) +
-	'&feelslike=' + encodeURIComponent(options['feelslike']) +
-	'&ESDuration=' + encodeURIComponent(options['ESDuration']) +
-	'&wspeed=' + encodeURIComponent(options['wspeed']) +	
-	'&start=' + encodeURIComponent(options['start']) +	
-	'&end=' + encodeURIComponent(options['end']) +	
-	'&timer=' + encodeURIComponent(options['timer']) +
+	
+	//Set default values
+	var optlanguage =  options['language'];
+	if ((optlanguage ==null)||(optlanguage == "null")){optlanguage = 100;} //set to english if null
+
+	var optgps = options['use_gps'];
+	if ((optgps == null)||(optgps=="null")){optgps = "true";}
+
+	var optlocation = options['location'];
+	if ((optlocation == null)||(optlocation=="null")){optlocation="";}
+	
+	var optunits = options['units'];
+	if ((optunits == null)||(optunits=="null")){optunits = "celsius";}
+	
+	var optinvert = options['invert_color'];
+	if ((optinvert == null)||(optinvert=="null")){optinvert = "false";}
+	
+	var optvibes = options['vibes'];
+	if ((optvibes==null)||(optvibes=="null")) {optvibes = "false";}
+	
+	var optaccuracy = options['accuracy'];
+	if ((optaccuracy==null)||(optaccuracy=="null")){optaccuracy=16;}
+	
+	var optfeelslike = options['feelslike'];
+	if ((optfeelslike ==null)||(optfeelslike=="null")){optfeelslike = "false";}
+	
+	var optESDuration = options['ESDuration'];
+	if ((optESDuration == null)||(optESDuration=="null")){optESDuration = 5;}
+	
+	var optwspeed = options['wspeed'];
+	if ((optwspeed == null)||(optwspeed=="null")){optwspeed = "0";}
+	
+	var optstart = options['start'];
+	if ((optstart == null)||(optstart == "null")) {optstart="0";}
+	
+	var optend = options['end'];
+	if((optend ==null)||(optend=="null")){optend ="0";}
+	
+	var opttimer = options['timer'];
+	if ((opttimer == null)||(opttimer=="null")){opttimer=30;}
+	
+	var opthvibe = options['hourly_vibe'];
+	if ((opthvibe == null)||(opthvibe=="null")){opthvibe="false";}
+	
+	var optalert = options['alerts'];
+	if((optalert == null)||(optalert=="null")){optalert = "false";}
+	
+	var optseconds = options['seconds'];
+	if ((optseconds == null)||(optseconds=="null")){optseconds = "false";}
+	
+	var optforecast = options['forecast'];
+	if ((optforecast == null)||(optforecast=="null")){optforecast = "false";}
+	
+	var optprovider = options['weatherprovider'];
+	if ((optprovider == null)||(optprovider=="null")){optprovider = "0";}
+	
+	var opthidebat = options['hide_bat'];
+	if ((opthidebat == null)||(opthidebat =="null")){opthidebat="false";}
+	
+	var optbacklight = options['backlight'];
+	if ((optbacklight==null)||(optbacklight=="null")){optbacklight = "false";}
+	
+	var optcustomapikey = options['CustomAPIKey'];
+	if ((optcustomapikey==null)||(optcustomapikey=="null")){optcustomapikey = ""}
+	
+	var optkey = options['key'];
+	if ((optkey == null)||(optkey=="null")){optkey="";}
+	
+ 
+	//var uri = 'http://dabdemon.github.io/Yahoo--Weather/development.html?' + //Here you need to enter your configuration webservice
+    var uri = 'http://yweather.es/ywsettings.html?' + 
+	'language=' + encodeURIComponent(optlanguage) +
+	'&use_gps=' + encodeURIComponent(optgps) +
+    '&location=' + encodeURIComponent(optlocation) +
+    '&units=' + encodeURIComponent(optunits) +
+    '&invert_color=' + encodeURIComponent(optinvert) +
+	'&vibes=' + encodeURIComponent(optvibes) +
+	'&accuracy=' + encodeURIComponent(optaccuracy) +
+	'&feelslike=' + encodeURIComponent(optfeelslike) +
+	'&ESDuration=' + encodeURIComponent(optESDuration) +
+	'&wspeed=' + encodeURIComponent(optwspeed) +	
+	'&start=' + encodeURIComponent(optstart) +	
+	'&end=' + encodeURIComponent(optend) +	
+	'&timer=' + encodeURIComponent(opttimer) +
 	'&UUID=' + encodeURIComponent(Pebble.getAccountToken()) +
 	'&lt=' + encodeURIComponent(CheckUserKey()) +
-	'&key=' + encodeURIComponent(options['key']) +
-//YWeather 2.3 - REQ02. Hourly Vibe - START
-	'&hourly_vibe=' + encodeURIComponent(options['hourly_vibe']) +
-//YWeather 2.3 - REQ02. Hourly Vibe - END
-//YWeather 2.4 - Enable/Disable Alerts - START
-	'&alerts=' + encodeURIComponent(options['alerts']) +
-//YWeather 2.4 - Enable/Disable Alerts - END
-//YWeather 2.3 - REQ01. Display Seconds - START
-	'&seconds=' + encodeURIComponent(options['seconds']) +
-//YWeather 2.3 - REQ01. Display Seconds - END
-	'&weatherprovider=' + encodeURIComponent(options['weatherprovider']) +
-	'&CustomAPIKey=' + encodeURIComponent(options['CustomAPIKey']) +
-	'&hide_bat=' + encodeURIComponent(options['hide_bat']) +
-	'&start=' + encodeURIComponent(options['start']) +
-	'&end=' + encodeURIComponent(options['end']) +
-	'&backlight=' + encodeURIComponent(options['backlight']) +
-	'&find=' + encodeURIComponent(options['find']) +
-	'&latlong=' + encodeURIComponent(options['latlong']) +
-	  
-	'&lastseen=' + encodeURIComponent(getLocationName(options['latlong'])) +
-//	'&font=' + encodeURIComponent(options['font']) +
-	'&forecast=' + encodeURIComponent(options['forecast']);
+	'&key=' + encodeURIComponent(optkey) +
+	'&hourly_vibe=' + encodeURIComponent(opthvibe) +
+	'&alerts=' + encodeURIComponent(optalert) +
+	'&seconds=' + encodeURIComponent(optseconds) +
+	'&weatherprovider=' + encodeURIComponent(optprovider) +
+	'&CustomAPIKey=' + encodeURIComponent(optcustomapikey) +
+	'&hide_bat=' + encodeURIComponent(opthidebat) +
+	'&backlight=' + encodeURIComponent(optbacklight) +
+	'&forecast=' + encodeURIComponent(optforecast);
 
-	//console.log('showing configuration at uri: ' + uri);
-
-  Pebble.openURL(uri);
+	console.log('showing configuration at uri: ' + uri);
+  	Pebble.openURL(uri);
+	
 });
 
 //Retrieve user settings after submitting
 Pebble.addEventListener('webviewclosed', function(e) {
   if (e.response) {
     options = JSON.parse(decodeURIComponent(e.response));
+	  //clear the cached data
+	  console.log("clearing cached data...");
+	  localStorage.clear();
+	  //save the new options
     localStorage.setItem('options', JSON.stringify(options));
     console.log('storing options: ' + JSON.stringify(options));
     updateWeather();
