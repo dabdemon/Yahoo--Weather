@@ -18,6 +18,7 @@
 			<div class ="jumbotron">
 				<h3 class="text-warning"><b>YWeather Settings</b></h3>
 				<h4>Please, select your settings and click on Submit</h4>
+				<h4 class="text-danger"><b>NOTE: </b> The darker/sunken option is the selected one</h4>
 			</div>
 		</div>
 
@@ -59,7 +60,7 @@
 					                            <option value="3">Czech</option>
 					                            <option value="10">Danish</option>
 					                            <option value="7">Dutch</option>
-					                            <option value="100">English (U.S.)</option>
+					                            <option value="100" selected>English (U.S.)</option>
 					                            <option value="97">English (Non-U.S.)</option>
 					                            <option value="6">Finnish</option>
 					                            <option value="4">French</option>
@@ -191,6 +192,47 @@
 								     		<input type="text" class="col-md-6" id="location" name="location" Placeholder="e.j. 'Chicago'">
 								     	</div>
 								  </div>
+
+								  									<!-- Weather Provider-->
+									<div class="form-group">
+									    <label for="weatherprovider" class="control-label col-md-3">Provider</label>
+									    <div class="col-md-6">
+					       					<select type="text" name="weatherprovider" id="weatherprovider" class="form-control"/>
+					                            <option value="0">Yahoo! Weather</option>
+					                            <option value="1">The Weather Underground</option>
+					                            <option value="2">forecast.io</option>
+					                        </select>
+									    </div>
+									</div>
+
+
+
+					  				<!-- Custom API key -->
+									<div class="form-group">
+									    <label for="CustomAPIKey" class="control-label col-md-3">Custom API Key</label>
+									    <div class="col-md-6">
+					       					<input type="text" name="CustomAPIKey" id="CustomAPIKey" value="" Placeholder="Enter your custom API key here">
+									    </div>
+									</div>
+	
+									
+
+									<div class="alert alert-success alert-dismissable">
+											<button type="button" class="close" data-dismiss="alert" aria-hidden="true">x</button>
+										    <h3>What is a custom API Key?</h3>
+										    <div>If you want to change the weather provider you must get your own API key. Otherise the application WON'T WORK!<br>
+										    	If you are not sure what a Custom API key is or how to get one, please keep Yahoo! as the weather provider.
+										    	<br>
+										    	<br>
+										    	To get a The Weather Underground API key follow this <span><a href="http://deutsch.wunderground.com/weather/api/d/login.html">(link)</a></span>
+										    	<br>
+										    	To get a forecast.io API key follow this <span><a href="https://developer.forecast.io/register">(link)</a>
+										    	<br>
+										    	<br>
+										    	NOTE: You own those keys are they are not related with YWeather anyhow. You are responsible of doing a good use of those provider's developer keys and YWeather only helps you by offering a free way to use your private credentials for accessing the weather data on TWU and/or forecast.io. If you don't understand what this means or you don't agree you should not change the weather provider.
+										    </span>
+										    </div>
+										</div>
 
 					  			</form>
 					  		</div>
@@ -328,7 +370,7 @@
 						  				<div class="form-group">
 						  					<label for="UUID" class="control-label col-sm-3">User ID</label>
 						  					<div class="col-sm-9">
-									     		<input type="text" class="col-sm-9" id="UUID" name="UUID">
+									     		<input type="text" class="col-sm-9" id="UUID" name="UUID" readonly>
 									     	</div>
 								  		</div>
 
@@ -336,7 +378,7 @@
 						  				<div class="form-group">
 						  					<label for="key" class="control-label col-sm-3">User Key</label>
 						  					<div class="col-sm-9">
-									     		<input type="text" class="col-sm-9" id="key" name="key">
+									     		<input type="text" class="col-sm-9" id="key" name="key" placeholder="Paste your key here.">
 									     	</div>
 								  		</div>
 
@@ -643,53 +685,6 @@
 									</div>
 								
 
-
-
-									<!-- Weather Provider-->
-									<div class="form-group">
-									    <label for="weatherprovider" class="control-label col-md-3">Provider</label>
-									    <div class="col-md-6">
-									       <div class="input-group">
-									        <div class="input-group-addon">
-									          <span class="text-info">LT3</span>
-									        </div>
-					       					<select type="text" name="weatherprovider" id="weatherprovider" class="form-control" />
-					                            <option value="0">Yahoo! Weather</option>
-					                            <option value="1">The Weather Underground</option>
-					                            <option value="2">forecast.io</option>
-					                        </select>
-									       </div>
-									    </div>
-									</div>
-
-
-
-					  				<!-- Custom API key -->
-									<div class="form-group">
-									    <label for="CustomAPIKey" class="control-label col-md-3">Custom API Key</label>
-									    <div class="col-md-6">
-									       <div class="input-group">
-									        <div class="input-group-addon">
-									          <span class="text-info">LT3</span>
-									        </div>
-					       					<input type="text" name="CustomAPIKey" id="CustomAPIKey" value="" Placeholder="Enter your custom API key here">
-									       </div>
-									    </div>
-									</div>
-	
-									
-
-									<div class="alert alert-success alert-dismissable">
-											<button type="button" class="close" data-dismiss="alert" aria-hidden="true">x</button>
-										    <h3>What is a custom API Key?</h3>
-										    <div>If you want to change the weather provider you must get your own API key.<br><br>
-										    	To get a The Weather Underground API key follow this <span><a href="http://deutsch.wunderground.com/weather/api/d/login.html">(link)</a></span>
-										    	<br><br>
-										    	To get a forecast.io API key follow this <span><a href="https://developer.forecast.io/register">(link)</a>
-										    </span>
-										    </div>
-										</div>
-
 						  		</form>
 
 						       
@@ -801,8 +796,6 @@
                     $('#start').prop('disabled', true);
                     $('#end').prop('disabled', true);
                     $('#forecast').prop('disabled', true);
-                    $('#weatherprovider').prop('disabled', true);
-                    $('#CustomAPIKey').prop('CustomAPIKey', true);
                     //Enable LT 1 fields
                     if (parseInt(getQueryVariable('lt')) >= 1) {
                         $('#feelslike').prop('disabled', false);
@@ -820,8 +813,6 @@
                     //Enable LT 3 fields
                     if (parseInt(getQueryVariable('lt')) >= 3) {
                         $('#forecast').prop('disabled', false);
-                        $('#weatherprovider').prop('disabled', false);
-                        $('#CustomAPIKey').prop('disabled', false);
                     }
                     $('#b-cancel').click(function() {
                         document.location = 'pebblejs://close#';
@@ -829,7 +820,10 @@
                     $('#b-submit').click(function() {
                         document.location = 'pebblejs://close#' + encodeURIComponent(JSON.stringify(saveOptions()));
                     });
-                    $('#language').val(getQueryVariable('language')).change();
+                    
+                    if (getQueryVariable('language') != ""){
+                    	$('#language').val(getQueryVariable('language')).change();
+                    }
                     if (getQueryVariable('use_gps') == "false") {
                         $('input:radio[name=use_gps][value=false]').prop('checked', true).trigger("click");
                     } else {
@@ -841,32 +835,32 @@
                     } else {
                         $('input:radio[name=units][value=fahrenheit]').prop('checked', true).trigger("click");
                     }
-                    if (getQueryVariable('invert_color') == "false") {
-                        $('input:radio[name=invert_color][value=false]').prop('checked', true).trigger("click");
-                    } else {
+                    if (getQueryVariable('invert_color') == "true") {
                         $('input:radio[name=invert_color][value=true]').prop('checked', true).trigger("click");
+                    } else {
+                        $('input:radio[name=invert_color][value=false]').prop('checked', true).trigger("click");
                     }
           
-                    if (getQueryVariable('vibes') == "0") {
-                        $('input:radio[name=vibes][value=0]').prop('checked', true).trigger("click");
+                    if (getQueryVariable('vibes') == "1") {
+                        $('input:radio[name=vibes][value=1]').prop('checked', true).trigger("click");
                     }
-                    else if (getQueryVariable('vibes') == "1"){
- 						$('input:radio[name=vibes][value=1]').prop('checked', true).trigger("click");
+                    else if (getQueryVariable('vibes') == "2"){
+ 						$('input:radio[name=vibes][value=2]').prop('checked', true).trigger("click");
                     } 
                     else {
-                        $('input:radio[name=vibes][value=2]').prop('checked', true).trigger("click");
+                        $('input:radio[name=vibes][value=0]').prop('checked', true).trigger("click");
                     }
                     $('#accuracy').val(getQueryVariable('accuracy')).change();
-                    if (getQueryVariable('feelslike') == "false") {
-                        $('input:radio[name=feelslike][value=false]').prop('checked', true).trigger("click");
-                    } else {
+                    if (getQueryVariable('feelslike') == "true") {
                         $('input:radio[name=feelslike][value=true]').prop('checked', true).trigger("click");
+                    } else {
+                        $('input:radio[name=feelslike][value=false]').prop('checked', true).trigger("click");
                     }
                     $('#ESDuration').val(getQueryVariable('ESDuration')).change();
-                    if (getQueryVariable('backlight') == "false") {
-                        $('input:radio[name=backlight][value=false]').prop('checked', true).trigger("click");
-                    } else {
+                    if (getQueryVariable('backlight') == "true") {
                         $('input:radio[name=backlight][value=true]').prop('checked', true).trigger("click");
+                    } else {
+                        $('input:radio[name=backlight][value=false]').prop('checked', true).trigger("click");
                     }
                     $('#wspeed').val(getQueryVariable('wspeed')).change();
                     $('#start').val(getQueryVariable('start')).change();
@@ -883,20 +877,20 @@
                     }
                     */
                      $('#forecast').val(getQueryVariable('forecast')).change();
-                    if (getQueryVariable('seconds') == "false") {
-                        $('input:radio[name=seconds][value=false]').prop('checked', true).trigger("click");
-                    } else {
+                    if (getQueryVariable('seconds') == "true") {
                         $('input:radio[name=seconds][value=true]').prop('checked', true).trigger("click");
-                    }
-                    if (getQueryVariable('hourly_vibe') == "false") {
-                        $('input:radio[name=hourly_vibe][value=false]').prop('checked', true).trigger("click");
                     } else {
+                        $('input:radio[name=seconds][value=false]').prop('checked', true).trigger("click");
+                    }
+                    if (getQueryVariable('hourly_vibe') == "true") {
                         $('input:radio[name=hourly_vibe][value=true]').prop('checked', true).trigger("click");
-                    }
-                    if (getQueryVariable('alerts') == "false") {
-                        $('input:radio[name=alerts][value=false]').prop('checked', true).trigger("click");
                     } else {
+                        $('input:radio[name=hourly_vibe][value=false]').prop('checked', true).trigger("click");
+                    }
+                    if (getQueryVariable('alerts') == "true") {
                         $('input:radio[name=alerts][value=true]').prop('checked', true).trigger("click");
+                    } else {
+                        $('input:radio[name=alerts][value=false]').prop('checked', true).trigger("click");
                     }
                     
                     $('#weatherprovider').val(getQueryVariable('weatherprovider')).change();
