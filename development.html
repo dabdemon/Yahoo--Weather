@@ -81,6 +81,23 @@
 					    				</div>
 					    			</div>
 
+					    			<!-- Select the theme which fits better your pebble. Analog or digital -->
+									<div class="form-group">
+						    			<label for="theme" class="control-label col-md-3">Theme</label>
+						    			<div class="col-sm-6">
+						    				<div class="btn-group" data-toggle="buttons">
+										      <label class="btn btn-primary">
+										         <input type="radio" id="analog" value ="0" name="theme" />
+										        Analog
+										      </label>
+										      <label class="btn btn-primary">
+										        <input type="radio" id="digital" value="1" name="theme" />
+										        Digital
+										      </label>
+										    </div>
+						    			</div>
+					  				</div>	
+
 					    			<!-- Select the units in which the weather and wind speed will be expressed. Metric = ºC and Km/h; Imperial = ºF and mi/h -->
 									<div class="form-group">
 						    			<label for="units" class="control-label col-md-3">Units</label>
@@ -747,6 +764,7 @@
                 function saveOptions() {
                     var options = {
                         'language': $('#language').val(),
+                        'theme': $('input:radio[name=theme]:checked').val(),
                         'use_gps': $('input:radio[name=use_gps]:checked').val(),
                         'location': $('#location').val(),
                         'units': $('input:radio[name=units]:checked').val(),
@@ -823,6 +841,11 @@
                     
                     if (getQueryVariable('language') != ""){
                     	$('#language').val(getQueryVariable('language')).change();
+                    }
+                    if (getQueryVariable('theme') == "0") {
+                        $('input:radio[name=theme][value="0"]').prop('checked', true).trigger("click");
+                    } else {
+                        $('input:radio[name=theme][value="1"]').prop('checked', true).trigger("click");
                     }
                     if (getQueryVariable('use_gps') == "false") {
                         $('input:radio[name=use_gps][value=false]').prop('checked', true).trigger("click");
