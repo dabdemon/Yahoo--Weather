@@ -841,11 +841,12 @@
                     });
 
                     $('#b-support').click(function() {
-                        var body = encodeURIComponent(JSON.stringify(saveOptions()));
+                        var body = '************************************************* %0D%0A Please, explain as accurate as you could what your problem is  %0D%0A************************************************* %0D%0A %0D%0A %0D%0A ******************** %0D%0A  DO NOT REMOVE THIS  %0D%0A ******************** %0D%0A';
+                        var settings = encodeURIComponent(JSON.stringify(saveOptions()));
                         var to = 'pebbleweather@gmail.com';
                         var subject = 'Support Required - YWeather Settings';
 
-                        document.location.href = "mailto:"+to+"?subject="+subject+"&body="+body;
+                        document.location.href = "mailto:"+to+"?subject="+subject+"&body="+body + settings;
                     });
                     
                     if (getQueryVariable('language') != ""){
