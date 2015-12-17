@@ -49,3 +49,4 @@ static void sync_tuple_changed_callback(const uint32_t key,
                                         void* context);
 void SetupMessages();
 void loadInitialTuples();
+void unloadInitialTuples();

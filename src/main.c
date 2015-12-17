@@ -40,17 +40,6 @@ void handle_deinit(void){
 
 } //HANDLE_DEINIT
 
-/*******************/
-/* Window Handlers */
-/*******************/
-static void main_window_load(Window *window) {
-  LoadDigital();
-}
-
-static void main_window_unload(Window *window) {
-  unloadDigital();
-}
-
 //**********************//
 // Init the application //
 //**********************//
@@ -60,19 +49,12 @@ void handle_init(void){
 
         //Create the main window
         mainWindow = window_create();
-
-		window_set_window_handlers(mainWindow, (WindowHandlers) {
-		.load = main_window_load,
-		.unload = main_window_unload,
-	  });
-	
         window_stack_push(mainWindow, true /* Animated */);  
 	
 		window_set_background_color(mainWindow, GColorBlack);
 	
 		loadFontResources();
 	
-		loadForecastIcons();
 		//loadPersistentData(false);
   
 		//Load the Main Window
@@ -80,7 +62,7 @@ void handle_init(void){
 		//Get Current Date
 		loadPersistentData(false, language_key);
 		getDate();
-		getTime();
+		//getTime();
 		
 		// Set up the update layer callback
 		SubscribeTickEvent();
@@ -91,19 +73,19 @@ void handle_init(void){
   		handle_battery(battery_state_service_peek());
 	
 		//Check the Bluetooth status
-		#ifdef PBL_SDK_2
-		  bluetooth_connection_service_subscribe(handle_bluetooth);
-		#elif PBL_SDK_3
+		//#ifdef PBL_SDK_2
+		  //bluetooth_connection_service_subscribe(handle_bluetooth);
+		//#elif PBL_SDK_3
 		  connection_service_subscribe((ConnectionHandlers) {
 			.pebble_app_connection_handler = handle_bluetooth
 		  });
-		#endif
+		//#endif
 		//and get the current BT status to do not experience delays
-		#ifdef PBL_SDK_2
-		  handle_bluetooth(bluetooth_connection_service_peek());
-		#elif PBL_SDK_3
-		  handle_bluetooth(connection_service_peek_pebble_app_connection());
-		#endif
+		//#ifdef PBL_SDK_2
+		  //handle_bluetooth(bluetooth_connection_service_peek());
+		//#elif PBL_SDK_3
+		  //handle_bluetooth(connection_service_peek_pebble_app_connection());
+		//#endif
 	
 		//setup the timer to refresh the weather info every 30min
 	/*
@@ -155,6 +137,7 @@ void unloadFontResource(){
 	fonts_unload_custom_font(font_update);
 	fonts_unload_custom_font(font_russian);
 	fonts_unload_custom_font(font_russian_date_forecast);
+	fonts_unload_custom_font(font_asian);
 }
 
 void loadPersistentData(bool refresh, int intKEY){
@@ -186,7 +169,7 @@ void loadPersistentData(bool refresh, int intKEY){
 		APP_LOG(APP_LOG_LEVEL_INFO, strICON);
 		*/// DEBUG //
 		
-		if (weather_image != NULL){gbitmap_destroy(weather_image);}
+	if (weather_image != NULL){gbitmap_destroy(weather_image);}
 		weather_image = gbitmap_create_with_resource(WEATHER_ICONS[ICON_CODE]);
 		#ifdef PBL_SDK_3
 			bitmap_layer_set_bitmap(weather_icon_layer, weather_image);
@@ -342,11 +325,16 @@ void refreshLayers(){
 			layer_add_child(window_get_root_layer(mainWindow), bitmap_layer_get_layer(BT_icon_layer));
       	#endif
 
+		
+//APP_LOG(APP_LOG_LEVEL_DEBUG, "LoadDigital: Heap free is %u bytes", heap_bytes_free());
+		
 	}//LoadMainWindow END
 	void unloadDigital(){
 		text_layer_destroy(Weekday_Layer);
 		text_layer_destroy(date_layer);
 		text_layer_destroy(Time_Layer);
+		
+APP_LOG(APP_LOG_LEVEL_DEBUG, "unloadDigital: Heap free is %u bytes", heap_bytes_free());
 	}
 
 	//**************************//
@@ -374,8 +362,8 @@ void refreshLayers(){
 				
 		
 		//control that people using old settings page are now referencing to the new asian translation method
-		if (intLanguage == 98){intLanguage=20;}
-		if (intLanguage == 99){intLanguage=19;}
+		//if (intLanguage == 98){intLanguage=20;}
+		//if (intLanguage == 99){intLanguage=19;}
 		
 		//control that app doesn't crash if selected language doesn't exist (version control)
 		if (intLanguage > intLangCounter){intLanguage = 100;} //set to watch language 
@@ -457,11 +445,16 @@ void refreshLayers(){
 			strftime(day_month,sizeof(day_month),"%e",tz1Ptr);
 				
 			if ((intLanguage == 13)||(intLanguage == 4)){
-				text_layer_set_text(date_layer,strncat(month_text,day_month,strlen(month_text)));} //Czech or Hungarian 
+				text_layer_set_text(date_layer,strncat(month_text,day_month,strlen(month_text)));
+				//text_layer_set_text(date_layer,strcat(translateMonth(intMonth, intLanguage),day_month));
+			} //Czech or Hungarian 
 			//else if (intLanguage == 19){text_layer_set_text(date_layer,strcat(translateMonth(intMonth, intLanguage),chinese_numbers[intDay]));} //Chinese
 			else if (intLanguage == 19){text_layer_set_text(date_layer,strcat(translateMonth(intMonth, intLanguage),japanese_numbers[intDay]));} //Chinese
 			else if (intLanguage == 20){text_layer_set_text(date_layer,strcat(translateMonth(intMonth, intLanguage),japanese_numbers[intDay]));} //Japanese
-			else{text_layer_set_text(date_layer,strncat(day_month,month_text,strlen(month_text))); }
+			else{
+				text_layer_set_text(date_layer,strncat(day_month,month_text,strlen(month_text)));
+				//text_layer_set_text(date_layer,strcat(day_month,translateMonth(intMonth, intLanguage)));
+			}
 		/*		
 			APP_LOG(APP_LOG_LEVEL_INFO, "getDate date_layer: ");
 			APP_LOG(APP_LOG_LEVEL_INFO, text_layer_get_text(date_layer));
@@ -470,7 +463,8 @@ void refreshLayers(){
 		}
 
 
-		text_layer_set_text(Weekday_Layer,weekday_text); //Update the weekday layer  
+		text_layer_set_text(Weekday_Layer,weekday_text); //Update the weekday layer 
+		//text_layer_set_text(Weekday_Layer,translateDay(intWDay, intLanguage)); //Update the weekday layer 
 
 	}
 
@@ -533,14 +527,14 @@ void refreshLayers(){
 /***********/
 
 void LoadTemperature(){	
-		
+	
 	  //Track that we are displaying the primary screen
 		blnForecast = false;
 	
       //Weather Icon
       	weather_icon_layer = bitmap_layer_create(WEATHER_FRAME);
 		//if there weather_image contains data, do not load again (avoid memory issues)
-		if (weather_image == NULL) {weather_image = gbitmap_create_with_resource(WEATHER_ICONS[ICON_CODE]);}
+		weather_image = gbitmap_create_with_resource(WEATHER_ICONS[ICON_CODE]);
       	bitmap_layer_set_bitmap(weather_icon_layer, weather_image);
       	layer_add_child(window_get_root_layer(mainWindow), bitmap_layer_get_layer(weather_icon_layer));
       //Temperature
@@ -576,6 +570,8 @@ void LoadTemperature(){
 	#endif
 
 	
+//APP_LOG(APP_LOG_LEVEL_DEBUG, "LoadTemperature: Heap free is %u bytes", heap_bytes_free());
+	
 } //LoadTemperature - END
 void UnloadTemperature(){
 	//Destroy the temperature Layer
@@ -583,32 +579,41 @@ void UnloadTemperature(){
 	if(weather_icon_layer){bitmap_layer_destroy(weather_icon_layer);}
 	if(Location_Layer){text_layer_destroy(Location_Layer);}
 	if(Last_Update){text_layer_destroy(Last_Update);}
-
+	//kill the weather icon
+	gbitmap_destroy(weather_image);
+	
+//APP_LOG(APP_LOG_LEVEL_DEBUG, "unloadTemperature: Heap free is %u bytes", heap_bytes_free());
 }
 
 void loadForecastIcons(){
-	//These icons are unique, so load them just once and avoid
-	//double free errors by loading and unloading on demand
+
 	high_image = gbitmap_create_with_resource(RESOURCE_ID_HIGH);
 	low_image = gbitmap_create_with_resource(RESOURCE_ID_LOW);
 	sunrise_image = gbitmap_create_with_resource(RESOURCE_ID_SUNRISE);
 	sunset_image = gbitmap_create_with_resource(RESOURCE_ID_SUNSET);
 	wind_image = gbitmap_create_with_resource(RESOURCE_ID_WIND_ICON);
 	rain_image = gbitmap_create_with_resource(RESOURCE_ID_ICON_RAIN_SMALL);
+}
+void unloadForecastIcons(){
 
-	
+	gbitmap_destroy(high_image);
+	gbitmap_destroy(low_image);
+	gbitmap_destroy(sunrise_image);
+	gbitmap_destroy(sunset_image);
+	gbitmap_destroy(wind_image);
+	gbitmap_destroy(rain_image);
 }
 
 void LoadForecast(){
-	APP_LOG(APP_LOG_LEVEL_INFO, "LoadForecast date_layer: ");
-	APP_LOG(APP_LOG_LEVEL_INFO, text_layer_get_text(date_layer));
 	
 	//Track that we are displaying the secondary screen
 	blnForecast = true;
 	
 	//Unload the temperature layers
 	UnloadTemperature();
-
+	
+	//Load the forecast images
+	loadForecastIcons();
   //animate the time (easing out)
       #ifdef PBL_ROUND
         //take the day out
@@ -698,7 +703,7 @@ void LoadForecast(){
 	persist_read_string(SUNRISE_KEY, sunrise, sizeof(sunrise));
 	text_layer_set_text(Sunrise_Layer,formatSunrise(sunrise));
 	
-	APP_LOG(APP_LOG_LEVEL_INFO, "loadPersistentData llego hasta el SUNRISE");
+	//APP_LOG(APP_LOG_LEVEL_INFO, "loadPersistentData llego hasta el SUNRISE");
 	//Display the sunset icon
 	sunrise_icon_layer = bitmap_layer_create(SUNRISE_ICON_FRAME);
 	bitmap_layer_set_bitmap(sunrise_icon_layer, sunrise_image);
@@ -715,7 +720,7 @@ void LoadForecast(){
 	persist_read_string(SUNSET_KEY, sunset, sizeof(sunset));
 	text_layer_set_text(Sunset_Layer,formatSunset(sunset));
 	
-	APP_LOG(APP_LOG_LEVEL_INFO, "loadPersistentData llego hasta el SUNSET");
+	//APP_LOG(APP_LOG_LEVEL_INFO, "loadPersistentData llego hasta el SUNSET");
 	//Display the sunset icon
 	sunset_icon_layer = bitmap_layer_create(SUNSET_ICON_FRAME);
 	bitmap_layer_set_bitmap(sunset_icon_layer, sunset_image);
@@ -743,7 +748,7 @@ void LoadForecast(){
 	persist_read_string(WDIRECTION_KEY, strwdirection, sizeof(strwdirection));
 	text_layer_set_text(WDirection_Layer,strwdirection);
 
-	APP_LOG(APP_LOG_LEVEL_INFO, "loadPersistentData llego hasta el WIND");
+	//APP_LOG(APP_LOG_LEVEL_INFO, "loadPersistentData llego hasta el WIND");
     //Display the wind icon
 	wind_icon_layer = bitmap_layer_create(WIND_ICON_FRAME);
 	bitmap_layer_set_bitmap(wind_icon_layer, wind_image);
@@ -762,7 +767,7 @@ void LoadForecast(){
 	persist_read_string(POP_KEY, PoP, sizeof(PoP));
 	text_layer_set_text(PoP_Layer,PoP);
 	
-	APP_LOG(APP_LOG_LEVEL_INFO, "loadPersistentData llego hasta el RAIN");
+	//APP_LOG(APP_LOG_LEVEL_INFO, "loadPersistentData llego hasta el RAIN");
 	//Rain ICON
 	rain_icon_layer = bitmap_layer_create(RAIN_ICON_FRAME);
 	bitmap_layer_set_bitmap(rain_icon_layer, rain_image);
@@ -773,10 +778,12 @@ void LoadForecast(){
 	TapCount = 0;
 
 	
-	APP_LOG(APP_LOG_LEVEL_INFO, "loadPersistentData llego hasta el forecastTIMER");
+	//APP_LOG(APP_LOG_LEVEL_INFO, "loadPersistentData llego hasta el forecastTIMER");
 	//setup the timer to set back the temperature after 5sec
 	forecastTimer = app_timer_register(ESDuration_ms, forecast_callback, NULL);
 	
+	
+//APP_LOG(APP_LOG_LEVEL_DEBUG, "LoadForecast: Heap free is %u bytes", heap_bytes_free());
 
 } //LoadForecast - END
 void UnloadForecast(){
@@ -796,10 +803,35 @@ void UnloadForecast(){
 	//if(moon_icon_layer){bitmap_layer_destroy(moon_icon_layer);}
 	if(PoP_Layer){text_layer_destroy(PoP_Layer);}
 	if(rain_icon_layer){bitmap_layer_destroy(rain_icon_layer);}
+	//unload the forecast icons
+	unloadForecastIcons();
 	
+//APP_LOG(APP_LOG_LEVEL_DEBUG, "unloadForecast: Heap free is %u bytes", heap_bytes_free());
+}
+
+void load3DaysIcons(){
+
+	code1 = persist_read_int(FORECAST_CODE1_KEY);
+	forecast1 = gbitmap_create_with_resource(WEATHER_ICONS_SMALL[code1]);
+	
+	code2 = persist_read_int(FORECAST_CODE2_KEY);
+	forecast2 = gbitmap_create_with_resource(WEATHER_ICONS_SMALL[code2]);
+	
+	code3 = persist_read_int(FORECAST_CODE3_KEY);
+	forecast3 = gbitmap_create_with_resource(WEATHER_ICONS_SMALL[code3]);
+	
+}
+void unload3DaysIcons(){
+	gbitmap_destroy(forecast1);
+	gbitmap_destroy(forecast2);
+	gbitmap_destroy(forecast3);
 }
 
 void Load3Days(){
+	
+	//load the weather images
+	load3DaysIcons();
+	
 //DAY 1
 	//Weekday	
 	 	Day1_Layer = text_layer_create(FORECAST_DAY1_FRAME);
@@ -818,14 +850,13 @@ void Load3Days(){
 		layer_add_child(window_get_root_layer(mainWindow), text_layer_get_layer(Day1_Layer));
 	
 		text_layer_set_text(Day1_Layer,weekday1_text);
-	
+
+
 	//Display the weather icon
 	forecast1_layer = bitmap_layer_create(FORECAST_CODE1_FRAME);
-	if (forecast1 != NULL){gbitmap_destroy(forecast1);}
-	code1 = persist_read_int(FORECAST_CODE1_KEY);
-	forecast1 = gbitmap_create_with_resource(WEATHER_ICONS_SMALL[code1]);
 	bitmap_layer_set_bitmap(forecast1_layer, forecast1);
     layer_add_child(window_get_root_layer(mainWindow), bitmap_layer_get_layer(forecast1_layer));
+
 
 	//High for the day	
 	High1_Layer = text_layer_create(FORECAST_HIGH1_FRAME);
@@ -850,6 +881,8 @@ void Load3Days(){
 	persist_read_string(FORECAST_LOW1_KEY, day1L, sizeof(day1L));
 	text_layer_set_text(Low1_Layer,day1L);
 	
+	
+
 //DAY 2
 	//Weekday	
 		Day2_Layer = text_layer_create(FORECAST_DAY2_FRAME);
@@ -868,12 +901,10 @@ void Load3Days(){
 		layer_add_child(window_get_root_layer(mainWindow), text_layer_get_layer(Day2_Layer));
 
 		text_layer_set_text(Day2_Layer,weekday2_text);
+		
+	
 	//Display the weather icon
 	forecast2_layer = bitmap_layer_create(FORECAST_CODE2_FRAME);
-	if (forecast2 != NULL){gbitmap_destroy(forecast2);}
-	code2 = persist_read_int(FORECAST_CODE2_KEY);
-	forecast2 = gbitmap_create_with_resource(WEATHER_ICONS_SMALL[code2]);
-	
 	bitmap_layer_set_bitmap(forecast2_layer, forecast2);
     layer_add_child(window_get_root_layer(mainWindow), bitmap_layer_get_layer(forecast2_layer));
 	
@@ -887,6 +918,7 @@ void Load3Days(){
 	
 	persist_read_string(FORECAST_HIGH2_KEY, day2H, sizeof(day2H));
 	text_layer_set_text(High2_Layer,day2H);
+	
 	//Low for the day
 	Low2_Layer = text_layer_create(FORECAST_LOW2_FRAME);
 	text_layer_set_text_color(Low2_Layer, GColorWhite);
@@ -897,6 +929,7 @@ void Load3Days(){
 	
 	persist_read_string(FORECAST_LOW2_KEY, day2L, sizeof(day2L));
 	text_layer_set_text(Low2_Layer,day2L);
+	
 	
 //DAY 3
 	//Weekday
@@ -919,13 +952,9 @@ void Load3Days(){
 	
 	//Display the weather icon
 	forecast3_layer = bitmap_layer_create(FORECAST_CODE3_FRAME);
-	if (forecast3 != NULL){gbitmap_destroy(forecast3);}
-	code3 = persist_read_int(FORECAST_CODE3_KEY);
-	forecast3 = gbitmap_create_with_resource(WEATHER_ICONS_SMALL[code3]);
-	
-	
 	bitmap_layer_set_bitmap(forecast3_layer, forecast3);
     layer_add_child(window_get_root_layer(mainWindow), bitmap_layer_get_layer(forecast3_layer));
+	
 	
 	//High for the day	
 	High3_Layer = text_layer_create(FORECAST_HIGH3_FRAME);
@@ -952,6 +981,9 @@ void Load3Days(){
 	//setup the timer to set back the temperature after 5sec
 	forecastTimer = app_timer_register(ESDuration_ms, forecast3Days_callback, NULL);
 	
+	
+//APP_LOG(APP_LOG_LEVEL_DEBUG, "Load3Days: Heap free is %u bytes", heap_bytes_free());
+	
 } 
 void Unload3Days(){
 	
@@ -970,6 +1002,9 @@ void Unload3Days(){
 	if(High3_Layer){text_layer_destroy(High3_Layer);}
 	if(Low3_Layer){text_layer_destroy(Low3_Layer);}
 	if(forecast3_layer){bitmap_layer_destroy(forecast3_layer);}
+	
+	
+//APP_LOG(APP_LOG_LEVEL_DEBUG, "Unload3Days: Heap free is %u bytes", heap_bytes_free());
 }
 
 //*****************//
@@ -1063,6 +1098,8 @@ static void forecast3Days_callback(void *context) {
 		
 		//Refresh the weather
 		Unload3Days();
+		//unload the weather images
+		unload3DaysIcons();
 
        //animate the time (easing in)
             #ifdef PBL_ROUND

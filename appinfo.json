@@ -44,6 +44,26 @@
     "resources": {
         "media": [
             {
+                "file": "images/partly-cloudy-night.png",
+                "name": "ICON_PARTLY_CLOUDY_NIGHT",
+                "targetPlatforms": [
+                    "aplite",
+                    "basalt",
+                    "chalk"
+                ],
+                "type": "bitmap"
+            },
+            {
+                "file": "images/cloudy.png",
+                "name": "ICON_CLOUDY",
+                "targetPlatforms": [
+                    "aplite",
+                    "basalt",
+                    "chalk"
+                ],
+                "type": "bitmap"
+            },
+            {
                 "file": "images/YWeather_Menu.png",
                 "menuIcon": true,
                 "name": "Menu_Image",
@@ -77,91 +97,109 @@
             {
                 "file": "images/ICON_THUNDER_SMALL.png",
                 "name": "ICON_THUNDER_SMALL",
+                "targetPlatforms": null,
                 "type": "bitmap"
             },
             {
                 "file": "images/ICON_CLOUDY_SMALL.png",
                 "name": "ICON_CLOUDY_SMALL",
+                "targetPlatforms": null,
                 "type": "bitmap"
             },
             {
                 "file": "images/ICON_DRIZZLE_SMALL.png",
                 "name": "ICON_DRIZZLE_SMALL",
+                "targetPlatforms": null,
                 "type": "bitmap"
             },
             {
                 "file": "images/ICON_RAIN_SNOW_SMALL.png",
                 "name": "ICON_RAIN_SNOW_SMALL",
+                "targetPlatforms": null,
                 "type": "bitmap"
             },
             {
                 "file": "images/ICON_RAIN_SLEET_SMALL.png",
                 "name": "ICON_RAIN_SLEET_SMALL",
+                "targetPlatforms": null,
                 "type": "bitmap"
             },
             {
                 "file": "images/ICON_SNOW_SLEET_SMALL.png",
                 "name": "ICON_SNOW_SLEET_SMALL",
+                "targetPlatforms": null,
                 "type": "bitmap"
             },
             {
                 "file": "images/ICON_SLEET_SMALL.png",
                 "name": "ICON_SLEET_SMALL",
+                "targetPlatforms": null,
                 "type": "bitmap"
             },
             {
                 "file": "images/ICON_SNOW_SMALL.png",
                 "name": "ICON_SNOW_SMALL",
+                "targetPlatforms": null,
                 "type": "bitmap"
             },
             {
                 "file": "images/ICON_PARTLY_CLOUDY_DAY.png",
                 "name": "ICON_PARTLY_CLOUDY_DAY_SMALL",
+                "targetPlatforms": null,
                 "type": "bitmap"
             },
             {
                 "file": "images/ICON_FOG_SMALL.png",
                 "name": "ICON_FOG_SMALL",
+                "targetPlatforms": null,
                 "type": "bitmap"
             },
             {
                 "file": "images/ICON_HOT_SMALL.png",
                 "name": "ICON_HOT_SMALL",
+                "targetPlatforms": null,
                 "type": "bitmap"
             },
             {
                 "file": "images/ICON_NOT_AVAILABLE_SMALL.png",
                 "name": "ICON_NOT_AVAILABLE_SMALL",
+                "targetPlatforms": null,
                 "type": "bitmap"
             },
             {
                 "file": "images/ICON_COLD_SMALL.png",
                 "name": "ICON_COLD_SMALL",
+                "targetPlatforms": null,
                 "type": "bitmap"
             },
             {
                 "file": "images/wind_small.png",
                 "name": "ICON_WIND_SMALL",
+                "targetPlatforms": null,
                 "type": "bitmap"
             },
             {
                 "file": "images/clear-night_small.png",
                 "name": "ICON_CLEAR_NIGHT_SMALL",
+                "targetPlatforms": null,
                 "type": "bitmap"
             },
             {
                 "file": "images/ICON_PARTLY_CLOUDY_NIGHT_SMALL.png",
                 "name": "ICON_PARTLY_CLOUDY_NIGHT_SMALL",
+                "targetPlatforms": null,
                 "type": "bitmap"
             },
             {
                 "file": "images/clear-day_small.png",
                 "name": "ICON_CLEAR_DAY_SMALL",
+                "targetPlatforms": null,
                 "type": "bitmap"
             },
             {
                 "file": "images/phone-disconnected.png",
                 "name": "PHONE_DISCONNECTED",
+                "targetPlatforms": null,
                 "type": "bitmap"
             },
             {
@@ -255,43 +293,27 @@
                 "type": "bitmap"
             },
             {
-                "file": "images/partly-cloudy-night.png",
-                "name": "ICON_PARTLY_CLOUDY_NIGHT",
-                "targetPlatforms": [
-                    "aplite",
-                    "basalt",
-                    "chalk"
-                ],
-                "type": "bitmap"
-            },
-            {
-                "file": "images/cloudy.png",
-                "name": "ICON_CLOUDY",
-                "targetPlatforms": [
-                    "aplite",
-                    "basalt",
-                    "chalk"
-                ],
-                "type": "bitmap"
-            },
-            {
                 "file": "images/disconnected.png",
                 "name": "DISCONNECTED",
+                "targetPlatforms": null,
                 "type": "bitmap"
             },
             {
                 "file": "images/sunset_small.PNG",
                 "name": "SUNSET",
+                "targetPlatforms": null,
                 "type": "bitmap"
             },
             {
                 "file": "images/sunrise_small.PNG",
                 "name": "SUNRISE",
+                "targetPlatforms": null,
                 "type": "bitmap"
             },
             {
                 "file": "images/wind_icon.png",
                 "name": "WIND_ICON",
+                "targetPlatforms": null,
                 "type": "bitmap"
             },
             {

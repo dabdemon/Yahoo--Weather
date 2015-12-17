@@ -6,6 +6,7 @@
 // AppSync options //
 //*****************//
 static AppSync sync;
+//uint8_t sync_buffer[PBL_IF_BW_ELSE(350,512)];
 uint8_t sync_buffer[512];
 static char update_text[] = "00:00";
 
@@ -235,59 +236,64 @@ static void sync_tuple_changed_callback(const uint32_t key,
 void SetupMessages(){
 	
 		//first, load the main screen persistent data
-		loadPersistentData(false, language_key);
-		loadPersistentData(false, WEATHER_TEMPERATURE_KEY);
-		loadPersistentData(false, WEATHER_ICON_KEY);
+		//loadPersistentData(false, language_key);
+		//loadPersistentData(false, WEATHER_TEMPERATURE_KEY);
+		//loadPersistentData(false, WEATHER_ICON_KEY);
+	
 		//and then load the initial tuples
 		loadInitialTuples();
 
 		//second, open the app message session
         //app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
+		//app_message_open(PBL_IF_BW_ELSE(256,512), PBL_IF_BW_ELSE(256,512));
 		app_message_open(512, 512);
-        
+       
 		//third, define the initial tuples array
-        Tuplet initial_values[] = {
-        TupletInteger(WEATHER_ICON_KEY,initial_ICON_CODE),
-		MyTupletCString(WEATHER_TEMPERATURE_KEY, initial_temp),
-		TupletInteger(THEME_KEY, 0),
-        MyTupletCString(WEATHER_CITY_KEY, initial_city), //display app version on load
-		TupletInteger(INVERT_COLOR_KEY, 0),
-		TupletInteger(language_key, initial_Language), //INITIALIZE TO LAST SAVED	
-		TupletInteger(VIBES_KEY, 0),
-		MyTupletCString(WEATHER_HIGH_KEY,initial_high),
-		MyTupletCString(WEATHER_LOW_KEY,initial_low),
-		MyTupletCString(SUNRISE_KEY,initial_sunrise),
-		MyTupletCString(SUNSET_KEY,initial_sunset),
-		MyTupletCString(WIND_KEY,initial_wind),
-		MyTupletCString(WDIRECTION_KEY,initial_strwdirection),
-		MyTupletCString(POP_KEY,initial_PoP),
+		Tuplet initial_values[] = {
+			TupletInteger(WEATHER_ICON_KEY,initial_ICON_CODE),
+			MyTupletCString(WEATHER_TEMPERATURE_KEY, initial_temp),
+			//TupletInteger(THEME_KEY, 0),
+			MyTupletCString(WEATHER_CITY_KEY, initial_city), //display app version on load
+			//TupletInteger(INVERT_COLOR_KEY, 0),
+			TupletInteger(language_key, initial_Language), //INITIALIZE TO LAST SAVED	
+			TupletInteger(VIBES_KEY, 0),
+			MyTupletCString(WEATHER_HIGH_KEY,initial_high),
+			MyTupletCString(WEATHER_LOW_KEY,initial_low),
+			MyTupletCString(SUNRISE_KEY,initial_sunrise),
+			MyTupletCString(SUNSET_KEY,initial_sunset),
+			MyTupletCString(WIND_KEY,initial_wind),
+			MyTupletCString(WDIRECTION_KEY,initial_strwdirection),
+			MyTupletCString(POP_KEY,initial_PoP),
 		//3 days forecast
-		TupletInteger(FORECAST_CODE1_KEY,18),
-		MyTupletCString(FORECAST_HIGH1_KEY,initial_day1H),
-		MyTupletCString(FORECAST_LOW1_KEY,initial_day1L),
-		TupletInteger(FORECAST_CODE2_KEY,18),
-		MyTupletCString(FORECAST_HIGH2_KEY,initial_day2H),
-		MyTupletCString(FORECAST_LOW2_KEY,initial_day2L),
-		TupletInteger(FORECAST_CODE3_KEY,18),
-		MyTupletCString(FORECAST_HIGH3_KEY,initial_day3H),
-		MyTupletCString(FORECAST_LOW3_KEY,initial_day3L),
+			TupletInteger(FORECAST_CODE1_KEY,18),
+			MyTupletCString(FORECAST_HIGH1_KEY,initial_day1H),
+			MyTupletCString(FORECAST_LOW1_KEY,initial_day1L),
+			TupletInteger(FORECAST_CODE2_KEY,18),
+			MyTupletCString(FORECAST_HIGH2_KEY,initial_day2H),
+			MyTupletCString(FORECAST_LOW2_KEY,initial_day2L),
+			TupletInteger(FORECAST_CODE3_KEY,18),
+			MyTupletCString(FORECAST_HIGH3_KEY,initial_day3H),
+			MyTupletCString(FORECAST_LOW3_KEY,initial_day3L),
 		//Extra Features
-		TupletInteger(EXTRA_ESDURATION_KEY,initial_ESDuration_ms),
-		TupletInteger(EXTRA_TIMER_KEY,initial_timeout_ms),
-		TupletInteger(EXTRA_FORECAST_KEY,initial_bln3daysForecast),
-		TupletInteger(DISPLAY_SECONDS_KEY,0),
-		TupletInteger(HOURLY_VIBE_KEY,initial_HourlyVibe),
-		TupletInteger(HOURLY_VIBE_START_KEY,0),
-		TupletInteger(HOURLY_VIBE_END_KEY,0),
-		TupletInteger(HIDE_BAT_KEY,0),
-		TupletInteger(BACKLIGHT_KEY, initial_blnBacklight),
+			TupletInteger(EXTRA_ESDURATION_KEY,initial_ESDuration_ms),
+			TupletInteger(EXTRA_TIMER_KEY,initial_timeout_ms),
+			TupletInteger(EXTRA_FORECAST_KEY,initial_bln3daysForecast),
+			//TupletInteger(DISPLAY_SECONDS_KEY,0),
+			TupletInteger(HOURLY_VIBE_KEY,initial_HourlyVibe),
+			TupletInteger(HOURLY_VIBE_START_KEY,0),
+			TupletInteger(HOURLY_VIBE_END_KEY,0),
+			//TupletInteger(HIDE_BAT_KEY,0),
+			TupletInteger(BACKLIGHT_KEY, initial_blnBacklight),
        	}; //TUPLET INITIAL VALUES
         
+	
 		//finally init the app sync
 		app_sync_init(&sync, sync_buffer, sizeof(sync_buffer), initial_values,
 					  ARRAY_LENGTH(initial_values), sync_tuple_changed_callback,
 					  NULL, NULL);
 	
+		//after initializing the sync, unload the initial tuples to free memory
+		unloadInitialTuples();
 }
 
 void loadInitialTuples(){
@@ -324,4 +330,22 @@ void loadInitialTuples(){
 	if(persist_exists(FORECAST_HIGH3_KEY)){persist_read_string(FORECAST_HIGH3_KEY, initial_day3H, sizeof(initial_day3H));}
 	if(persist_exists(FORECAST_LOW3_KEY)){persist_read_string(FORECAST_LOW3_KEY, initial_day3L, sizeof(initial_day3L));}
 	
+}
+
+void unloadInitialTuples(){
+	memset(&initial_temp[0], 0, sizeof(initial_temp));
+	memset(&initial_city[0], 0, sizeof(initial_city));
+	memset(&initial_temp[0], 0, sizeof(initial_high));
+	memset(&initial_temp[0], 0, sizeof(initial_low));
+	memset(&initial_temp[0], 0, sizeof(initial_sunrise));
+	memset(&initial_temp[0], 0, sizeof(initial_sunset));
+	memset(&initial_temp[0], 0, sizeof(initial_wind));
+	memset(&initial_temp[0], 0, sizeof(initial_PoP));
+	memset(&initial_temp[0], 0, sizeof(initial_strwdirection));
+	memset(&initial_temp[0], 0, sizeof(initial_day1H));
+	memset(&initial_temp[0], 0, sizeof(initial_day1L));
+	memset(&initial_temp[0], 0, sizeof(initial_day2H));
+	memset(&initial_temp[0], 0, sizeof(initial_day2L));
+	memset(&initial_temp[0], 0, sizeof(initial_day3H));
+	memset(&initial_temp[0], 0, sizeof(initial_day3L));
 }
