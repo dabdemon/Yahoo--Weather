@@ -1,41 +1,86 @@
+#pragma once
+#include <pebble.h>
 //*********************//
 // DEFINE THE WEEKDAYS //
 //*********************// 
-static const char CHINESE_DAYS[] = {
-	RESOURCE_ID_CHIN_MONDAY,
-	RESOURCE_ID_CHIN_TUESDAY,
-	RESOURCE_ID_CHIN_WEDNESDAY,
-	RESOURCE_ID_CHIN_THURSDAY,
-	RESOURCE_ID_CHIN_FRIDAY,
-	RESOURCE_ID_CHIN_SATURDAY,
-	RESOURCE_ID_CHIN_SUNDAY,
+// Custom ASIAN FONT:  1234567890零号一二三四五六七八九十星期天月曜日火水木金土日
+
+
+static const char *chinese_numbers[]={
+	//日 is concatenated at the end of the number to express it is a month day
+	"零", // 0 - líng
+	"一日", // 1 - yī
+	"二日", // 2 - èr
+	"三日", // 3 - sān
+	"四日", // 4 - sì
+	"五日", // 5 - wǔ
+	"六日", // 6 - liù
+	"七日", // 7 - qī
+	"八日", // 8 - bā
+	"九日", // 9 - jiǔ
+	"十日", // 10 - shí
+	"十一日", // 11 - shí yī (10+1)
+	"十二日", // 12 - shí èr (10+2)
+	"十三日", // 13 - shí sān
+	"十四日", // 14 - shí sì
+	"十五日", // 15 - shí wǔ
+	"十六日", // 16 - shí liù
+	"十七日", // 17 - shí qī
+	"十八日", // 18 - shí bā
+	"十九日", // 19 - shí jiǔ
+	"二十日", // 20 - èr shí (2*10)
+	"二十一日", // 21 - èr shí yī (2*10+1)
+	"二十二日", // 22 - èr shí èr
+	"二十三日", // 23 - èr shí sān
+	"二十四日", // 24 - èr shí sì
+	"二十五日", // 25 - èr shí wǔ
+	"二十六日", // 26 - èr shí liù
+	"二十七日", // 27 - èr shí qī
+	"二十八日", // 28 - èr shí bā
+	"二十九日", // 29 - èr shí jiǔ
+	"三十日", // 30 - sān shí (3*10)
+	"三十一日", // 31 - sān shí yī (3*10+1)
 };
 
-
-static const char JAPANESE_DAYS[] = {
-	RESOURCE_ID_JAP_MON,
-	RESOURCE_ID_JAP_TUE,
-	RESOURCE_ID_JAP_WED,
-	RESOURCE_ID_JAP_THU,
-	RESOURCE_ID_JAP_FRI,
-	RESOURCE_ID_JAP_SAT,
-	RESOURCE_ID_JAP_SUN,
+static const char *japanese_numbers[]={
+	//add 日 after the number to express it is a week day
+	"0",
+	"1日",
+	"2日",
+	"3日",
+	"4日",
+	"5日",
+	"6日",
+	"7日",
+	"8日",
+	"9日",
+	"10日",
+	"11日",
+	"12日",
+	"13日",
+	"14日",
+	"15日",
+	"16日",
+	"17日",
+	"18日",
+	"19日",
+	"20日",
+	"21日",
+	"22日",
+	"23日",
+	"24日",
+	"25日",
+	"26日",
+	"27日",
+	"28日",
+	"29日",
+	"30日",
+	"31日",
 };
 
-
-//Testig Russian bitmaps
-static const char RUSSIAN_DAYS[] = {
-	RESOURCE_ID_MONDAY_RU,
-	RESOURCE_ID_TUESDAY_RU,
-	RESOURCE_ID_MONDAY_RU,
-	RESOURCE_ID_MONDAY_RU,
-	RESOURCE_ID_MONDAY_RU,
-	RESOURCE_ID_MONDAY_RU,
-	RESOURCE_ID_MONDAY_RU,
-};
-
-static const char *ENGLISH_DAYS[] = {
-	NULL,
+static const char *WEEKDAYS[] = {
+	"NULL",
+	//ENGLISH - 0
 	"Monday",
 	"Tuesday",
 	"Wednesday",
@@ -43,11 +88,7 @@ static const char *ENGLISH_DAYS[] = {
 	"Friday",
 	"Saturday",
 	"Sunday",
-};
-
-static const char *WEEKDAYS[] = {
-	NULL,
-	//SPANISH - 0
+	//SPANISH - 1
 	"Lunes",
 	"Martes",
 	"Miércoles",
@@ -55,7 +96,7 @@ static const char *WEEKDAYS[] = {
 	"Viernes",
 	"Sábado", 
 	"Domingo", 
-	//ITALIAN - 1
+	//ITALIAN - 2
 	"Lunedi",
 	"Martedi",
 	"Mercoledi", 
@@ -63,7 +104,7 @@ static const char *WEEKDAYS[] = {
 	"Venerdi", 
 	"Sabato", 
 	"Domenica", 
-	//GERMAN - 2
+	//GERMAN - 3
 	"Montag", 
 	"Dienstag", 
 	"Mittwoch", 
@@ -71,7 +112,7 @@ static const char *WEEKDAYS[] = {
 	"Freitag", 
 	"Samstag", 
 	"Sonntag",
-	//CZECH - 3
+	//CZECH - 4
 	"Pondělí",
 	"Úterý", 
 	"Streda", 
@@ -79,7 +120,7 @@ static const char *WEEKDAYS[] = {
 	"Pátek", 
 	"Sobota", 
 	"Neděle", 
-	//FRENCH - 4
+	//FRENCH - 5
 	"Lundi",
 	"Mardi", 
 	"Mercredi",
@@ -87,7 +128,7 @@ static const char *WEEKDAYS[] = {
 	"Vendredi", 
 	"Samedi", 
 	"Dimanche", 
-	//PORTUGUESE - 5
+	//PORTUGUESE - 6
 	"Segunda", 
 	"Terça", 
 	"Quarta",
@@ -95,7 +136,7 @@ static const char *WEEKDAYS[] = {
 	"Sexta", 
 	"Sábado", 
 	"Domingo", 
-	//FINNISH - 6
+	//FINNISH - 7
 	"Maanantai", 
 	"Tiistai", 
 	"Keskiviikko",
@@ -103,7 +144,7 @@ static const char *WEEKDAYS[] = {
 	"Perjantai",
 	"Lauantai",
 	"Sunnuntai", 
-	//DUTCH - 7
+	//DUTCH - 8
 	"Maandag", 
 	"Dinsdag", 
 	"Woensdag", 
@@ -111,7 +152,7 @@ static const char *WEEKDAYS[] = {
 	"Vrijdag", 
 	"Zaterdag", 
 	"Zondag", 
-	//POLISH - 8
+	//POLISH - 9
 	"Poniedzialek",
 	"Wtorek", 
 	"Sroda", 
@@ -119,7 +160,7 @@ static const char *WEEKDAYS[] = {
 	"Piątek", 
 	"Sobota",
 	"Niedziela",
-	//SWEDISH - 9
+	//SWEDISH - 10
 	"Måndag",
 	"Tisdag", 
 	"Onsdag", 
@@ -127,7 +168,7 @@ static const char *WEEKDAYS[] = {
 	"Fredag", 
 	"Lördag",
 	"Söndag ",
-	//DANISH - 10
+	//DANISH - 11
 	"Mandag",
 	"Tirsdag",
 	"Onsdag",
@@ -135,7 +176,7 @@ static const char *WEEKDAYS[] = {
 	"Fredag", 
 	"Lørdag",
 	"Søndag ",
-	//CATALAN - 11
+	//CATALAN - 12
 	"Dilluns", 
 	"Dimarts",
 	"Dimecres", 
@@ -143,7 +184,7 @@ static const char *WEEKDAYS[] = {
 	"Divendres",
 	"Dissabte",
 	"Diumenge ",
-	//HUNGARIAN - 12
+	//HUNGARIAN - 13
 	"Hétfo",
 	"Kedd", 
 	"Szerda",
@@ -151,7 +192,7 @@ static const char *WEEKDAYS[] = {
 	"Péntek", 
 	"Szombat",
 	"Vasárnap", 
-	//NORWEGIAN - 13
+	//NORWEGIAN - 14
 	"Mandag",
 	"Tirsdag",
 	"Onsdag",
@@ -159,7 +200,7 @@ static const char *WEEKDAYS[] = {
 	"Fredag", 
 	"Lørdag",
 	"Søndag ",  
-	//TURKISH - 14
+	//TURKISH - 15
 	"Pazartesi",
 	"Salı",
 	"Çarsamba",
@@ -167,7 +208,7 @@ static const char *WEEKDAYS[] = {
 	"Cuma",
 	"Cumartesi",
 	"Pazar",
-	//SLOVAK - 15
+	//SLOVAK - 16
 	"Pondelok", 
 	"Utorok", 
 	"Streda", 
@@ -175,7 +216,7 @@ static const char *WEEKDAYS[] = {
 	"Piatok", 
 	"Sobota", 
 	"Nedela",
-	//ROMANIAN - 16
+	//ROMANIAN - 17
 	"Luni", 
 	"Marti", 
 	"Miercuri", 
@@ -183,8 +224,7 @@ static const char *WEEKDAYS[] = {
 	"Vineri", 
 	"Sâmbătă", 
 	"Duminică",
-	//RUSSIAN - 17
-	
+	//RUSSIAN - 18
 	"PonedelÝnik",//"Понедельник",
 	"Vtornik",//"Вторник",
 	"Sreda",//"Среда",
@@ -192,7 +232,34 @@ static const char *WEEKDAYS[] = {
 	"PÔtnica",//"Пятница",
 	"Subbota",//"Суббота",
 	"VoskresenÝe",//"Воскресенье",
-	
+
+	//CHINESE - 19
+	"星期一", //Monday
+	"星期二", //Tuesday
+	"星期三", //Wednesday
+	"星期四", //Thursday
+	"星期五", //Friday
+	"星期六", //Saturday
+	"星期天", //Sunday
+/*
+	//JAPANESE (KANA)- 20
+	"げつようび", //Monday
+	"かようび",  //Tuesday
+	"すいようび", //Wednesday
+	"もくようび", //Thursday
+	"きんようび", //Friday
+	"どようび", //Saturday
+	"にちようび", //Sunday
+*/
+	//JAPANESE (KANJI) - 20
+	"月曜日", //Monday
+	"火曜日", //Tuesday
+	"水曜日", //Wednesday
+	"木曜日", //Thursday
+	"金曜日", //Friday
+	"土曜日", //Saturday
+	"日曜日", //Sunday
+
 	/*
 	"Понедельник",
 	"Вторник",
@@ -206,7 +273,20 @@ static const char *WEEKDAYS[] = {
 
 static const char *MONTHS[] = {
 	NULL,
-	 //SPANISH - 0
+	//ENGLISH - 0
+	" january",
+	" february",
+	" march",
+	" april",
+	" may",
+	" june",
+	" july",
+	" august",
+	" september",
+	" october",
+	" november",
+	" december",
+	 //SPANISH - 1
 	" enero",
 	" febrero",
 	" marzo",
@@ -219,7 +299,7 @@ static const char *MONTHS[] = {
 	" octubre", 
 	" noviembre", 
 	" diciembre", 
-	//ITALIAN - 1
+	//ITALIAN - 2
 	" gennaio", 
 	" febbraio",
 	" marzo",
@@ -232,7 +312,7 @@ static const char *MONTHS[] = {
 	" ottobre",
 	" novembre",
 	" dicembre",
-	//GERMAN - 2
+	//GERMAN - 3
 	".Januar",
 	".Februar",
 	".März",
@@ -245,7 +325,7 @@ static const char *MONTHS[] = {
 	".Oktober",
 	".November",
 	".Dezember",
-	//CZECH - 3
+	//CZECH - 4
 	"Leden ",
 	"Únor ",
 	"Brezen ",
@@ -258,7 +338,7 @@ static const char *MONTHS[] = {
 	"Ríjen ",
 	"Listopad ",
 	"Prosinec ",
-	//FRENCH - 4
+	//FRENCH - 5
 	" janvier",
 	" février", 
 	" mars", 
@@ -271,7 +351,7 @@ static const char *MONTHS[] = {
 	" octobre",
 	" novembre", 
 	" décembre", 
-	//PORTUGUESE - 5
+	//PORTUGUESE - 6
 	" Janeiro", 
 	" Fevereiro", 
 	" Março", 
@@ -284,7 +364,7 @@ static const char *MONTHS[] = {
 	" Outubro",
 	" Novembro",
 	" Dezembro",
-	//FINNISH - 6
+	//FINNISH - 7
 	". Tammikuu",
 	". Helmikuu", 
 	". Maaliskuu",
@@ -297,7 +377,7 @@ static const char *MONTHS[] = {
 	". Lokakuu", 
 	". Marraskuu", 
 	". Joulukuu", 
-	//DUTCH - 7
+	//DUTCH - 8
 	" Januari", 
 	" Februari",
 	" Maart",
@@ -310,7 +390,7 @@ static const char *MONTHS[] = {
 	" Oktober", 
 	" November",
 	" December", 
-	//POLISH - 8
+	//POLISH - 9
 	" stycznia",
 	" lutego", 
 	" marca", 
@@ -323,7 +403,7 @@ static const char *MONTHS[] = {
 	" pazdziernika",
 	" listopada", 
 	" grudnia", 
-	//SWEDISH - 9
+	//SWEDISH - 10
 	" Januari", 
 	" Februari",
 	" Mars", 
@@ -336,7 +416,7 @@ static const char *MONTHS[] = {
 	" Oktober",
 	" November", 
 	" December", 
-	//DANISH - 10
+	//DANISH - 11
 	". Januar",
 	". Februar", 
 	". Marts", 
@@ -349,7 +429,7 @@ static const char *MONTHS[] = {
 	". Oktober", 
 	". November",
 	". December",
-	//CATALAN - 11
+	//CATALAN - 12
 	" Gener", 
 	" Febrer", 
 	" Març", 
@@ -362,7 +442,7 @@ static const char *MONTHS[] = {
 	" Octubre", 
 	" Novembre", 
 	" Desembre", 
-	//HUNGARIAN - 12
+	//HUNGARIAN - 13
 	"január ", 
 	"február ", 
 	"március ",
@@ -375,7 +455,7 @@ static const char *MONTHS[] = {
 	"október ",
 	"november ", 
 	"december ", 
-	//NORWEGIAN - 13
+	//NORWEGIAN - 14
 	". januar", 
 	". februar", 
 	". mars", 
@@ -388,7 +468,7 @@ static const char *MONTHS[] = {
 	". oktober", 
 	". november", 
 	". desember", 
-	//TURKISH - 14
+	//TURKISH - 15
 	" Ocak",
 	" Subat",
 	" Mart",
@@ -401,7 +481,7 @@ static const char *MONTHS[] = {
 	" Ekim",
 	" Kasım",
 	" Aralık",
-	//SLOVAK - 15
+	//SLOVAK - 16
 	". Januar", 
 	". Februar", 
 	". Marec", 
@@ -414,7 +494,7 @@ static const char *MONTHS[] = {
 	". Oktober", 
 	". November", 
 	". December",
-	//ROMANIAN - 16
+	//ROMANIAN - 17
 	" Ianuarie",
 	" Februarie",
 	" Martie",
@@ -427,8 +507,7 @@ static const char *MONTHS[] = {
 	" Octombrie",
 	" Noiembrie",
 	" Decembrie",
-	//RUSSIAN - 17
-	
+	//RUSSIAN - 18
 	" ÂnvarÔ",//" ÂnvarÝ",//" Январь",
 	" FevralÔ",//" FevralÝ",//" Февраль",
 	" Marta",//" Mart",//" Март",
@@ -441,6 +520,62 @@ static const char *MONTHS[] = {
 	" OktÔbrÔ",//" OktÔbrÝ",//" Октябрь",
 	" NoÔbrÔ",//" NoÔbrÝ",//" Ноябрь",
 	" DekabrÔ",//" DekabrÝ",//" Декабрь",
+
+	//CHINESE - 19
+/*
+	"一月 ", //January
+	"二月 ", //February 
+	"三月 ", //March
+	"四月 ", //April
+	"五月 ", //May
+	"六月 ", //June
+	"七月 ", //July
+	"八月 ", //August
+	"九月 ", //September
+	"十月 ", //October
+	"十一月 ", //November
+	"十二月 ", //December
+*/
+	"1月 ", //January
+	"2月 ", //February
+	"3月 ", //March
+	"4月 ", //April
+	"5月 ", //May
+	"6月 ", //June
+	"7月 ", //July
+	"8月 ", //August
+	"9月 ", //September
+	"10月 ", //October
+	"11月 ", //November
+	"12月 ", //December
+/*
+	//JAPANESE (KANA) - 20
+	"いちがつ", //January
+	"にがつ", //February
+	"さんがつ", //March
+	"しがつ", //April
+	"ごがつ", //May
+	"ろくがつ", //June
+	"しちがつ", //July
+	"はちがつ", //August
+	"くがつ", //September
+	"じゅうがつ", //October
+	"じゅういちがつ", //November
+	"じゅうにがつ", //December
+*/
+	//JAPANESE (KANJI)- 20
+	"1月 ", //January
+	"2月 ", //February
+	"3月 ", //March
+	"4月 ", //April
+	"5月 ", //May
+	"6月 ", //June
+	"7月 ", //July
+	"8月 ", //August
+	"9月 ", //September
+	"10月 ", //October
+	"11月 ", //November
+	"12月 ", //December
 
 	/*
 	" Январь",
@@ -458,3 +593,6 @@ static const char *MONTHS[] = {
 	*/
 };
 	
+
+char* translateDay(int weekday, int language);
+char* translateMonth(int month, int language);

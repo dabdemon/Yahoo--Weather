@@ -227,12 +227,13 @@ var openweather = {
 
 var options = JSON.parse(localStorage.getItem('options'));
 //console.log('read options: ' + JSON.stringify(options));
-if (options === null) options = { "language" : 100, //default to "English"
-								"use_gps" : "true",
-								"location" : "",
+if (options === null) options = { "language" : 100, //default to "Watch Language"
+								"theme" : 1, //default to Digital
+								"use_gps" : "false",
+								"location" : "madrid",
 								"units" : "celsius",
 								"invert_color" : "false",
-								"vibes" : "true",
+								"vibes" : 1,
 								"accuracy" : 16, //default to "Street"
 								"feelslike" : "false",
 								"ESDuration" : 5,
@@ -420,6 +421,7 @@ function TWUFromLarLong(latitude, longitude){
 					else {low3 = response.forecast.simpleforecast.forecastday[3].low.fahrenheit + "\u00B0";}
 
 					//add a blank space between the - and the temp to better display
+				/*
 					temperature = temperature.replace("-","- "); 
 					high1 = high1.replace("-","- ");
 					low1 = low1.replace("-","- ");
@@ -427,7 +429,8 @@ function TWUFromLarLong(latitude, longitude){
 					low2 = low2.replace("-","- ");
 					high3 = high3.replace("-","- ");
 					low3 = low3.replace("-","- ");
-
+*/
+				
 					//console logs
 					console.log("icon: " + icon + " temp: " + temperature + " city: " + city);
 					console.log("today's high: " + high + " today's low: " + low);
@@ -440,6 +443,7 @@ function TWUFromLarLong(latitude, longitude){
 					console.log("icon3: " + code3 + " high3: " + high3 + " low3: " + low3);
 					console.log("start: " + parseInt(options["start"]) + " end: " + parseInt(options["end"]));
 					console.log("display battery: " + (options["hide_bat"] == "true" ? 1 : 0));
+					console.log("theme: " + (options.theme));
 
 					//send the values to the Pebble!!
 					Pebble.sendAppMessage({
@@ -447,6 +451,7 @@ function TWUFromLarLong(latitude, longitude){
 						"icon":icon,
 						"temperature":temperature, //Round the temperature
 						"city":city,
+						"theme": parseInt(options.theme),
 						//User preferences
 						"invert_color" : (options["invert_color"] == "true" ? 1 : 0),
 						"language" : parseInt(options['language']),
@@ -592,6 +597,7 @@ function openweatherByLatLong(latitude, longitude)
 			//console.log("icon3: " + code3 + " high3: " + high3 + " low3: " + low3);
 			console.log("start: " + parseInt(options["start"]) + " end: " + parseInt(options["end"]));
 			console.log("display battery: " + (options["hide_bat"] == "true" ? 1 : 0));
+			console.log("theme: " + (options.theme));
 			
 			//send the values to the Pebble!!
 			Pebble.sendAppMessage({
@@ -599,6 +605,7 @@ function openweatherByLatLong(latitude, longitude)
 				"icon":icon,
 				"temperature":temperature, //Round the temperature
 				"city":city, 
+				"theme": parseInt(options.theme),
 				//User preferences
 				"invert_color" : (options["invert_color"] == "true" ? 1 : 0),
 				"language" : parseInt(options['language']),
@@ -775,6 +782,7 @@ function forecastioByLatLong(latitude, longitude)
 			console.log("icon3: " + code3 + " high3: " + high3 + " low3: " + low3);
 			console.log("start: " + parseInt(options["start"]) + " end: " + parseInt(options["end"]));
 			console.log("display battery: " + (options["hide_bat"] == "true" ? 1 : 0));
+			console.log("theme: " + (options.theme));
 			
 			//send the values to the Pebble!!
 			Pebble.sendAppMessage({
@@ -782,6 +790,7 @@ function forecastioByLatLong(latitude, longitude)
 				"icon":icon,
 				"temperature":temperature, //Round the temperature
 				"city":city, 
+				"theme": parseInt(options.theme),
 				//User preferences
 				"invert_color" : (options["invert_color"] == "true" ? 1 : 0),
 				"language" : parseInt(options['language']),
@@ -1015,6 +1024,7 @@ function getWeatherFromWoeid(woeid, city) {
 			low3 = channel[3].item.forecast.low + "\u00B0";
 
 			//add a blank space between the - and the temp to better display
+			/*
 			temperature = temperature.replace("-","- "); 
 			high1 = high1.replace("-","- ");
 			low1 = low1.replace("-","- ");
@@ -1022,6 +1032,7 @@ function getWeatherFromWoeid(woeid, city) {
 			low2 = low2.replace("-","- ");
 			high3 = high3.replace("-","- ");
 			low3 = low3.replace("-","- ");
+			*/
 			
 			//console logs
 			console.log("icon: " + icon + " temp: " + temperature + " city: " + city);
@@ -1034,6 +1045,7 @@ function getWeatherFromWoeid(woeid, city) {
 			console.log("icon2: " + code2 + " high2: " + high2 + " low2: " + low2);
 			console.log("icon3: " + code3 + " high3: " + high3 + " low3: " + low3);
 			console.log("start: " + parseInt(options["start"]) + " end: " + parseInt(options["end"]));
+			console.log("theme: " + (options.theme));
 			
 			//send the values to the Pebble!!
 			Pebble.sendAppMessage({
@@ -1041,6 +1053,7 @@ function getWeatherFromWoeid(woeid, city) {
 				"icon":icon,
 				"temperature":temperature,
 				"city":city,
+				"theme": parseInt(options.theme),
 				//User preferences
 				"invert_color" : (options["invert_color"] == "true" ? 1 : 0),
 				"language" : parseInt(options['language']),
@@ -1077,6 +1090,8 @@ function getWeatherFromWoeid(woeid, city) {
 				"pop" : "N/A",
 			//	"font" : parseInt(options['font']),
           });
+          
+          console.log("data sent to Pebble");
         }
       } else {
         console.log("Error WFW");
@@ -1298,7 +1313,57 @@ NNW 326.25 - 348.75
 
 }
 
+function CheckUserKey()
+{
+	var lt = 0;
+	var key = options['key'];
+	var token = Pebble.getAccountToken();
+	var decrypt;
+	var app = 1; //1 means YWeather.
+	
+	//if there is not user key, then license is 0
+	if ((key==undefined)||(key==null)||(key=="")||(key=="undefined")||(key=="false")){key="00000000000"}
+	//check the user key
+	
+	if (key.length = 11) {
+		//old key; use original decrypt mode
+		decrypt = token.substring(10,11) + token.substring(2,3) + token.substring(7,8) + token.substring(14,15) + token.substring(0,1);
+		decrypt = decrypt + key.substring(5,6);
+		decrypt = decrypt + token.substring(1,2) + token.substring(8,9) + token.substring(5,6) + token.substring(3,4) + token.substring(6,7)
+	}
+	/*
+	else if (key.length = 13){
+		//new key; use the newer/better decrypt mode
+		var magicKey = key.substring(0,1);
+		//check that the key is valid for this application
+		if (key.substring(11,12) = app){
+			decrypt = token.substring(10+parseInt(magicKey),((10+parseInt(magicKey))+1) + token.substring(2,3) + token.substring(7,8) + token.substring(14,15) + token.substring(0+parseInt(magicKey),((0+parseInt(magicKey))+1));
+			decrypt = decrypt + key.substring(6,7);
+			decrypt = decrypt + token.substring(1,2) + token.substring(8,9) + token.substring(5,6) + token.substring(3,4) + token.substring(6+parseInt(magicKey),((6+parseInt(magicKey))+1))
+		}
+		else{
+			decrypt = "999999999999";
+		}
+		
+	}
+	*/
+	else {
+		//invalid key... what is this?
+		decrypt = "999999999999";
+	}
+	
 
+	if (decrypt == key) {lt = key.substring(5,6);}
+	else {lt = 0;}
+	
+	//confirm that the javascript code works fine
+	//options['key']=decrypt;
+
+	
+	console.log("Key: " + key + " Decrypt: " + decrypt + " LT: " + lt);
+	
+	return lt;
+}
 
 
 function getLocationName(pos){
@@ -1350,7 +1415,7 @@ Pebble.addEventListener('showConfiguration', function(e) {
 	if ((optinvert == null)||(optinvert=="null")){optinvert = "false";}
 	
 	var optvibes = options['vibes'];
-	if ((optvibes==null)||(optvibes=="null")) {optvibes = "false";}
+	if ((optvibes==null)||(optvibes=="null")) {optvibes = 0;}
 	
 	var optaccuracy = options['accuracy'];
 	if ((optaccuracy==null)||(optaccuracy=="null")){optaccuracy=16;}
@@ -1400,14 +1465,18 @@ Pebble.addEventListener('showConfiguration', function(e) {
 	var optkey = options['key'];
 	if ((optkey == null)||(optkey=="null")){optkey="";}
 	
+	var optTheme = options['theme'];
+	if ((optTheme == null)||(optTheme=="null")){optTheme="1";}
+	
  
-	//var uri = 'http://dabdemon.github.io/Yahoo--Weather/development.html?' + //Here you need to enter your configuration webservice
-    var uri = 'http://yweather.es/ywsettings.html?' + 
+	var uri = 'http://dabdemon.github.io/Yahoo--Weather/development.html?' + //Here you need to enter your configuration webservice
+    //var uri = 'http://yweather.es/ywsettings.html?' + 
 	'language=' + encodeURIComponent(optlanguage) +
+	'&theme=' + encodeURIComponent(optTheme) +
 	'&use_gps=' + encodeURIComponent(optgps) +
-    '&location=' + encodeURIComponent(optlocation) +
-    '&units=' + encodeURIComponent(optunits) +
-    '&invert_color=' + encodeURIComponent(optinvert) +
+  '&location=' + encodeURIComponent(optlocation) +
+  '&units=' + encodeURIComponent(optunits) +
+  '&invert_color=' + encodeURIComponent(optinvert) +
 	'&vibes=' + encodeURIComponent(optvibes) +
 	'&accuracy=' + encodeURIComponent(optaccuracy) +
 	'&feelslike=' + encodeURIComponent(optfeelslike) +
@@ -1465,3 +1534,4 @@ Pebble.addEventListener("ready", function(e) {
 
 
 });
+

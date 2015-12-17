@@ -1,17 +1,4 @@
-//******************//
-// DEFINE THE ICONS //
-//******************//  
-const int MOON_IMAGE_RESOURCE_IDS[] = {
-  RESOURCE_ID_MOON_0,
-  RESOURCE_ID_MOON_1,
-  RESOURCE_ID_MOON_2,
-  RESOURCE_ID_MOON_3,
-  RESOURCE_ID_MOON_4,
-  RESOURCE_ID_MOON_5,
-  RESOURCE_ID_MOON_6,
-  RESOURCE_ID_MOON_7
-};
-
+#pragma once
 static const uint32_t WEATHER_ICONS[] = {
   RESOURCE_ID_ICON_CLEAR_DAY,
   RESOURCE_ID_ICON_CLEAR_NIGHT,
@@ -52,73 +39,5 @@ static const uint32_t WEATHER_ICONS_SMALL[] = {
   RESOURCE_ID_ICON_THUNDER_SMALL,
   RESOURCE_ID_ICON_NOT_AVAILABLE_SMALL,
   RESOURCE_ID_ICON_DRIZZLE_SMALL,
+  RESOURCE_ID_DISCONNECTED,
 }; 
-
-static const uint32_t BATTERY_ICON[] = {
-	RESOURCE_ID_BATT_CHAR, //CHARGING
-	RESOURCE_ID_BATT_EMPTY, // <=10%
-	RESOURCE_ID_BATT_20, // 11-20%
-	RESOURCE_ID_BATT_40, // 21-30%
-	RESOURCE_ID_BATT_40, // 31-40%
-	RESOURCE_ID_BATT_60, // 41-50%
-	RESOURCE_ID_BATT_60, // 51-60%
-	RESOURCE_ID_BATT_80, // 61-70%
-	RESOURCE_ID_BATT_80, // 71-80%
-	RESOURCE_ID_BATT_FULL, // 81-90%
-	RESOURCE_ID_BATT_FULL, //91-100%
-};
-
-		static GBitmap *BT_image;
-        static BitmapLayer *BT_icon_layer; //Layer for the BT connection
-        
-        static GBitmap *Batt_image;
-        static BitmapLayer *Batt_icon_layer; //Layer for the Battery status
-        
-        static GBitmap *weather_image;
-        static BitmapLayer *weather_icon_layer; //Layer for the weather info
-
-        static GBitmap *sunset_image;
-        static BitmapLayer *sunset_icon_layer; //Layer for the sunset info
-
-        static GBitmap *sunrise_image;
-        static BitmapLayer *sunrise_icon_layer; //Layer for the sunrise info
-
-        static GBitmap *high_image;
-        static BitmapLayer *high_icon_layer; //Layer for the high info
-
-        static GBitmap *low_image;
-        static BitmapLayer *low_icon_layer; //Layer for the low info
-
-        static GBitmap *wind_image;
-        static BitmapLayer *wind_icon_layer; //Layer for the wind info
-
- 		static GBitmap *rain_image;
-        static BitmapLayer *rain_icon_layer; //Layer for the wind info
-
-        static GBitmap *moon_image;
-        static BitmapLayer *moon_icon_layer; //Layer for the wind info
-
-        static GBitmap *chinese_day;
-        static BitmapLayer *chinese_day_layer; //Layer for the weather info
-	//YWeather 2.3 - REQ02. Hourly Vibe - START
-        static GBitmap *hourly_vibe;
-        static BitmapLayer *hourly_vibe_layer; //Layer for the hourly vibe display
-	//YWeather 2.3 - REQ02. Hourly Vibe - END
-
-		//static GBitmap *image;
-		//static GBitmap *image1;
-		//static GBitmap *image2;
-		//static GBitmap *image3;
-		static GBitmap *forecast1;
-		static BitmapLayer *forecast1_layer;
-		static GBitmap *forecast2;
-		static BitmapLayer *forecast2_layer;
-		static GBitmap *forecast3;
-		static BitmapLayer *forecast3_layer;
-
-        static GBitmap *chinese_day1;
-        static BitmapLayer *chinese_day1_layer; //Layer for the forecast info
-        static GBitmap *chinese_day2;
-        static BitmapLayer *chinese_day2_layer; //Layer for the forecast info
-        static GBitmap *chinese_day3;
-        static BitmapLayer *chinese_day3_layer; //Layer for the forecast info

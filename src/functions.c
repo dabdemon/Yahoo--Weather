@@ -1,10 +1,18 @@
 #include <pebble.h>
-#include "functions.h"
+#include <functions.h>
 
-////////////////////
-// DO NOT DISTURB //
-////////////////////
-	
+
+/**********************/
+/* Handle Hourly Vibe */
+/**********************/
+
+void hourlyVibe(bool disabled){
+	if (!disabled){
+		//Two short vibes
+		vibes_double_pulse();
+	}
+}
+
 bool DoNotDisturb(int Hour, int Minutes, int DNDStart_KEY, int DNDEnd_KEY){
 	//Define the variables
 	bool blnNextDay = 0;
@@ -27,6 +35,31 @@ bool DoNotDisturb(int Hour, int Minutes, int DNDStart_KEY, int DNDEnd_KEY){
 		else {return false;} //Not DND period
 	}
 	
+}
+
+char * itoa (int value, char *result){
+    char const digit[] = "0123456789";
+    char *p = result;
+    if (value < 0) {
+        *p++ = '-';
+        value *= -1;
+    }
+
+    /* move number of required chars and null terminate */
+    int shift = value;
+    do {
+        ++p;
+        shift /= 10;
+    } while (shift);
+    *p = '\0';
+
+    /* populate result in reverse order */
+    do {
+        *--p = digit [value % 10];
+        value /= 10;
+    } while (value);
+
+    return result;
 }
 
 
@@ -170,4 +203,17 @@ int moon_phase(int y, int m, int d) {
     b = jd*8 + 0.5;	   		/* scale fraction from 0-8 and round by adding 0.5 */
     b = b & 7;		   		/* 0 and 8 are the same so turn 8 into 0 */
     return b;
+}
+
+
+/*****************/
+/* MISCELLANEOUS */
+/*****************/
+void ExtendBackLight(){
+	
+	//Turn the lights on!
+	light_enable_interaction();
+	//Reset the time for another second
+	BackLightTimer = app_timer_register(1000, ExtendBackLight, NULL);
+
 }

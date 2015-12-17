@@ -1,828 +1,785 @@
-//Declare and Import references
-#include "pebble.h"
-#include "pebble_fonts.h"
-#include "language.h"
-#include "variables.h"
-#include "bitmaps.h"
-#include "textlayers.h"
-#include "frames.h"
-
-#include "functions.h"
-
-
- 
-//UIDs:
-	//English: 35a28a4d-0c9f-408f-9c6d-551e65f03186
-	//Spanish: 3ab59c04-142f-4ff1-b90d-aab93ce54a32
-	//Italian: 6279f406-1114-4b2f-852d-65b0e8ff2a73
+#include <pebble.h>
+#include <main.h>
+#include <appMessage.h>
+#include <bitmaps.h>
+#include <userInterface.h>
+#include <variables.h>
+#include <language.h>
+#include <functions.h>
+#include <bluetooth.h>
+#include <battery.h>
+#include <PDUtils.h>
 
 
-//Declare initial window        
-        Window *my_window;
-
-
-//**************************//
-// Check the Battery Status //
-//**************************//
-
-static void handle_battery(BatteryChargeState charge_state) {
-     //static char battery_text[] = "100%";
-	
-	//kill previous batt_image to avoid invalid ones.
-	//if (Batt_image !=NULL) {gbitmap_destroy(Batt_image);}
-	//Batt_image = NULL;
-    bitmap_layer_set_bitmap(Batt_icon_layer, NULL);
-	
-	//dev hardcore - REMOVE!!
-	//batt_status = true;
-
-  if (charge_state.is_charging) {
-    //snprintf(battery_text, sizeof(battery_text), "charging");
-	  		//Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_CHAR);
-	  		if (Batt_image !=NULL) {gbitmap_destroy(Batt_image);}
-	  		Batt_image = gbitmap_create_with_resource(BATTERY_ICON[0]);
-            bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
-			
-	  		#ifdef PBL_PLATFORM_APLITE
-			  bitmap_layer_set_compositing_mode(Batt_icon_layer, GCompOpAssign);
-			#elif PBL_PLATFORM_BASALT
-			  bitmap_layer_set_compositing_mode(Batt_icon_layer, GCompOpSet);
-			#endif
-  } else {
-	  //snprintf(battery_text, sizeof(battery_text), "%d%%", charge_state.charge_percent);
-
-	  
-	  //WHILE RUNNING LOW, BATT STATUS WILL ALWAYS DISPLAY  
-         //set the new batt_image
-         //DO NOT display the batt_icon all the time. it is annoying.
-         if (charge_state.charge_percent <=10) //If the charge is between 0% and 10%
-         {
-			 //Batt_image = gbitmap_create_with_resource(RESOURCE_ID_BATT_EMPTY);
-			 if (Batt_image !=NULL) {gbitmap_destroy(Batt_image);}
-			 Batt_image = gbitmap_create_with_resource(BATTERY_ICON[1]);
-             bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
-			 
-			#ifdef PBL_PLATFORM_APLITE
-			  bitmap_layer_set_compositing_mode(Batt_icon_layer, GCompOpAssign);
-			#elif PBL_PLATFORM_BASALT
-			  bitmap_layer_set_compositing_mode(Batt_icon_layer, GCompOpSet);
-			#endif
-         }
-	  //CHECK IF BATTERY STATUS SHOULD DISPLAY ALL THE TIME OR JUST WHILE RUNNING LOW
-	  else if (batt_status){
-		  
-		  if (Batt_image !=NULL) {gbitmap_destroy(Batt_image);}
-		  Batt_image = gbitmap_create_with_resource(BATTERY_ICON[charge_state.charge_percent/10]);
-          bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
-		  
-		  	#ifdef PBL_PLATFORM_APLITE
-			  bitmap_layer_set_compositing_mode(Batt_icon_layer, GCompOpAssign);
-			#elif PBL_PLATFORM_BASALT
-			  bitmap_layer_set_compositing_mode(Batt_icon_layer, GCompOpSet);
-			#endif
-		  
-	  }
-
-  }
-  //text_layer_set_text(Batt_Layer, battery_text);
+//*************//
+// ENTRY POINT //
+//*************//
+int main(void){        
+        handle_init();
+        app_event_loop();
+        handle_deinit();
 }
 
 
-	
-/**************************/
-// Vibes on disconnection //
-/**************************/
-static void vibes()
-{
+//**********************//
+// Kill the application //
+//**********************//
+void handle_deinit(void){
+  //text_layer_destroy(text_layer);
 
+/*
+        //Unsuscribe services
+        tick_timer_service_unsubscribe();
 	
-	//Vibes to aler the user if its the first time it vibes OR if the user selected to
-	//vibe until the connection is restored.
-	
-	if (blnvibes == 2){
-	
-			//Vibes to alert disconnection and do this every minute until the connection is restored
-			if (bluetooth_connection_service_peek()== false){
-					//alert the user about the BT connection
-					vibes_long_pulse();}			
-				
-	
-	}
-	else if (blnvibes == 1){
-	
-	
-			//Vibes on connection
-			if (BTConnected == false){
-				if (bluetooth_connection_service_peek() == true){
-					//Vibes to alert connection
-					//if (blnvibes==true){
-						//alert the user about the BT disconnection
-						//vibes_short_pulse();
-					//}
-					BTConnected = true;
-				}
-			}
-
-
-			//Vibes on disconnect (just once)
-			if (BTConnected == true){
-				//Vibes to alert disconnection
-				if (bluetooth_connection_service_peek()== false){
-					//alert the user about the BT connection
-					vibes_long_pulse();			
-					BTConnected = false;
-				}
-			}
-	
-}
-
-}	
-
-
-//******************************//
-// Handle Bluetooth Connection //
-//*****************************//
-static void handle_bluetooth(bool connected)
-{
-          //text_layer_set_text(BT_Layer, connected ? "C" : "D");
+        //Deallocate custom fonts
+        void unloadFontResource();
         
-        //draw the BT icon if connected        
-        if(connected ==true)
-        {
-			if (BT_image !=NULL) {gbitmap_destroy(BT_image);}
-			BT_image = gbitmap_create_with_resource(RESOURCE_ID_BT_CONNECTED);
-            bitmap_layer_set_bitmap(BT_icon_layer, BT_image);
-			
-			#ifdef PBL_PLATFORM_APLITE
-			  bitmap_layer_set_compositing_mode(BT_icon_layer, GCompOpAssign);
-			#elif PBL_PLATFORM_BASALT
-			  bitmap_layer_set_compositing_mode(BT_icon_layer, GCompOpSet);
-			#endif
-			//if (BTConnected == false){
-			//setup the timer to catch false disconnections (5 secs)
-         	//timer = app_timer_register(5000, vibes, NULL);
-			//}
+        //Deallocate the main window
+         window_destroy(mainWindow);
+*/
 
-        }
-        else
-        {
-            //Kill the previous image
-		    //if (BT_image!=NULL) {gbitmap_destroy(BT_image);}
-            bitmap_layer_set_bitmap(BT_icon_layer, NULL);
-			//if (BTConnected == true){
-			//setup the timer to catch false disconnections (5 secs)
-         	timer = app_timer_register(5000, vibes, NULL);
-		//}
-			
-      
-        }
-	
+} //HANDLE_DEINIT
 
-        
-} //handle_bluetooth
-
-/////////////////	
-//Invert colors//
-/////////////////
-
-
-void InvertColors(bool inverted)
-{
-	#ifdef PBL_PLATFORM_APLITE
-	
-	if (inverted){
-		//Inverter layer
-		if (blninverted == false){		
-			inv_layer = inverter_layer_create(GRect(0, 0, 144, 168));
-			layer_add_child(window_get_root_layer(my_window), (Layer*) inv_layer);
-			blninverted =  true;
-	    }
-	}
-	
-	else{
-		if(blninverted){
-			inverter_layer_destroy(inv_layer);
-			blninverted = false;}
-	}
-	#endif
-	
-}// END - Invert colors
-
-
-
-//**************************//
-//** Get the current date **//
-//**************************//
-void getDate()
-{
-
-	//Get the date
-	time_t actualPtr = time(NULL);
-	struct tm *tz1Ptr = localtime(&actualPtr);
-
-	//get day, month and year for moon phase
-	intday = tz1Ptr->tm_mday;
-	intmonth = tz1Ptr->tm_mon;
-	intyear = tz1Ptr->tm_year;
-	
-
-	//fix the development issue (set to english non-us)
-	if (language>100){language = 97;}
-	//Check that the selected language exists in the installed watchface version
-	//(EXCLIDING CHINESE, JAPANESE AND ENGLISH!!) -- SET TO ENGLISH U.S.
-	if((language>intLangCounter)&&(language<97)){language=100;}
-	
-
-
-
-	//Try new translation method
-
-		//Get the number of the weekday
-		strftime(weekday_text,sizeof(weekday_text),"%u",tz1Ptr);
-		int ia = weekday_text[0] - '0'; 
-		int ib = (language*7)+ia;
-	
-		//Get the 3 days forecast days
-		int fcA = ia+1;
-		if (fcA>7){fcA=fcA-7;}
-		//if english, chinese or japanese, don't check the language key (they use their own array)
-		if (language<97){fcA = (language*7)+fcA;}		
-	
-		int fcB = ia+2;
-		if (fcB>7){fcB=fcB-7;}
-		//if english, chinese or japanese, don't check the language key (they use their own array)
-		if (language<97){fcB = (language*7)+fcB;}		
-			
-		int fcC = ia+3;
-		if (fcC>7){fcC=fcC-7;}
-		//if english, chinese or japanese, don't check the language key (they use their own array)
-		if (language<97){fcC = (language*7)+fcC;}	
-	
-		//Get the number of the month	
-		strftime(month_text,sizeof(month_text),"%m",tz1Ptr);
-		int ic = month_text[1] - '0';
-		if (month_text[0]=='1'){ic=ic+10;}			
-		int id = (language*12)+ic;
-
-	if((language==100)||(language==97)){ //ENGLISH
-
-		//remove the chinese week day
-		if (chinese_day) {gbitmap_destroy(chinese_day);}
-		bitmap_layer_set_bitmap(chinese_day_layer, NULL);
-
-		//Get the English fortmat
-		if (language==100){strftime(month_text,sizeof(month_text),"%B %e",tz1Ptr);} //English US
-		else {strftime(month_text,sizeof(month_text),"%e %B",tz1Ptr);} // English Non-US
-		
-		strftime(weekday_text,sizeof(weekday_text),"%A",tz1Ptr);
-
-		text_layer_set_text(Weekday_Layer,weekday_text); //Update the weekday layer  
-		text_layer_set_text(date_layer,month_text); 
-		
-		//Get the 3 days forecast
-		memcpy(&weekday1_text, ENGLISH_DAYS[fcA], strlen(ENGLISH_DAYS[fcA])+1);
-		memcpy(&weekday2_text, ENGLISH_DAYS[fcB], strlen(ENGLISH_DAYS[fcB])+1);
-		memcpy(&weekday3_text, ENGLISH_DAYS[fcC], strlen(ENGLISH_DAYS[fcC])+1);
-
-	}
-
-	else if (language==99){//CHINESE
-
-		//Work on retrieving the correct weekday
-		//Get the Month
-		strftime(month_text,sizeof(month_text),"%m/%d",tz1Ptr);
-
-		//Clean un the text layer
-		text_layer_set_text(Weekday_Layer,"");
-
-		if (chinese_day!= NULL) {gbitmap_destroy(chinese_day);}
-		chinese_day = gbitmap_create_with_resource(CHINESE_DAYS[ia-1]);
-		//Display the weekday in chinese
-		bitmap_layer_set_bitmap(chinese_day_layer, chinese_day);
-		text_layer_set_text(date_layer, month_text);
-		
-		//Get the 3 days forecast (in english for now)
-		memcpy(&weekday1_text, ENGLISH_DAYS[fcA], strlen(ENGLISH_DAYS[fcA])+1);
-		memcpy(&weekday2_text, ENGLISH_DAYS[fcB], strlen(ENGLISH_DAYS[fcB])+1);
-		memcpy(&weekday3_text, ENGLISH_DAYS[fcC], strlen(ENGLISH_DAYS[fcC])+1);
-		
-
-	}
-	else if (language==98){//JAPANESE (use the same layer and bitmap than japanese)
-
-		//Work on retrieving the correct weekday
-		//Get the Month
-		strftime(month_text,sizeof(month_text),"%m/%d",tz1Ptr);
-
-		//Clean un the text layer
-		text_layer_set_text(Weekday_Layer,"");
-
-		if (chinese_day!= NULL) {gbitmap_destroy(chinese_day);}
-		chinese_day = gbitmap_create_with_resource(JAPANESE_DAYS[ia-1]);
-		//Display the weekday in chinese
-		bitmap_layer_set_bitmap(chinese_day_layer, chinese_day);
-		text_layer_set_text(date_layer, month_text);
-		
-		//Get the 3 days forecast (in english for now)
-		memcpy(&weekday1_text, ENGLISH_DAYS[fcA], strlen(ENGLISH_DAYS[fcA])+1);
-		memcpy(&weekday2_text, ENGLISH_DAYS[fcB], strlen(ENGLISH_DAYS[fcB])+1);
-		memcpy(&weekday3_text, ENGLISH_DAYS[fcC], strlen(ENGLISH_DAYS[fcC])+1);
-//		if (chinese_day1!= NULL) {gbitmap_destroy(chinese_day1);}
-//		if (chinese_day2!= NULL) {gbitmap_destroy(chinese_day2);}
-//		if (chinese_day3!= NULL) {gbitmap_destroy(chinese_day3);}
-		
-//		chinese_day1 = gbitmap_create_with_resource(JAPANESE_DAYS[fcA-1]);
-//		chinese_day2 = gbitmap_create_with_resource(JAPANESE_DAYS[fcB-1]);
-//		chinese_day3 = gbitmap_create_with_resource(JAPANESE_DAYS[fcC-1]);
-
-	}
-
-	else{
-		//remove the chinese week day
-		if (chinese_day !=NULL) {gbitmap_destroy(chinese_day);}
-		bitmap_layer_set_bitmap(chinese_day_layer, NULL);
-
-		//Set the weekeday
-		text_layer_set_text(Weekday_Layer, WEEKDAYS[ib]); //Update the weekday layer  
-
-
-		//Get the day
-		strftime(day_month,sizeof(day_month),"%e",tz1Ptr);
-
-		//Set the month
-		//text_layer_set_text(date_layer, MONTHS[id]);
-				 if ((language == 12)||(language == 3)){
-					memcpy(&month_text, MONTHS[id], strlen(MONTHS[id])+1);
-					text_layer_set_text(date_layer,strncat(month_text,day_month,strlen(month_text)));} //Czech or Hungarian
-				else{text_layer_set_text(date_layer,strncat(day_month,MONTHS[id],strlen(MONTHS[id]))); }
-		
-		//Get the 3 days forecast
-		memcpy(&weekday1_text, WEEKDAYS[fcA], strlen(WEEKDAYS[fcA])+1);
-		memcpy(&weekday2_text, WEEKDAYS[fcB], strlen(WEEKDAYS[fcB])+1);
-		memcpy(&weekday3_text, WEEKDAYS[fcC], strlen(WEEKDAYS[fcC])+1);
-
-	}
-
+/*******************/
+/* Window Handlers */
+/*******************/
+static void main_window_load(Window *window) {
+  LoadDigital();
 }
 
-//YWeather 2.3 - REQ01. Display Seconds - START
-void getTime()
-	{
-	
-	time_t actualPtr = time(NULL);
-	struct tm *tz1Ptr = localtime(&actualPtr);
-	
-	if (clock_is_24h_style()){strftime(time_text, sizeof(time_text), "%H:%M", tz1Ptr);}
-	else {strftime(time_text, sizeof(time_text), "%I:%M", tz1Ptr);}	
-	
-	//Remove the leading 0s
-	if (time_text[0]=='0') {memcpy(&time_text," ",1);}
-	
-	//clock_copy_time_string(time_text, sizeof(time_text));
-	
-		
-		//Set the time to the Time Layer
-        text_layer_set_text(Time_Layer, time_text);
-                
-        //Check Battery Status
-        handle_battery(battery_state_service_peek());
-                
-        //Check BT Status
-        handle_bluetooth(bluetooth_connection_service_peek());
-	
-}
-//YWeather 2.3 - REQ01. Display Seconds - END
-
-
-//************************//
-// Capture the Tick event //
-//************************//
-void handle_tick(struct tm *tick_time, TimeUnits units_changed)
-{
-	//YWeather 2.3 - REQ01. Display Seconds - START
-			//Set the AM/PM indicator
-			//if(clock_is_24h_style()){memcpy(&ampm_text,  "24H", strlen("24H"));}
-			//else {strftime(ampm_text, sizeof(ampm_text), "%p", tick_time);}
-			if(!clock_is_24h_style()){strftime(ampm_text, sizeof(ampm_text), "%p", tick_time);}
-			text_layer_set_text(ampm_layer, ampm_text); //Update the weekday layer  
-	//YWeather 2.3 - REQ01. Display Seconds - END
-     
-	    if (units_changed & SECOND_UNIT)
-		{
-			//YWeather 2.3 - REQ01. Display Seconds - START
-			//refresh the tap counter every second
-			//TapCount = 0;
-			//Set the seconds
-			strftime(seconds_text, sizeof(seconds_text), "%S", tick_time);
-			if (blnseconds){text_layer_set_text(seconds_layer, seconds_text);}
-			else {text_layer_set_text(seconds_layer, "");}
-			//YWeather 2.3 - REQ01. Display Seconds - END
-			
-		}
-       if (units_changed & MINUTE_UNIT)
-       {
-//YWeather 2.3 - REQ01. Display Seconds - START
-			getTime();
-		   
-		   //clean up the seconds if disables
-		   if (! blnseconds){text_layer_set_text(seconds_layer, "");}
-//YWeather 2.3 - REQ01. Display Seconds - END
-	//YWeather 2.3 - REQ02. Hourly Vibe - START
-		   //Vibes on O'Clock
-		  // if (blnhourly_vibe){
-		   		//if ((tick_time->tm_min == 0)&&(tick_time->tm_sec == 0)) {vibes_double_pulse();}
-		   //}
-	} //MINUTE CHANGES
-		if (units_changed & HOUR_UNIT){
-			//Vibes on O'Clock
-			if (blnhourly_vibe){
-				if(!DoNotDisturb(tick_time->tm_hour, tick_time->tm_min,HOURLY_VIBE_START_KEY,HOURLY_VIBE_END_KEY)){vibes_double_pulse();}
-				//vibes_double_pulse();
-				}
-		} //HOUR CHANGES
-		   
-
-	//YWeather 2.3 - REQ02. Hourly Vibe - END
-	     if (units_changed & DAY_UNIT){
-			 	//Update the date
-			 	getDate();}
-
-	
-} //HANDLE_TICK
-
-
-void SubscribeTickEvent(){
-		time_t now = time(NULL);
-		struct tm *current_time = localtime(&now);
-	
-		if (blnseconds) {
-			handle_tick(current_time, SECOND_UNIT);
-			tick_timer_service_subscribe(SECOND_UNIT, &handle_tick);
-		}
-		else {
-			handle_tick(current_time, MINUTE_UNIT);
-			tick_timer_service_subscribe(MINUTE_UNIT, &handle_tick);
-			
-		}
+static void main_window_unload(Window *window) {
+  unloadDigital();
 }
 
-//*****************//
-// AppSync options //
-//*****************//
+//**********************//
+// Init the application //
+//**********************//
+void handle_init(void){
+		//Use the internationalization API to detect the user's language
+		setlocale(LC_ALL, i18n_get_system_locale());
 
-        static AppSync sync;
-        static uint8_t sync_buffer[512];
+        //Create the main window
+        mainWindow = window_create();
 
-  static void sync_tuple_changed_callback(const uint32_t key,
-                                        const Tuple* new_tuple,
-                                        const Tuple* old_tuple,
-                                        void* context) {
-
-        
-  // App Sync keeps new_tuple in sync_buffer, so we may use it directly
-  switch (key) {
-    case WEATHER_ICON_KEY:
-	    if (weather_image != NULL){gbitmap_destroy(weather_image);}
-
-	  		weather_image = gbitmap_create_with_resource(WEATHER_ICONS[new_tuple->value->uint8]);
-			//If the app is in the Main Screen, refresh the weather icon
-			if (blnForecast == false) {bitmap_layer_set_bitmap(weather_icon_layer, weather_image);}
-	  		//ICON_CODE = new_tuple->value->uint8;
-	  	  	persist_write_int(WEATHER_ICON_KEY, new_tuple->value->uint8);
-      		break;
-
-    case WEATHER_TEMPERATURE_KEY:
-         //Update the temperature
-	        //Set the time on which weather was retrived
-			//clock_copy_time_string(last_update, sizeof(last_update));
-	  		memcpy(&last_update,  time_text, strlen(time_text));
-	  		//If the app is in the Main Screen, refresh Last Update
-			if (blnForecast == false) {text_layer_set_text(Last_Update, last_update);}
-	  		
-	  		//Save the temperature
-	    	persist_write_string(WEATHER_TEMPERATURE_KEY, new_tuple->value->cstring);
-	  	  	//If the app is in the Main Screen, refresh Temperature
-			if (blnForecast == false) {text_layer_set_text(Temperature_Layer, new_tuple->value->cstring);}	        
-      		break;
-
-     case WEATHER_CITY_KEY:
-	  		persist_write_string(WEATHER_CITY_KEY, new_tuple->value->cstring);
-	  	  	//If the app is in the Main Screen, refresh City
-			if (blnForecast == false) {text_layer_set_text(Location_Layer, new_tuple->value->cstring);}        	
-         	break;
-
-	 case INVERT_COLOR_KEY:
-		  color_inverted = new_tuple->value->uint8 != 0;
-		  persist_write_bool(INVERT_COLOR_KEY, color_inverted);
-
-	  	  //refresh the layout
-	  	#ifdef PBL_PLATFORM_APLITE
-	  	  	InvertColors(color_inverted);
-	 	#endif
-		  break;
-	  
-	  case language_key:
-	  	  language = new_tuple->value->uint8;
-	  	  persist_write_int(language_key, language);
-	  		//set the right font charset
+		window_set_window_handlers(mainWindow, (WindowHandlers) {
+		.load = main_window_load,
+		.unload = main_window_unload,
+	  });
+	
+        window_stack_push(mainWindow, true /* Animated */);  
+	
+		window_set_background_color(mainWindow, GColorBlack);
+	
+		loadFontResources();
+	
+		loadForecastIcons();
+		//loadPersistentData(false);
   
-	  		if (language == 17){
-                text_layer_set_font(date_layer, font_russian_date);
-				text_layer_set_font(Weekday_Layer, font_russian_date);
+		//Load the Main Window
+		LoadDigital();
+		//Get Current Date
+		loadPersistentData(false, language_key);
+		getDate();
+		getTime();
+		
+		// Set up the update layer callback
+		SubscribeTickEvent();
+	
+		//Enable the Battery check event (for PTR or Digital theme)
+		battery_state_service_subscribe(&handle_battery);
+		//and get the current battery status to do not experience delays
+  		handle_battery(battery_state_service_peek());
+	
+		//Check the Bluetooth status
+		#ifdef PBL_SDK_2
+		  bluetooth_connection_service_subscribe(handle_bluetooth);
+		#elif PBL_SDK_3
+		  connection_service_subscribe((ConnectionHandlers) {
+			.pebble_app_connection_handler = handle_bluetooth
+		  });
+		#endif
+		//and get the current BT status to do not experience delays
+		#ifdef PBL_SDK_2
+		  handle_bluetooth(bluetooth_connection_service_peek());
+		#elif PBL_SDK_3
+		  handle_bluetooth(connection_service_peek_pebble_app_connection());
+		#endif
+	
+		//setup the timer to refresh the weather info every 30min
+	/*
+		static char strdebug[15];
+		memset(&strdebug[0], 0, sizeof(strdebug));
+	  	itoa(timeout_ms, strdebug);
+		APP_LOG(APP_LOG_LEVEL_INFO, "weatherTimer timeout_ms: ");
+		APP_LOG(APP_LOG_LEVEL_INFO, strdebug);
+	*/
+	
+		weatherTimer = app_timer_register(timeout_ms, weatherTimer_callback, NULL);
+	
+		//Get weather
+		SetupMessages();
+	
+		//load Temperature
+		LoadTemperature();
+	
+		//Subscribe to the accelerometer event.
+        accel_tap_service_subscribe(accel_tap_handler);
+        
+} 
+
+void loadFontResources(){
+
+		res_t = resource_get_handle(RESOURCE_ID_FUTURA_CONDENSED_53); // Time font
+		res_d = resource_get_handle(RESOURCE_ID_FUTURA_17); // Date font for common ASCII languages
+		res_temp = resource_get_handle(RESOURCE_ID_FUTURA_43); //Temperature  
+		res_u = resource_get_handle(RESOURCE_ID_FUTURA_10); // Last Update font
+		res_russian = resource_get_handle(RESOURCE_ID_RUSSIAN_17); // Date in russian
+		res_d_rus_forecast = resource_get_handle(RESOURCE_ID_RUSSIAN_14); // Date font for Russian language
+		res_asian = resource_get_handle(RESOURCE_ID_ASIAN_17);
+
+		font_date = fonts_load_custom_font(res_d);
+		font_time = fonts_load_custom_font(res_t);
+		font_temperature = fonts_load_custom_font(res_temp);
+		font_update = fonts_load_custom_font(res_u);
+		font_russian = fonts_load_custom_font(res_russian);
+		font_russian_date_forecast = fonts_load_custom_font(res_d_rus_forecast);
+		font_asian = fonts_load_custom_font(res_asian);
+	
+
+	}
+
+void unloadFontResource(){
+	fonts_unload_custom_font(font_date);
+	fonts_unload_custom_font(font_time);
+	fonts_unload_custom_font(font_temperature);
+	fonts_unload_custom_font(font_update);
+	fonts_unload_custom_font(font_russian);
+	fonts_unload_custom_font(font_russian_date_forecast);
+}
+
+void loadPersistentData(bool refresh, int intKEY){
+	
+		/*
+		static char strKEY[15];
+		memset(&strKEY[0], 0, sizeof(strKEY));
+	  	itoa(intKEY, strKEY);
+		APP_LOG(APP_LOG_LEVEL_INFO, "loadPersistentData intKEY: ");
+		APP_LOG(APP_LOG_LEVEL_INFO, strKEY);
+		*/ //DEBUG//
+	
+	//Weather
+	if(persist_exists(WEATHER_TEMPERATURE_KEY) && intKEY == WEATHER_TEMPERATURE_KEY){
+		persist_read_string(WEATHER_TEMPERATURE_KEY, temp, sizeof(temp));
+			/*		
+				APP_LOG(APP_LOG_LEVEL_INFO, "loadPersistentData temp: ");
+				APP_LOG(APP_LOG_LEVEL_INFO, temp);
+			*/// DEBUG //
+	}
+	if(persist_exists(WEATHER_ICON_KEY) && intKEY == WEATHER_ICON_KEY){
+		ICON_CODE = persist_read_int(WEATHER_ICON_KEY);
+	
+		/*
+		static char strICON[15];
+		memset(&strICON[0], 0, sizeof(strICON));
+	  	itoa(ICON_CODE, strICON);
+		APP_LOG(APP_LOG_LEVEL_INFO, "loadPersistentData ICON_CODE: ");
+		APP_LOG(APP_LOG_LEVEL_INFO, strICON);
+		*/// DEBUG //
+		
+		if (weather_image != NULL){gbitmap_destroy(weather_image);}
+		weather_image = gbitmap_create_with_resource(WEATHER_ICONS[ICON_CODE]);
+		#ifdef PBL_SDK_3
+			bitmap_layer_set_bitmap(weather_icon_layer, weather_image);
+		#endif
+	}
+	if(persist_exists(WEATHER_CITY_KEY) && intKEY == WEATHER_CITY_KEY){
+		persist_read_string(WEATHER_CITY_KEY, city, sizeof(city));
+			/*
+				APP_LOG(APP_LOG_LEVEL_INFO, "loadPersistentData city: ");
+				APP_LOG(APP_LOG_LEVEL_INFO, city);
+			*/// DEBUG //
+	}
+	if(persist_exists(WEATHER_LAST_UPDATE) && intKEY == WEATHER_LAST_UPDATE){
+		persist_read_string(WEATHER_LAST_UPDATE, last_update, sizeof(last_update));
+			/*
+				APP_LOG(APP_LOG_LEVEL_INFO, "loadPersistentData last_update: ");
+				APP_LOG(APP_LOG_LEVEL_INFO, last_update);
+			*/// DEBUG //
+	}
+	
+	//Miscellaneous
+	if(persist_exists(EXTRA_TIMER_KEY) && intKEY == EXTRA_TIMER_KEY){
+		timeout_ms = persist_read_int(EXTRA_TIMER_KEY);
+		/*
+			static char strTIMER[15];
+			memset(&strTIMER[0], 0, sizeof(strTIMER));
+			itoa(timeout_ms, strTIMER);
+			APP_LOG(APP_LOG_LEVEL_INFO, "loadPersistentData timeout_ms: ");
+			APP_LOG(APP_LOG_LEVEL_INFO, strTIMER);
+		*/// DEBUG //
+	}
+	if(persist_exists(language_key) && intKEY == language_key){
+		intLanguage = persist_read_int(language_key);
+			/*
+				static char strLanguage[15];
+				memset(&strLanguage[0], 0, sizeof(strLanguage));
+				itoa(intLanguage, strLanguage);
+				APP_LOG(APP_LOG_LEVEL_INFO, "loadPersistentData intLanguage: ");
+				APP_LOG(APP_LOG_LEVEL_INFO, strLanguage);
+			*/// DEBUG //
+	}
+	if(persist_exists(HOURLY_VIBE_KEY) && intKEY == HOURLY_VIBE_KEY){
+		blnHourlyVibe = persist_read_int(HOURLY_VIBE_KEY);
+			/*
+			static char strHourlyVibe[15];
+			memset(&strHourlyVibe[0], 0, sizeof(strHourlyVibe));
+			itoa(blnHourlyVibe, strHourlyVibe);
+			APP_LOG(APP_LOG_LEVEL_INFO, "loadPersistentData blnHourlyVibe: ");
+			APP_LOG(APP_LOG_LEVEL_INFO, strHourlyVibe);
+		*/// DEBUG //
+	}
+	if(persist_exists(HOURLY_VIBE_KEY) && intKEY == HOURLY_VIBE_KEY){
+		blnHourlyVibe = persist_read_int(HOURLY_VIBE_KEY);
+	}	
+	if(persist_exists(BACKLIGHT_KEY) && intKEY == BACKLIGHT_KEY){
+		blnBacklight= persist_read_int(BACKLIGHT_KEY);
+	}
+	
+	//Forecast
+	if(persist_exists(WEATHER_HIGH_KEY) && intKEY == WEATHER_HIGH_KEY){persist_read_string(WEATHER_HIGH_KEY, high, sizeof(high));}
+	if(persist_exists(WEATHER_LOW_KEY) && intKEY == WEATHER_LOW_KEY){persist_read_string(WEATHER_LOW_KEY, low, sizeof(low));}
+	if(persist_exists(SUNRISE_KEY) && intKEY == SUNRISE_KEY){persist_read_string(SUNRISE_KEY, sunrise, sizeof(sunrise));}
+	if(persist_exists(SUNSET_KEY) && intKEY == SUNSET_KEY){persist_read_string(SUNSET_KEY, sunset, sizeof(sunset));}
+	if(persist_exists(WIND_KEY) && intKEY == WIND_KEY){persist_read_string(WIND_KEY, wind, sizeof(wind));}
+	if(persist_exists(POP_KEY) && intKEY == POP_KEY){persist_read_string(POP_KEY, PoP, sizeof(PoP));}
+	if(persist_exists(WDIRECTION_KEY) && intKEY == WDIRECTION_KEY){persist_read_string(WDIRECTION_KEY, strwdirection, sizeof(strwdirection));}
+	
+	//3-Day Forecast
+	if(persist_exists(EXTRA_FORECAST_KEY) && intKEY == EXTRA_FORECAST_KEY){bln3daysForecast = persist_read_int(EXTRA_FORECAST_KEY);}
+	if(persist_exists(FORECAST_HIGH1_KEY) && intKEY == FORECAST_HIGH1_KEY){persist_read_string(FORECAST_HIGH1_KEY, day1H, sizeof(day1H));}
+	if(persist_exists(FORECAST_LOW1_KEY) && intKEY == FORECAST_LOW1_KEY){	persist_read_string(FORECAST_LOW1_KEY, day1L, sizeof(day1L));}
+	if(persist_exists(FORECAST_HIGH2_KEY) && intKEY == FORECAST_HIGH2_KEY){	persist_read_string(FORECAST_HIGH2_KEY, day2H, sizeof(day2H));}
+	if(persist_exists(FORECAST_LOW2_KEY) && intKEY == FORECAST_LOW2_KEY){	persist_read_string(FORECAST_LOW2_KEY, day2L, sizeof(day2L));}
+	if(persist_exists(FORECAST_HIGH3_KEY) && intKEY == FORECAST_HIGH3_KEY){	persist_read_string(FORECAST_HIGH3_KEY, day3H, sizeof(day3H));}
+	if(persist_exists(FORECAST_LOW3_KEY) && intKEY == FORECAST_LOW3_KEY){	persist_read_string(FORECAST_LOW3_KEY, day3L, sizeof(day3L));}
+	
+	//if we want to refresh the on screen info, refresh the layers.
+	if(refresh){refreshLayers();}
+}
+
+void refreshLayers(){
+	
+	//Init the date
+	getDate();
+}
+
+/*****************/
+/* DATE AND TIME */
+/*****************/
+
+	void LoadDigital(){
+		
+
+		//Weekday
+			Weekday_Layer = text_layer_create(WEEKDAY_FRAME);
+			text_layer_set_text_alignment(Weekday_Layer, PBL_IF_ROUND_ELSE(GTextAlignmentCenter,GTextAlignmentLeft));
+			text_layer_set_text_color(Weekday_Layer, GColorWhite);
+			text_layer_set_background_color(Weekday_Layer, GColorClear);
+			text_layer_set_font(Weekday_Layer, font_date);
+			layer_add_child(window_get_root_layer(mainWindow), text_layer_get_layer(Weekday_Layer));
+		 	 
+		//Date
+			date_layer = text_layer_create(DATE_FRAME);
+			text_layer_set_text_alignment(date_layer, PBL_IF_ROUND_ELSE(GTextAlignmentCenter,GTextAlignmentRight));
+			text_layer_set_text_color(date_layer, GColorWhite);
+			text_layer_set_background_color(date_layer, GColorClear);
+			text_layer_set_font(date_layer, font_date);
+			layer_add_child(window_get_root_layer(mainWindow), text_layer_get_layer(date_layer));
+
+		//Time
+			Time_Layer = text_layer_create(TIME_FRAME);
+			text_layer_set_text_alignment(Time_Layer, GTextAlignmentCenter);
+
+			//Define the text color based on the Pebble model
+			#ifdef PBL_COLOR
+				text_layer_set_text_color(Time_Layer, GColorChromeYellow);
+			#else
+				text_layer_set_text_color(Time_Layer, GColorWhite);
+			#endif
+
+			text_layer_set_background_color(Time_Layer, GColorClear);
+			text_layer_set_font(Time_Layer, font_time);
+			layer_add_child(window_get_root_layer(mainWindow), text_layer_get_layer(Time_Layer));
+		
+		//Add the Battery Layer
+		//#ifdef PBL_SDK_3
+			  Layer *window_layer = window_get_root_layer(mainWindow);
+			  GRect bounds = layer_get_bounds(window_layer);
+			  battery_layer = layer_create(bounds);
+			  layer_set_update_proc(battery_layer, battery_update_proc);
+			  layer_add_child(window_layer, battery_layer);
+		//#endif 
+		
+		#ifdef PBL_RECT
+			Batt_Layer = text_layer_create(BATT_FRAME);
+			text_layer_set_text_alignment(Batt_Layer, GTextAlignmentCenter);
+			text_layer_set_text_color(Batt_Layer, GColorWhite);
+			text_layer_set_background_color(Batt_Layer, GColorClear);
+			text_layer_set_font(Batt_Layer, font_update);
+			layer_add_child(window_get_root_layer(mainWindow), text_layer_get_layer(Batt_Layer));
+		#endif
+		
+		//Bluetooth connection
+		
+		#ifdef PBL_ROUND
+			//After the date & time, draw a line to separate from weather
+			line = text_layer_create(BT_FRAME);
+			text_layer_set_background_color(line, GColorBlack);
+			layer_add_child(window_get_root_layer(mainWindow), text_layer_get_layer(line));
+		#else
+			BT_icon_layer = bitmap_layer_create(BT_FRAME);
+			bitmap_layer_set_bitmap(BT_icon_layer, NULL);
+			layer_add_child(window_get_root_layer(mainWindow), bitmap_layer_get_layer(BT_icon_layer));
+      	#endif
+
+	}//LoadMainWindow END
+	void unloadDigital(){
+		text_layer_destroy(Weekday_Layer);
+		text_layer_destroy(date_layer);
+		text_layer_destroy(Time_Layer);
+	}
+
+	//**************************//
+	//** Get the current date **//
+	//**************************//
+	void getDate(){
+
+		//Get the date
+		time_t actualPtr = time(NULL);
+		struct tm *tz1Ptr = localtime(&actualPtr);
+		//get the local date
+		char *sys_locale = setlocale(LC_ALL, "");
+		//get the date and month numbers
+		intDay = tz1Ptr->tm_mday;
+		intMonth = tz1Ptr->tm_mon + 1; //tm_mon sets january to month 0.
+		intWDay = tz1Ptr->tm_wday; 
+		
+		//clean up the day, date and weekday char arrays
+		memset(&weekday_text[0], 0, sizeof(weekday_text));
+		memset(&month_text[0], 0, sizeof(month_text));
+		memset(&day_month[0], 0, sizeof(day_month));
+		memset(&weekday1_text[0], 0, sizeof(weekday1_text));
+		memset(&weekday2_text[0], 0, sizeof(weekday2_text));
+		memset(&weekday3_text[0], 0, sizeof(weekday3_text));
+				
+		
+		//control that people using old settings page are now referencing to the new asian translation method
+		if (intLanguage == 98){intLanguage=20;}
+		if (intLanguage == 99){intLanguage=19;}
+		
+		//control that app doesn't crash if selected language doesn't exist (version control)
+		if (intLanguage > intLangCounter){intLanguage = 100;} //set to watch language 
+
+		
+		//if russian, change the font type
+		if (intLanguage == 18){
+			text_layer_set_font(date_layer, font_russian);
+			text_layer_set_font(Weekday_Layer, font_russian);
+		}
+		else if (intLanguage == 19 || intLanguage == 20){
+			text_layer_set_font(date_layer, font_asian);
+			text_layer_set_font(Weekday_Layer, font_asian);
+		}
+		else{
+			text_layer_set_font(date_layer, font_date);
+			text_layer_set_font(Weekday_Layer, font_date);
+		}
+		
+		
+		if (intLanguage==100){
+			if (strcmp("en_US", sys_locale) == 0) {
+				//Get the USA format
+				strftime(month_text,sizeof(month_text),"%B %e",tz1Ptr);
 			}
 			else{
-				text_layer_set_font(date_layer, font_date);
-				text_layer_set_font(Weekday_Layer, font_date);
+				//Get the Europe's format
+				strftime(month_text,sizeof(month_text),"%e %B",tz1Ptr);
 			}
-	  
+			strftime(weekday_text,sizeof(weekday_text),"%A",tz1Ptr);
+			text_layer_set_text(date_layer,month_text); 
+			//Get the 3-day forecast
+			struct tm *auxPtr = localtime(&actualPtr);
+			//Since mktime() is not realible in Pebble's firmware, use PUtils to built the dual time.
+			auxPtr->tm_mday +=1;
+			time_t dayPlusOne = p_mktime(auxPtr);
+			struct tm *wd1Ptr = gmtime(&dayPlusOne);
+			strftime(weekday1_text,sizeof(weekday1_text),PBL_IF_ROUND_ELSE("%a","%A"),wd1Ptr);
+			
+			auxPtr->tm_mday +=1;
+			time_t dayPlusTwo = p_mktime(auxPtr);
+			struct tm *wd2Ptr = gmtime(&dayPlusTwo);
+			strftime(weekday2_text,sizeof(weekday2_text),PBL_IF_ROUND_ELSE("%a","%A"),wd2Ptr);
+			
+			auxPtr->tm_mday +=1;
+			time_t dayPlusThree = p_mktime(auxPtr);
+			struct tm *wd3Ptr = gmtime(&dayPlusThree);
+			strftime(weekday3_text,sizeof(weekday3_text),PBL_IF_ROUND_ELSE("%a","%A"),wd3Ptr);
+		}//WATCH LANGUAGE
+		else{
+			//translate the day of the week
+			char *translatedDay = translateDay(intWDay, intLanguage);
+			memcpy(&weekday_text, translatedDay, strlen(translatedDay)+1);
+			//translate the 3-day forecast
+			//week day + 1
+				int intDayPlusOne = intWDay+1;
+				if (intDayPlusOne > 6){intDayPlusOne = intDayPlusOne-7;}
+				char *translatedDay1 = translateDay(intDayPlusOne, intLanguage);
+				snprintf(weekday1_text, PBL_IF_ROUND_ELSE(3,strlen(translatedDay1)+1 ),translatedDay1);
+				//memcpy(&weekday1_text, translatedDay1, PBL_IF_ROUND_ELSE(3,strlen(translatedDay1)+1 ));
+			//week day + 2
+				int intDayPlusTwo = intWDay+2;
+				if (intDayPlusTwo > 6){intDayPlusTwo = intDayPlusTwo-7;}
+				char *translatedDay2 = translateDay(intDayPlusTwo, intLanguage);
+				snprintf(weekday2_text, PBL_IF_ROUND_ELSE(3,strlen(translatedDay2)+1 ),translatedDay2);
+				//memcpy(&weekday2_text, translatedDay2, PBL_IF_ROUND_ELSE(3,strlen(translatedDay2)+1 ));
+			//week day + 3
+				int intDayPlusThree = intWDay+3;
+				if (intDayPlusThree > 6){intDayPlusThree = intDayPlusThree-7;}
+				char *translatedDay3 = translateDay(intDayPlusThree, intLanguage);
+				snprintf(weekday3_text, PBL_IF_ROUND_ELSE(3,strlen(translatedDay3)+1 ),translatedDay3);
+				//memcpy(&weekday3_text, translatedDay3, PBL_IF_ROUND_ELSE(3,strlen(translatedDay3)+1 ));
+								
+			//translate the month
+			char *translatedMonth = translateMonth(intMonth, intLanguage);
+			memcpy(&month_text, translatedMonth, strlen(translatedMonth)+1);
+			
+			//concatenate the day of the month
+			strftime(day_month,sizeof(day_month),"%e",tz1Ptr);
+				
+			if ((intLanguage == 13)||(intLanguage == 4)){
+				text_layer_set_text(date_layer,strncat(month_text,day_month,strlen(month_text)));} //Czech or Hungarian 
+			//else if (intLanguage == 19){text_layer_set_text(date_layer,strcat(translateMonth(intMonth, intLanguage),chinese_numbers[intDay]));} //Chinese
+			else if (intLanguage == 19){text_layer_set_text(date_layer,strcat(translateMonth(intMonth, intLanguage),japanese_numbers[intDay]));} //Chinese
+			else if (intLanguage == 20){text_layer_set_text(date_layer,strcat(translateMonth(intMonth, intLanguage),japanese_numbers[intDay]));} //Japanese
+			else{text_layer_set_text(date_layer,strncat(day_month,month_text,strlen(month_text))); }
+		/*		
+			APP_LOG(APP_LOG_LEVEL_INFO, "getDate date_layer: ");
+			APP_LOG(APP_LOG_LEVEL_INFO, text_layer_get_text(date_layer));
+			//DEBUG//
+		*/
+		}
 
-	  		//Init the date
+
+		text_layer_set_text(Weekday_Layer,weekday_text); //Update the weekday layer  
+
+	}
+
+	/********************/
+	/* Get Current time */
+	/********************/
+	void getTime(){
+
+		time_t actualPtr = time(NULL);
+		struct tm *tz1Ptr = localtime(&actualPtr);
+
+		if (clock_is_24h_style()){strftime(time_text, sizeof(time_text), "%H:%M", tz1Ptr);}
+		else {strftime(time_text, sizeof(time_text), "%I:%M", tz1Ptr);}	
+
+		//Remove the leading 0s
+		if (time_text[0]=='0') {memcpy(&time_text," ",1);}
+
+		//Set the time to the Time Layer
+		text_layer_set_text(Time_Layer, time_text);
+
+	}
+
+	/***************/
+	/* Tick Events */
+	/***************/
+	void handle_tick(struct tm *tick_time, TimeUnits units_changed){
+
+		if (units_changed & MINUTE_UNIT){
+			getTime();
+			/*
+			if (intLanguage == 19){
+				getDate();
+			} //if chinese refresh the date every minute
+			*/
+		}
+		if (units_changed & HOUR_UNIT){
+			if (blnHourlyVibe){
+				hourlyVibe(DoNotDisturb(tick_time->tm_hour, tick_time->tm_min,HOURLY_VIBE_START_KEY,HOURLY_VIBE_END_KEY));
+			}
+		}
+
+		if (units_changed & DAY_UNIT){
 			getDate();
-		  break;
-	  
-	  case VIBES_KEY:
-		  blnvibes = new_tuple->value->uint8;
-		  persist_write_int(VIBES_KEY, blnvibes);
-		  break;
-  
-	  //Forecast for the day
-		case WEATHER_HIGH_KEY: 
-	  		//Save the High temperature
-	        //memcpy(&high,  new_tuple->value->cstring, strlen( new_tuple->value->cstring));
-	    	persist_write_string(WEATHER_HIGH_KEY, new_tuple->value->cstring);
-      		break;
-		case WEATHER_LOW_KEY:
-	  	  	//Save the Low temperature
-	  		//memcpy(&low,  new_tuple->value->cstring, strlen( new_tuple->value->cstring));
-	    	persist_write_string(WEATHER_LOW_KEY, new_tuple->value->cstring);
-      		break;
-		case SUNRISE_KEY:
-	  	  	//Save the Sunrise Time
-	  	  	//memcpy(&sunrise,  new_tuple->value->cstring, strlen(sunrise));
-	    	persist_write_string(SUNRISE_KEY, new_tuple->value->cstring);
-      		break;
-		case SUNSET_KEY:
-	  	  	//Save the Sunset Time
-	  	  	//memcpy(&sunset,  new_tuple->value->cstring, strlen(sunset));
-	    	persist_write_string(SUNSET_KEY, new_tuple->value->cstring);
-      		break;
-		case WIND_KEY:
-	  	  	 //Save the Wind Speed
-	  	  	//memcpy(&wind,  new_tuple->value->cstring, strlen(wind));
-	    	persist_write_string(WIND_KEY, new_tuple->value->cstring);
-      		break;
-	  
-	  	case WDIRECTION_KEY:
-	  	  	//Save the Wind Direction
-	  	  	//wdirection = new_tuple->value->uint32;
-	  	  	//persist_write_int(WDIRECTION_KEY, wdirection);
-	  		persist_write_string(WDIRECTION_KEY, new_tuple->value->cstring);
-      		break;
-	  
-	  	case FORECAST_CODE1_KEY:
-	  		//Saves de weather condition
-	  	    //if (forecast1 != NULL){gbitmap_destroy(forecast1);}
-	  		//if (image != NULL){gbitmap_destroy(image);}
+		}
 
-	  		//image = gbitmap_create_with_resource(WEATHER_ICONS[new_tuple->value->uint8]);
-	  		//resized_data = malloc((image->bounds.size.h * image->row_size_bytes) * sizeof(uint8_t));
-	  		//forecast1 = scaleBitmap(image, 37, 37, resized_data);
-	  		persist_write_int(FORECAST_CODE1_KEY, new_tuple->value->uint8);
-      		break;
-	  
-	  	case FORECAST_HIGH1_KEY:
-	  		//Saves the high for the day
-	  		//memcpy(&day1H,  new_tuple->value->cstring, strlen( new_tuple->value->cstring));
-	  	 	persist_write_string(FORECAST_HIGH1_KEY, new_tuple->value->cstring);
-      		break;
-	  
-	  	case FORECAST_LOW1_KEY:
-	  		//Saves the low for the day
-	  		//memcpy(&day1L,  new_tuple->value->cstring, strlen( new_tuple->value->cstring));
-	  	    persist_write_string(FORECAST_LOW1_KEY, new_tuple->value->cstring);
-      		break;	 
-	  
-	  	case FORECAST_CODE2_KEY:
-	  		//Saves de weather condition
-	  		persist_write_int(FORECAST_CODE2_KEY, new_tuple->value->uint8);
-      		break;
-	  
-	  	case FORECAST_HIGH2_KEY:
-	  		//Saves the high for the day
-	  	  	//memcpy(&day2H,  new_tuple->value->cstring, strlen( new_tuple->value->cstring));
-	  	    persist_write_string(FORECAST_HIGH2_KEY, new_tuple->value->cstring);
-      		break;
-	  
-	  	case FORECAST_LOW2_KEY:
-	  		//Saves the low for the day
-	  	  	//memcpy(&day2L,  new_tuple->value->cstring, strlen( new_tuple->value->cstring));
-	  	    persist_write_string(FORECAST_LOW2_KEY, new_tuple->value->cstring);
-      		break;
-	  
-	  	case FORECAST_CODE3_KEY:
-	  		//Saves the weather condition
-	  		persist_write_int(FORECAST_CODE3_KEY, new_tuple->value->uint8);
-      		break;
-	  
-	  	case FORECAST_HIGH3_KEY:
-	  		//Saves the high for the day
-	  	  	//memcpy(&day3H,  new_tuple->value->cstring, strlen( new_tuple->value->cstring));
-	  	    persist_write_string(FORECAST_HIGH3_KEY, new_tuple->value->cstring);
-      		break;
-	  
-	  	case FORECAST_LOW3_KEY:
-	  		//Saves the low for the day
-	  		//memcpy(&day3L,  new_tuple->value->cstring, strlen( new_tuple->value->cstring));
-	  	    persist_write_string(FORECAST_LOW3_KEY, new_tuple->value->cstring);
-      		break;
-	  
-	  	case EXTRA_ESDURATION_KEY:
-	  		//Saves the Extended Screen duration
-	 		ESDuration_ms = new_tuple->value->uint8*1000;
-	  		persist_write_int(EXTRA_ESDURATION_KEY, ESDuration_ms);
-      		break;
-	  
-	  	case EXTRA_TIMER_KEY:
-	  		//Saves the weather update frequency
-	  		timeout_ms = new_tuple->value->uint8 * 60000;
-	  		persist_write_int(EXTRA_TIMER_KEY,timeout_ms);
-      		break;
-	  
-	  	case EXTRA_FORECAST_KEY:
-	  		//Saves the 3 days forecast toggle
-	  		bln3daysForecast =  new_tuple->value->uint8 != 0;
-	  		persist_write_int(EXTRA_FORECAST_KEY, new_tuple->value->uint8);
-      		break;
-	  	//YWeather 2.3 - REQ01. Display Seconds - START
-	  	  	case DISPLAY_SECONDS_KEY:
-	  		//Saves the display seconds toggle (only when the new value differs from the saved one)
-	  		if (blnseconds !=  new_tuple->value->uint8){
-				//APP_LOG(APP_LOG_LEVEL_INFO, "blnsecond cambia");
-				blnseconds =  new_tuple->value->uint8 != 0;
-				persist_write_int(DISPLAY_SECONDS_KEY, new_tuple->value->uint8);
+	} //HANDLE_TICK
 
-			//YWeather 2.4 - Enhance Display Seconds - START
-				//subscribes to the new tick even
-				tick_timer_service_unsubscribe();
-				SubscribeTickEvent();
-			}
-		//YWeather 2.4 - Enhance Display Seconds - END
+	void SubscribeTickEvent(){
 
-      		break;
-	  	//YWeather 2.3 - REQ01. Display Seconds - END
-	  	//YWeather 2.3 - REQ02. Hourly Vibe - START
-	  	  	case HOURLY_VIBE_KEY:
-	  		//Saves the hourly vibe toggle
-	  		blnhourly_vibe =  new_tuple->value->uint8 != 0;
-	  		persist_write_int(HOURLY_VIBE_KEY, new_tuple->value->uint8); 
-      		break;
-	  	//YWeather 2.3 - REQ02. Hourly Vibe - END
-	  	  	
-	  		case HOURLY_VIBE_START_KEY:
-	  		persist_write_int(HOURLY_VIBE_START_KEY, new_tuple->value->uint8);
-	  		break;
-	  
-	  	  	case HOURLY_VIBE_END_KEY:
-	  		persist_write_int(HOURLY_VIBE_END_KEY, new_tuple->value->uint8);
-	  		break;
-	  
-	  	 	case HIDE_BAT_KEY:
-		  	batt_status = new_tuple->value->uint8 != 0;
-		  	persist_write_int(HIDE_BAT_KEY, batt_status);
+		time_t now = time(NULL);
+		struct tm *current_time = localtime(&now);
 
-		  	break;
-	  
-	  	 // case FONT_KEY:
-	  	 // intUI = new_tuple->value->uint8;
-	  	 // persist_write_int(FONT_KEY, intUI);
-		 // break;
-	  
-	  		case BACKLIGHT_KEY:
-		  	blnBacklight = new_tuple->value->uint8 != 0;
-		  	persist_write_int(BACKLIGHT_KEY, blnBacklight);
+		handle_tick(current_time, MINUTE_UNIT);
+		tick_timer_service_subscribe(MINUTE_UNIT, &handle_tick);
 
-		  	break;
-	  
-	  		case POP_KEY:
-	  	  	//Save the Rain Probability
-	    	persist_write_string(POP_KEY, new_tuple->value->cstring);
-      		break;
+	}
 
-  }
-	  
-}
+/***********/
+/* WEATHER */
+/***********/
 
-
-
-//************************************************//
-// TIMER to refresh the weather data every 30 min //
-//************************************************//
-static void send_cmd(void) {
-
-         Tuplet value = TupletInteger(5, 0);
-        
-         DictionaryIterator *iter;
-         app_message_outbox_begin(&iter);
-        
-         if (iter == NULL) {
-                return;
-         }
-        
-         dict_write_tuplet(iter, &value);
-         dict_write_end(iter);
-        
-         app_message_outbox_send();
+void LoadTemperature(){	
+		
+	  //Track that we are displaying the primary screen
+		blnForecast = false;
 	
-}
-
-static void timer_callback(void *context) {
-
-		//Developer vibe: confirm that timer is not killed
-		//vibes_double_pulse();
-	
-        timer = app_timer_register(timeout_ms, timer_callback, NULL);
-
-        //Refresh the weather
-        send_cmd();
-	       
-
-}
-
-/*********************************/
-/* Load  the main weather screen */
-/*********************************/
-void LoadTemperature()
-{	
-	//If the backlight is on, turn it off and cancel the timer
-	app_timer_cancel(BackLightTimer);
-	//light_enable(false); //this was causing an issue about the backlight suddently stop when the user was navigating thru apps.
-	
-	//remove the inverted layer (if any) before creating the new text layers
-	#ifdef PBL_PLATFORM_APLITE
-		if(blninverted){inverter_layer_destroy(inv_layer);	blninverted = false;}
-	#endif
-	//Track that we are displaying the primary screen
-	blnForecast = false;
-	
-	//Display the Weather layer
-	weather_icon_layer = bitmap_layer_create(WEATHER_FRAME);
-	bitmap_layer_set_bitmap(weather_icon_layer, weather_image);
-    layer_add_child(window_get_root_layer(my_window), bitmap_layer_get_layer(weather_icon_layer));
+      //Weather Icon
+      	weather_icon_layer = bitmap_layer_create(WEATHER_FRAME);
+		//if there weather_image contains data, do not load again (avoid memory issues)
+		if (weather_image == NULL) {weather_image = gbitmap_create_with_resource(WEATHER_ICONS[ICON_CODE]);}
+      	bitmap_layer_set_bitmap(weather_icon_layer, weather_image);
+      	layer_add_child(window_get_root_layer(mainWindow), bitmap_layer_get_layer(weather_icon_layer));
+      //Temperature
+      	Temperature_Layer = text_layer_create(TEMPERATURE_FRAME);
+      	text_layer_set_text_alignment(Temperature_Layer, PBL_IF_ROUND_ELSE(GTextAlignmentRight, GTextAlignmentCenter));
+    	text_layer_set_text_color(Temperature_Layer, GColorWhite);  
+		text_layer_set_background_color(Temperature_Layer, GColorClear);	
+		text_layer_set_font(Temperature_Layer, font_temperature);
+		layer_add_child(window_get_root_layer(mainWindow), text_layer_get_layer(Temperature_Layer));
+		text_layer_set_text(Temperature_Layer, temp);
+	//Location
+      	Location_Layer = text_layer_create(LOCATION_FRAME);
+    	text_layer_set_text_color(Location_Layer, GColorWhite);
+  	  	text_layer_set_text_alignment(Location_Layer, PBL_IF_ROUND_ELSE(GTextAlignmentCenter, GTextAlignmentRight));
+		text_layer_set_background_color(Location_Layer, GColorClear);
+		text_layer_set_font(Location_Layer, font_update);
+		layer_add_child(window_get_root_layer(mainWindow), text_layer_get_layer(Location_Layer));
+		text_layer_set_text(Location_Layer, city);
+	//Last Update
+      	Last_Update = text_layer_create(LAST_UPDATE_FRAME);
+    	text_layer_set_text_color(Last_Update, GColorWhite);
+		text_layer_set_background_color(Last_Update, GColorClear);	
+		text_layer_set_font(Last_Update, font_update);
+		text_layer_set_text_alignment(Last_Update, GTextAlignmentRight);
+		layer_add_child(window_get_root_layer(mainWindow), text_layer_get_layer(Last_Update));
+		text_layer_set_text(Last_Update, last_update);
 	
 	//check the Pebble model to determine if the image is colored or not
-	#ifdef PBL_PLATFORM_APLITE
+	#ifdef PBL_BW
 		bitmap_layer_set_compositing_mode(weather_icon_layer, GCompOpAssign);
-	#elif PBL_PLATFORM_BASALT
+	#elif PBL_COLOR
 		bitmap_layer_set_compositing_mode(weather_icon_layer, GCompOpSet);
 	#endif
-	
-	//Create the Temperature Layer
-	Temperature_Layer = text_layer_create(TEMPERATURE_FRAME);
-	text_layer_set_text_color(Temperature_Layer, GColorWhite);
-	text_layer_set_background_color(Temperature_Layer, GColorClear);	
-	text_layer_set_font(Temperature_Layer, font_temperature);
-	text_layer_set_text_alignment(Temperature_Layer, GTextAlignmentCenter);
-	layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Temperature_Layer));
-	
-	//Display the Location layer
-	Location_Layer = text_layer_create(LOCATION_FRAME);
-	text_layer_set_text_color(Location_Layer, GColorWhite);	
-	text_layer_set_background_color(Location_Layer, GColorClear);
-	text_layer_set_font(Location_Layer, font_update);
-	text_layer_set_text_alignment(Location_Layer, GTextAlignmentRight);
-	layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Location_Layer));
-	
-	//Display the Last Update layer
-	Last_Update = text_layer_create(LAST_UPDATE_FRAME);
-	text_layer_set_text_color(Last_Update, GColorWhite);
-	text_layer_set_background_color(Last_Update, GColorClear);	
-	text_layer_set_font(Last_Update, font_update);
-	text_layer_set_text_alignment(Last_Update, GTextAlignmentRight);
-	layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Last_Update));
-	
-	//set back the location
-	//memset(&city[0], 0, sizeof(city));
-	persist_read_string(WEATHER_CITY_KEY, city, sizeof(city));
-	text_layer_set_text(Location_Layer, city);
-	
-	//set back the temperature
-	persist_read_string(WEATHER_TEMPERATURE_KEY, temp, sizeof(temp));
-	text_layer_set_text(Temperature_Layer, temp);
-	
-	//set back the last update
-	text_layer_set_text(Last_Update, last_update);
-	
-	//if color inverted, then create the inverted layer
-	#ifdef PBL_PLATFORM_APLITE
-		InvertColors(color_inverted);
-	#endif
+
 	
 } //LoadTemperature - END
+void UnloadTemperature(){
+	//Destroy the temperature Layer
+	if(Temperature_Layer){text_layer_destroy(Temperature_Layer);}
+	if(weather_icon_layer){bitmap_layer_destroy(weather_icon_layer);}
+	if(Location_Layer){text_layer_destroy(Location_Layer);}
+	if(Last_Update){text_layer_destroy(Last_Update);}
 
-//UNLOAD LAYERS //
+}
 
-void UnloadForecast()
-{
+void loadForecastIcons(){
+	//These icons are unique, so load them just once and avoid
+	//double free errors by loading and unloading on demand
+	high_image = gbitmap_create_with_resource(RESOURCE_ID_HIGH);
+	low_image = gbitmap_create_with_resource(RESOURCE_ID_LOW);
+	sunrise_image = gbitmap_create_with_resource(RESOURCE_ID_SUNRISE);
+	sunset_image = gbitmap_create_with_resource(RESOURCE_ID_SUNSET);
+	wind_image = gbitmap_create_with_resource(RESOURCE_ID_WIND_ICON);
+	rain_image = gbitmap_create_with_resource(RESOURCE_ID_ICON_RAIN_SMALL);
+
+	
+}
+
+void LoadForecast(){
+	APP_LOG(APP_LOG_LEVEL_INFO, "LoadForecast date_layer: ");
+	APP_LOG(APP_LOG_LEVEL_INFO, text_layer_get_text(date_layer));
+	
+	//Track that we are displaying the secondary screen
+	blnForecast = true;
+	
+	//Unload the temperature layers
+	UnloadTemperature();
+
+  //animate the time (easing out)
+      #ifdef PBL_ROUND
+        //take the day out
+        static PropertyAnimation* weekday_animation;
+        weekday_animation = property_animation_create_layer_frame((Layer*)Weekday_Layer, &WEEKDAY_FRAME, &GRect(-1000,-1000,1,1));
+        animation_schedule((Animation*) weekday_animation);
+      
+        //take the date out
+        static PropertyAnimation* date_animation;
+        date_animation = property_animation_create_layer_frame((Layer*)date_layer, &DATE_FRAME, &GRect(-1000,-1000,1,1));
+        animation_schedule((Animation*) date_animation);
+        
+        //scroll up the time
+        static PropertyAnimation* time_animation;
+        time_animation = property_animation_create_layer_frame((Layer*)Time_Layer, &TIME_FRAME, &TIME_FRAME_ANIMATED);
+        animation_schedule((Animation*) time_animation);
+        text_layer_set_text_alignment(Time_Layer, GTextAlignmentCenter);
+      
+	  /*
+        //Remove the seconds and AM/PM indicator
+        if (blnseconds){
+            //seconds
+            static PropertyAnimation* seconds_animation;
+            seconds_animation = property_animation_create_layer_frame((Layer*)seconds_layer, &SECONDS_FRAME_CHALK, &GRect(-1000,-1000,1,1));
+            animation_schedule((Animation*) seconds_animation);
+        }
+        if(!clock_is_24h_style()){
+            //AM/PM indicator
+            static PropertyAnimation* ampm_animation;
+            ampm_animation = property_animation_create_layer_frame((Layer*)ampm_layer, &AMPM_FRAME_CHALK, &GRect(-1000,-1000,1,1));
+            animation_schedule((Animation*) ampm_animation);
+          
+        }
+      */
+	  
+        //scroll up the bluetooth indicator
+        static PropertyAnimation* bt_animation;
+        bt_animation = property_animation_create_layer_frame((Layer*)line, &GRect(20, 109, 140, 2), &GRect(20, 81, 140, 2));
+        animation_schedule((Animation*) bt_animation);
+      #endif
+
+	//Create the Forecast Layers
+
+	//HIGH
+	High_Layer = text_layer_create(HIGH_FRAME);
+    text_layer_set_font(High_Layer, font_date);
+	text_layer_set_text_color(High_Layer, GColorWhite);
+	text_layer_set_background_color(High_Layer, GColorClear);
+	text_layer_set_text_alignment(High_Layer, GTextAlignmentRight);
+	layer_add_child(window_get_root_layer(mainWindow), text_layer_get_layer(High_Layer));
+	
+	persist_read_string(WEATHER_HIGH_KEY, high, sizeof(high));
+	text_layer_set_text(High_Layer,high);
+	
+
+	//Display the High icon
+	high_icon_layer = bitmap_layer_create(HIGH_ICON_FRAME);
+	bitmap_layer_set_bitmap(high_icon_layer, high_image);
+  	layer_add_child(window_get_root_layer(mainWindow), bitmap_layer_get_layer(high_icon_layer));
+	
+	
+	//LOW
+	Low_Layer = text_layer_create(LOW_FRAME);
+  	text_layer_set_font(Low_Layer, font_date);
+	text_layer_set_text_color(Low_Layer, GColorWhite);
+	text_layer_set_background_color(Low_Layer, GColorClear);
+	text_layer_set_text_alignment(Low_Layer, GTextAlignmentRight);
+	layer_add_child(window_get_root_layer(mainWindow), text_layer_get_layer(Low_Layer));
+	
+	persist_read_string(WEATHER_LOW_KEY, low, sizeof(low));
+	text_layer_set_text(Low_Layer,low);
+
+	
+	//Display the Low icon
+	low_icon_layer = bitmap_layer_create(LOW_ICON_FRAME);
+	bitmap_layer_set_bitmap(low_icon_layer, low_image);
+    layer_add_child(window_get_root_layer(mainWindow), bitmap_layer_get_layer(low_icon_layer));
+	
+	//SUNRISE
+	Sunrise_Layer = text_layer_create(SUNRISE_FRAME);
+  	text_layer_set_font(Sunrise_Layer, font_date);
+	text_layer_set_text_color(Sunrise_Layer, GColorWhite);
+	text_layer_set_background_color(Sunrise_Layer, GColorClear);
+	text_layer_set_text_alignment(Sunrise_Layer, GTextAlignmentRight);
+	layer_add_child(window_get_root_layer(mainWindow), text_layer_get_layer(Sunrise_Layer));
+	
+	persist_read_string(SUNRISE_KEY, sunrise, sizeof(sunrise));
+	text_layer_set_text(Sunrise_Layer,formatSunrise(sunrise));
+	
+	APP_LOG(APP_LOG_LEVEL_INFO, "loadPersistentData llego hasta el SUNRISE");
+	//Display the sunset icon
+	sunrise_icon_layer = bitmap_layer_create(SUNRISE_ICON_FRAME);
+	bitmap_layer_set_bitmap(sunrise_icon_layer, sunrise_image);
+  	layer_add_child(window_get_root_layer(mainWindow), bitmap_layer_get_layer(sunrise_icon_layer));
+	
+	//SUNSET
+	Sunset_Layer = text_layer_create(SUNSET_FRAME);	
+  	text_layer_set_font(Sunset_Layer, font_date);
+	text_layer_set_text_color(Sunset_Layer, GColorWhite);
+	text_layer_set_background_color(Sunset_Layer, GColorClear);
+	text_layer_set_text_alignment(Sunset_Layer, GTextAlignmentRight);
+	layer_add_child(window_get_root_layer(mainWindow), text_layer_get_layer(Sunset_Layer));
+	
+	persist_read_string(SUNSET_KEY, sunset, sizeof(sunset));
+	text_layer_set_text(Sunset_Layer,formatSunset(sunset));
+	
+	APP_LOG(APP_LOG_LEVEL_INFO, "loadPersistentData llego hasta el SUNSET");
+	//Display the sunset icon
+	sunset_icon_layer = bitmap_layer_create(SUNSET_ICON_FRAME);
+	bitmap_layer_set_bitmap(sunset_icon_layer, sunset_image);
+  	layer_add_child(window_get_root_layer(mainWindow), bitmap_layer_get_layer(sunset_icon_layer));
+  
+	//WIND SPEED
+	Wind_Layer = text_layer_create(WIND_FRAME);
+  	text_layer_set_text_alignment(Wind_Layer, PBL_IF_ROUND_ELSE(GTextAlignmentLeft, GTextAlignmentRight));
+	text_layer_set_font(Wind_Layer, font_date);
+	text_layer_set_text_color(Wind_Layer, GColorWhite);
+	text_layer_set_background_color(Wind_Layer, GColorClear);
+	layer_add_child(window_get_root_layer(mainWindow), text_layer_get_layer(Wind_Layer));
+	
+	persist_read_string(WIND_KEY, wind, sizeof(wind));
+	text_layer_set_text(Wind_Layer,wind);
+	
+	//WIND DIRECTION
+	WDirection_Layer = text_layer_create(WDIRECTION_FRAME);	
+  	text_layer_set_text_alignment(WDirection_Layer, PBL_IF_ROUND_ELSE(GTextAlignmentCenter, GTextAlignmentRight)); 
+	text_layer_set_text_color(WDirection_Layer, GColorWhite);
+	text_layer_set_background_color(WDirection_Layer, GColorClear);
+	text_layer_set_font(WDirection_Layer, font_update);
+	layer_add_child(window_get_root_layer(mainWindow), text_layer_get_layer(WDirection_Layer));
+	
+	persist_read_string(WDIRECTION_KEY, strwdirection, sizeof(strwdirection));
+	text_layer_set_text(WDirection_Layer,strwdirection);
+
+	APP_LOG(APP_LOG_LEVEL_INFO, "loadPersistentData llego hasta el WIND");
+    //Display the wind icon
+	wind_icon_layer = bitmap_layer_create(WIND_ICON_FRAME);
+	bitmap_layer_set_bitmap(wind_icon_layer, wind_image);
+  	layer_add_child(window_get_root_layer(mainWindow), bitmap_layer_get_layer(wind_icon_layer));
+	
+  
+	
+	//RAIN PROBABILITY	
+	PoP_Layer = text_layer_create(POP_FRAME);
+  	text_layer_set_font(PoP_Layer, PBL_IF_ROUND_ELSE(font_update,font_date));
+	text_layer_set_text_color(PoP_Layer, GColorWhite);
+	text_layer_set_background_color(PoP_Layer, GColorClear);
+	text_layer_set_text_alignment(PoP_Layer, GTextAlignmentRight);
+	layer_add_child(window_get_root_layer(mainWindow), text_layer_get_layer(PoP_Layer));
+	
+	persist_read_string(POP_KEY, PoP, sizeof(PoP));
+	text_layer_set_text(PoP_Layer,PoP);
+	
+	APP_LOG(APP_LOG_LEVEL_INFO, "loadPersistentData llego hasta el RAIN");
+	//Rain ICON
+	rain_icon_layer = bitmap_layer_create(RAIN_ICON_FRAME);
+	bitmap_layer_set_bitmap(rain_icon_layer, rain_image);
+  	layer_add_child(window_get_root_layer(mainWindow), bitmap_layer_get_layer(rain_icon_layer));
+	
+	
+	//refresh the tap counter 
+	TapCount = 0;
+
+	
+	APP_LOG(APP_LOG_LEVEL_INFO, "loadPersistentData llego hasta el forecastTIMER");
+	//setup the timer to set back the temperature after 5sec
+	forecastTimer = app_timer_register(ESDuration_ms, forecast_callback, NULL);
+	
+
+} //LoadForecast - END
+void UnloadForecast(){
 	//Destroy the forecast Layers
 	if(High_Layer){text_layer_destroy(High_Layer);}
 	if(Low_Layer){text_layer_destroy(Low_Layer);}
@@ -842,15 +799,160 @@ void UnloadForecast()
 	
 }
 
-void UnloadTemperature(){
-	//Destroy the temperature Layer
-	if(Temperature_Layer){text_layer_destroy(Temperature_Layer);}
-	if(weather_icon_layer){bitmap_layer_destroy(weather_icon_layer);}
-	if(Location_Layer){text_layer_destroy(Location_Layer);}
-	if(Last_Update){text_layer_destroy(Last_Update);}
+void Load3Days(){
+//DAY 1
+	//Weekday	
+	 	Day1_Layer = text_layer_create(FORECAST_DAY1_FRAME);
+		text_layer_set_text_color(Day1_Layer, GColorWhite);
+		text_layer_set_background_color(Day1_Layer, GColorClear);
+		if (intLanguage == 18){
+        	text_layer_set_font(Day1_Layer, font_russian_date_forecast);
+			}
+		else if (intLanguage == 19 || intLanguage == 20){
+			text_layer_set_font(Day1_Layer, font_asian);
+			}
+		else{
+			text_layer_set_font(Day1_Layer, font_date);
+			}
+		text_layer_set_text_alignment(Day1_Layer, GTextAlignmentLeft);
+		layer_add_child(window_get_root_layer(mainWindow), text_layer_get_layer(Day1_Layer));
+	
+		text_layer_set_text(Day1_Layer,weekday1_text);
+	
+	//Display the weather icon
+	forecast1_layer = bitmap_layer_create(FORECAST_CODE1_FRAME);
+	if (forecast1 != NULL){gbitmap_destroy(forecast1);}
+	code1 = persist_read_int(FORECAST_CODE1_KEY);
+	forecast1 = gbitmap_create_with_resource(WEATHER_ICONS_SMALL[code1]);
+	bitmap_layer_set_bitmap(forecast1_layer, forecast1);
+    layer_add_child(window_get_root_layer(mainWindow), bitmap_layer_get_layer(forecast1_layer));
 
-}
+	//High for the day	
+	High1_Layer = text_layer_create(FORECAST_HIGH1_FRAME);
+	text_layer_set_text_color(High1_Layer, GColorWhite);
+	text_layer_set_background_color(High1_Layer, GColorClear);
+	text_layer_set_font(High1_Layer, font_update);
+  	PBL_IF_RECT_ELSE(text_layer_set_text_alignment(High1_Layer, GTextAlignmentRight),text_layer_set_text_alignment(High1_Layer, GTextAlignmentLeft)); 
+	layer_add_child(window_get_root_layer(mainWindow), text_layer_get_layer(High1_Layer));
+	
+	persist_read_string(FORECAST_HIGH1_KEY, day1H, sizeof(day1H));
+	text_layer_set_text(High1_Layer,day1H);
+	
+	
+	//Low for the day
+	Low1_Layer = text_layer_create(FORECAST_LOW1_FRAME);
+	text_layer_set_text_color(Low1_Layer, GColorWhite);
+	text_layer_set_background_color(Low1_Layer, GColorClear);
+	text_layer_set_font(Low1_Layer, font_update);
+  	PBL_IF_RECT_ELSE(text_layer_set_text_alignment(Low1_Layer, GTextAlignmentRight),text_layer_set_text_alignment(Low1_Layer, GTextAlignmentLeft)); 
+	layer_add_child(window_get_root_layer(mainWindow), text_layer_get_layer(Low1_Layer));
+	
+	persist_read_string(FORECAST_LOW1_KEY, day1L, sizeof(day1L));
+	text_layer_set_text(Low1_Layer,day1L);
+	
+//DAY 2
+	//Weekday	
+		Day2_Layer = text_layer_create(FORECAST_DAY2_FRAME);
+		text_layer_set_text_color(Day2_Layer, GColorWhite);
+		text_layer_set_background_color(Day2_Layer, GColorClear);
+		if (intLanguage == 18){
+        	text_layer_set_font(Day2_Layer, font_russian_date_forecast);
+			}
+		else if (intLanguage == 19 || intLanguage == 20){
+			text_layer_set_font(Day2_Layer, font_asian);
+			}
+		else{
+			text_layer_set_font(Day2_Layer, font_date);
+			}
+		text_layer_set_text_alignment(Day2_Layer, GTextAlignmentLeft);
+		layer_add_child(window_get_root_layer(mainWindow), text_layer_get_layer(Day2_Layer));
 
+		text_layer_set_text(Day2_Layer,weekday2_text);
+	//Display the weather icon
+	forecast2_layer = bitmap_layer_create(FORECAST_CODE2_FRAME);
+	if (forecast2 != NULL){gbitmap_destroy(forecast2);}
+	code2 = persist_read_int(FORECAST_CODE2_KEY);
+	forecast2 = gbitmap_create_with_resource(WEATHER_ICONS_SMALL[code2]);
+	
+	bitmap_layer_set_bitmap(forecast2_layer, forecast2);
+    layer_add_child(window_get_root_layer(mainWindow), bitmap_layer_get_layer(forecast2_layer));
+	
+	//High for the day
+	High2_Layer = text_layer_create(FORECAST_HIGH2_FRAME);
+	text_layer_set_text_color(High2_Layer, GColorWhite);
+	text_layer_set_background_color(High2_Layer, GColorClear);
+	text_layer_set_font(High2_Layer, font_update);
+  	PBL_IF_RECT_ELSE(text_layer_set_text_alignment(High2_Layer, GTextAlignmentRight),text_layer_set_text_alignment(High2_Layer, GTextAlignmentLeft)); 
+	layer_add_child(window_get_root_layer(mainWindow), text_layer_get_layer(High2_Layer));
+	
+	persist_read_string(FORECAST_HIGH2_KEY, day2H, sizeof(day2H));
+	text_layer_set_text(High2_Layer,day2H);
+	//Low for the day
+	Low2_Layer = text_layer_create(FORECAST_LOW2_FRAME);
+	text_layer_set_text_color(Low2_Layer, GColorWhite);
+	text_layer_set_background_color(Low2_Layer, GColorClear);
+	text_layer_set_font(Low2_Layer, font_update);
+  	PBL_IF_RECT_ELSE(text_layer_set_text_alignment(Low2_Layer, GTextAlignmentRight),text_layer_set_text_alignment(Low2_Layer, GTextAlignmentLeft));
+	layer_add_child(window_get_root_layer(mainWindow), text_layer_get_layer(Low2_Layer));
+	
+	persist_read_string(FORECAST_LOW2_KEY, day2L, sizeof(day2L));
+	text_layer_set_text(Low2_Layer,day2L);
+	
+//DAY 3
+	//Weekday
+		Day3_Layer = text_layer_create(FORECAST_DAY3_FRAME);
+		text_layer_set_text_color(Day3_Layer, GColorWhite);
+		text_layer_set_background_color(Day3_Layer, GColorClear);
+		if (intLanguage == 18){
+        	text_layer_set_font(Day3_Layer, font_russian_date_forecast);
+			}
+		else if (intLanguage == 19 || intLanguage == 20){
+			text_layer_set_font(Day3_Layer, font_asian);
+			}
+		else{
+			text_layer_set_font(Day3_Layer, font_date);
+			}
+		text_layer_set_text_alignment(Day3_Layer, GTextAlignmentLeft);
+		layer_add_child(window_get_root_layer(mainWindow), text_layer_get_layer(Day3_Layer));
+
+		text_layer_set_text(Day3_Layer,weekday3_text);
+	
+	//Display the weather icon
+	forecast3_layer = bitmap_layer_create(FORECAST_CODE3_FRAME);
+	if (forecast3 != NULL){gbitmap_destroy(forecast3);}
+	code3 = persist_read_int(FORECAST_CODE3_KEY);
+	forecast3 = gbitmap_create_with_resource(WEATHER_ICONS_SMALL[code3]);
+	
+	
+	bitmap_layer_set_bitmap(forecast3_layer, forecast3);
+    layer_add_child(window_get_root_layer(mainWindow), bitmap_layer_get_layer(forecast3_layer));
+	
+	//High for the day	
+	High3_Layer = text_layer_create(FORECAST_HIGH3_FRAME);
+	text_layer_set_text_color(High3_Layer, GColorWhite);
+	text_layer_set_background_color(High3_Layer, GColorClear);
+	text_layer_set_font(High3_Layer, font_update);
+  	PBL_IF_RECT_ELSE(text_layer_set_text_alignment(High3_Layer, GTextAlignmentRight),text_layer_set_text_alignment(High3_Layer, GTextAlignmentLeft));
+	layer_add_child(window_get_root_layer(mainWindow), text_layer_get_layer(High3_Layer));
+	
+	persist_read_string(FORECAST_HIGH3_KEY, day3H, sizeof(day3H));
+	text_layer_set_text(High3_Layer,day3H);
+	
+	//Low for the day	
+	Low3_Layer = text_layer_create(FORECAST_LOW3_FRAME);
+	text_layer_set_text_color(Low3_Layer, GColorWhite);
+	text_layer_set_background_color(Low3_Layer, GColorClear);
+	text_layer_set_font(Low3_Layer, font_update);
+  	PBL_IF_RECT_ELSE(text_layer_set_text_alignment(Low3_Layer, GTextAlignmentRight),text_layer_set_text_alignment(Low3_Layer, GTextAlignmentLeft));
+	layer_add_child(window_get_root_layer(mainWindow), text_layer_get_layer(Low3_Layer));
+	
+	persist_read_string(FORECAST_LOW3_KEY, day3L, sizeof(day3L));
+	text_layer_set_text(Low3_Layer,day3L);
+	
+	//setup the timer to set back the temperature after 5sec
+	forecastTimer = app_timer_register(ESDuration_ms, forecast3Days_callback, NULL);
+	
+} 
 void Unload3Days(){
 	
 	//Destroy the  Layers
@@ -870,379 +972,154 @@ void Unload3Days(){
 	if(forecast3_layer){bitmap_layer_destroy(forecast3_layer);}
 }
 
-//TIMER CALLBACK
+//*****************//
+// TIMER callbacks //
+//*****************//
+static void fetchWeather(void) {
 
-static void forecast3Days_callback(void *context) {
-       
-		
-		//Refresh the weather
-		Unload3Days();
-        LoadTemperature();
-    
+         Tuplet value = TupletInteger(5, 0);
+        
+         DictionaryIterator *iter;
+         app_message_outbox_begin(&iter);
+        
+         if (iter == NULL) {
+                return;
+         }
+        
+         dict_write_tuplet(iter, &value);
+         dict_write_end(iter);
+        
+         app_message_outbox_send();
+	
+}
+
+static void weatherTimer_callback(void *context) {
+
+		//Developer vibe: confirm that timer is not killed
+		//vibes_double_pulse();
+	
+		if(persist_exists(EXTRA_TIMER_KEY)){timeout_ms = persist_read_int(EXTRA_TIMER_KEY);}
+	
+		/*
+		static char strdebug[15];
+		memset(&strdebug[0], 0, sizeof(strdebug));
+	  	itoa(timeout_ms, strdebug);
+		APP_LOG(APP_LOG_LEVEL_INFO, "weatherTimer timeout_ms: ");
+		APP_LOG(APP_LOG_LEVEL_INFO, strdebug);
+		*/ // DEBUG //
+	
+        weatherTimer = app_timer_register(timeout_ms, weatherTimer_callback, NULL);
+
+        //Refresh the weather
+        fetchWeather();
+	       
 
 }
 
-void Load3Days()
-{
-
-	//remove the inverted layer (if any) before creating the new text layers
-	#ifdef PBL_PLATFORM_APLITE
-		if(blninverted){inverter_layer_destroy(inv_layer);	blninverted = false;}
-	#endif
-//DAY 1
-	//Weekday
-		Day1_Layer = text_layer_create(FORECAST_DAY1_FRAME);	
-		text_layer_set_text_color(Day1_Layer, GColorWhite);
-		text_layer_set_background_color(Day1_Layer, GColorClear);
-		if (language == 17){
-        	text_layer_set_font(Day1_Layer, font_russian_date_forecast);
-			}
-		else{
-			text_layer_set_font(Day1_Layer, font_date);
-			}
-		text_layer_set_text_alignment(Day1_Layer, GTextAlignmentLeft);
-		layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Day1_Layer));
-	
-		text_layer_set_text(Day1_Layer,weekday1_text);
-	
-	//Display the weather icon
-	if (forecast1 != NULL){gbitmap_destroy(forecast1);}
-
-	code1 = persist_read_int(FORECAST_CODE1_KEY);
-	forecast1 = gbitmap_create_with_resource(WEATHER_ICONS_SMALL[code1]);
-	
-
-	forecast1_layer = bitmap_layer_create(FORECAST_CODE1_FRAME);
-	bitmap_layer_set_bitmap(forecast1_layer, forecast1);
-    layer_add_child(window_get_root_layer(my_window), bitmap_layer_get_layer(forecast1_layer));
-
-	//High for the day
-	High1_Layer = text_layer_create(FORECAST_HIGH1_FRAME);	
-	text_layer_set_text_color(High1_Layer, GColorWhite);
-	text_layer_set_background_color(High1_Layer, GColorClear);
-	text_layer_set_font(High1_Layer, font_update);
-	text_layer_set_text_alignment(High1_Layer, GTextAlignmentRight);
-	layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(High1_Layer));
-	
-	persist_read_string(FORECAST_HIGH1_KEY, day1H, sizeof(day1H));
-	text_layer_set_text(High1_Layer,day1H);
-	
-	
-	//Low for the day
-	Low1_Layer = text_layer_create(FORECAST_LOW1_FRAME);	
-	text_layer_set_text_color(Low1_Layer, GColorWhite);
-	text_layer_set_background_color(Low1_Layer, GColorClear);
-	text_layer_set_font(Low1_Layer, font_update);
-	text_layer_set_text_alignment(Low1_Layer, GTextAlignmentRight);
-	layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Low1_Layer));
-	
-	persist_read_string(FORECAST_LOW1_KEY, day1L, sizeof(day1L));
-	text_layer_set_text(Low1_Layer,day1L);
-	
-//DAY 2
-	//Weekday
-		Day2_Layer = text_layer_create(FORECAST_DAY2_FRAME);	
-		text_layer_set_text_color(Day2_Layer, GColorWhite);
-		text_layer_set_background_color(Day2_Layer, GColorClear);
-		if (language == 17){
-        	text_layer_set_font(Day2_Layer, font_russian_date_forecast);
-			}
-		else{
-			text_layer_set_font(Day2_Layer, font_date);
-			}
-		text_layer_set_text_alignment(Day2_Layer, GTextAlignmentLeft);
-		layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Day2_Layer));
-
-		text_layer_set_text(Day2_Layer,weekday2_text);
-	//Display the weather icon
-	if (forecast2 != NULL){gbitmap_destroy(forecast2);}
-	code2 = persist_read_int(FORECAST_CODE2_KEY);
-	forecast2 = gbitmap_create_with_resource(WEATHER_ICONS_SMALL[code2]);
-	forecast2_layer = bitmap_layer_create(FORECAST_CODE2_FRAME);
-	bitmap_layer_set_bitmap(forecast2_layer, forecast2);
-    layer_add_child(window_get_root_layer(my_window), bitmap_layer_get_layer(forecast2_layer));
-	
-	//High for the day
-	High2_Layer = text_layer_create(FORECAST_HIGH2_FRAME);	
-	text_layer_set_text_color(High2_Layer, GColorWhite);
-	text_layer_set_background_color(High2_Layer, GColorClear);
-	text_layer_set_font(High2_Layer, font_update);
-	text_layer_set_text_alignment(High2_Layer, GTextAlignmentRight);
-	layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(High2_Layer));
-	persist_read_string(FORECAST_HIGH2_KEY, day2H, sizeof(day2H));
-	text_layer_set_text(High2_Layer,day2H);
-	//Low for the day
-	Low2_Layer = text_layer_create(FORECAST_LOW2_FRAME);	
-	text_layer_set_text_color(Low2_Layer, GColorWhite);
-	text_layer_set_background_color(Low2_Layer, GColorClear);
-	text_layer_set_font(Low2_Layer, font_update);
-	text_layer_set_text_alignment(Low2_Layer, GTextAlignmentRight);
-	layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Low2_Layer));
-	persist_read_string(FORECAST_LOW2_KEY, day2L, sizeof(day2L));
-	text_layer_set_text(Low2_Layer,day2L);
-	
-//DAY 3
-	//Weekday
-		Day3_Layer = text_layer_create(FORECAST_DAY3_FRAME);	
-		text_layer_set_text_color(Day3_Layer, GColorWhite);
-		text_layer_set_background_color(Day3_Layer, GColorClear);
-		if (language == 17){
-        	text_layer_set_font(Day3_Layer, font_russian_date_forecast);
-			}
-		else{
-			text_layer_set_font(Day3_Layer, font_date);
-			}
-		text_layer_set_text_alignment(Day3_Layer, GTextAlignmentLeft);
-		layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Day3_Layer));
-
-		text_layer_set_text(Day3_Layer,weekday3_text);
-	
-	//Display the weather icon
-	if (forecast3 != NULL){gbitmap_destroy(forecast3);}
-
-	code3 = persist_read_int(FORECAST_CODE3_KEY);
-	forecast3 = gbitmap_create_with_resource(WEATHER_ICONS_SMALL[code3]);
-	
-	
-	forecast3_layer = bitmap_layer_create(FORECAST_CODE3_FRAME);
-	bitmap_layer_set_bitmap(forecast3_layer, forecast3);
-    layer_add_child(window_get_root_layer(my_window), bitmap_layer_get_layer(forecast3_layer));
-	
-	//High for the day
-	High3_Layer = text_layer_create(FORECAST_HIGH3_FRAME);	
-	text_layer_set_text_color(High3_Layer, GColorWhite);
-	text_layer_set_background_color(High3_Layer, GColorClear);
-	text_layer_set_font(High3_Layer, font_update);
-	text_layer_set_text_alignment(High3_Layer, GTextAlignmentRight);
-	layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(High3_Layer));
-	
-	persist_read_string(FORECAST_HIGH3_KEY, day3H, sizeof(day3H));
-	text_layer_set_text(High3_Layer,day3H);
-	
-	//Low for the day
-	Low3_Layer = text_layer_create(FORECAST_LOW3_FRAME);	
-	text_layer_set_text_color(Low3_Layer, GColorWhite);
-	text_layer_set_background_color(Low3_Layer, GColorClear);
-	text_layer_set_font(Low3_Layer, font_update);
-	text_layer_set_text_alignment(Low3_Layer, GTextAlignmentRight);
-	layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Low3_Layer));
-	
-	persist_read_string(FORECAST_LOW3_KEY, day3L, sizeof(day3L));
-	text_layer_set_text(Low3_Layer,day3L);
-	
-	//if color inverted, then create the inverted layer
-	#ifdef PBL_PLATFORM_APLITE
-		InvertColors(color_inverted);
-	#endif
-	//setup the timer to set back the temperature after 5sec
-	weather = app_timer_register(ESDuration_ms, forecast3Days_callback, NULL);
-	
-} //Load3Days - END
-
 static void forecast_callback(void *context) {
-       
-        //Refresh the weather
+        //Unload the forecast screen
 		UnloadForecast();
 		if (bln3daysForecast){
 			//LoadTemperature();
 			Load3Days();
 		}
 		else{
-			//turn the backlight off
-			//light_enable(false);
-			//Load the Main Screen
+	
+			#ifdef PBL_ROUND
+				//take the day in
+				static PropertyAnimation* weekday_animation;
+				weekday_animation = property_animation_create_layer_frame((Layer*)Weekday_Layer, &GRect(-1000,-1000,1,1),&WEEKDAY_FRAME);
+				animation_schedule((Animation*) weekday_animation);
+
+				//take the date in
+				static PropertyAnimation* date_animation;
+				date_animation = property_animation_create_layer_frame((Layer*)date_layer, &GRect(-1000,-1000,1,1),&DATE_FRAME);
+				animation_schedule((Animation*) date_animation);
+
+				//scroll down the time
+				static PropertyAnimation* time_animation;
+
+				time_animation = property_animation_create_layer_frame((Layer*)Time_Layer, &TIME_FRAME_ANIMATED, &TIME_FRAME);
+
+				animation_schedule((Animation*) time_animation);
+
+				//scroll down the bluetooth indicator
+				static PropertyAnimation* bt_animation;
+				bt_animation = property_animation_create_layer_frame((Layer*)line, &GRect(20, 81, 140, 2),&GRect(20, 109, 140, 2));
+				animation_schedule((Animation*) bt_animation);
+			#endif
+
+			//If the backlight is on, turn it off and cancel the timer
+			if(blnBacklight){app_timer_cancel(BackLightTimer);}
+			//Set the temperature back
 			LoadTemperature();
+			
 		}
-    
 
 }
 
+static void forecast3Days_callback(void *context) {
+       
+		
+		//Refresh the weather
+		Unload3Days();
+
+       //animate the time (easing in)
+            #ifdef PBL_ROUND
+              //take the day out
+              static PropertyAnimation* weekday_animation;
+              weekday_animation = property_animation_create_layer_frame((Layer*)Weekday_Layer, &GRect(-1000,-1000,1,1),&WEEKDAY_FRAME);
+              animation_schedule((Animation*) weekday_animation);
+            
+              //take the date out
+              static PropertyAnimation* date_animation;
+              date_animation = property_animation_create_layer_frame((Layer*)date_layer, &GRect(-1000,-1000,1,1),&DATE_FRAME);
+              animation_schedule((Animation*) date_animation);
+              
+              //scroll up the time
+              static PropertyAnimation* time_animation;
+	/*
+              if ((blnseconds) || (!clock_is_24h_style())){
+                  time_animation = property_animation_create_layer_frame((Layer*)Time_Layer, &TIME_FRAME_ANIMATED, &TIME_FRAME2);
+                  text_layer_set_text_alignment(Time_Layer, GTextAlignmentRight);
+              }
+              else{
+			  */
+                  time_animation = property_animation_create_layer_frame((Layer*)Time_Layer, &TIME_FRAME_ANIMATED, &TIME_FRAME);
+            //  }
+            animation_schedule((Animation*) time_animation);
+          
+              //scroll up the bluetooth indicator
+              static PropertyAnimation* bt_animation;
+              bt_animation = property_animation_create_layer_frame((Layer*)line, &GRect(20, 81, 140, 2),&GRect(20, 109, 140, 2));
+              animation_schedule((Animation*) bt_animation);
+          /*
+              //Remove the seconds and AM/PM indicator
+              if (blnseconds){
+                  //seconds
+                  static PropertyAnimation* seconds_animation;
+                  seconds_animation = property_animation_create_layer_frame((Layer*)seconds_layer, &GRect(-1000,-1000,1,1), &SECONDS_FRAME_CHALK);
+                  animation_schedule((Animation*) seconds_animation);
+              }
+              if(!clock_is_24h_style()){
+                  //AM/PM indicator
+                  static PropertyAnimation* ampm_animation;
+                  ampm_animation = property_animation_create_layer_frame((Layer*)ampm_layer, &GRect(-1000,-1000,1,1), &AMPM_FRAME_CHALK);
+                  animation_schedule((Animation*) ampm_animation);
+                
+              }
+		*/
+			#endif
+			//If the backlight is on, turn it off and cancel the timer
+			if(blnBacklight){app_timer_cancel(BackLightTimer);}
+			//Load the temperature layer
+			LoadTemperature();
 
 
-
-/****************************************/
-/* Display the secondary weather screen */
-/****************************************/
-
-void LoadForecast()
-{
-	//remove the inverted layer (if any) before creating the new text layers
-	#ifdef PBL_PLATFORM_APLITE
-		if(blninverted){inverter_layer_destroy(inv_layer);	blninverted = false;}
-	#endif
-	//Track that we are displaying the secondary screen
-	blnForecast = true;
-
-	//Unload the temperature layers
-	UnloadTemperature();
-	
-	//Create the Forecast Layers
-
-	//HIGH
-	High_Layer = text_layer_create(HIGH_FRAME);	
-	text_layer_set_text_color(High_Layer, GColorWhite);
-	text_layer_set_background_color(High_Layer, GColorClear);
-	text_layer_set_font(High_Layer, font_date);
-	text_layer_set_text_alignment(High_Layer, GTextAlignmentRight);
-	layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(High_Layer));
-	
-	persist_read_string(WEATHER_HIGH_KEY, high, sizeof(high));
-	text_layer_set_text(High_Layer,high);
-	
-	//Display the High icon
-	if (high_image){gbitmap_destroy(high_image);}
-	high_image = gbitmap_create_with_resource(RESOURCE_ID_HIGH);
-	high_icon_layer = bitmap_layer_create(HIGH_ICON_FRAME);
-	bitmap_layer_set_bitmap(high_icon_layer, high_image);
-    layer_add_child(window_get_root_layer(my_window), bitmap_layer_get_layer(high_icon_layer));
-	
-	//LOW
-	Low_Layer = text_layer_create(LOW_FRAME);	
-	text_layer_set_text_color(Low_Layer, GColorWhite);
-	text_layer_set_background_color(Low_Layer, GColorClear);
-	text_layer_set_font(Low_Layer, font_date);
-	text_layer_set_text_alignment(Low_Layer, GTextAlignmentRight);
-	layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Low_Layer));
-	
-	persist_read_string(WEATHER_LOW_KEY, low, sizeof(low));
-	text_layer_set_text(Low_Layer,low);
-	
-	//Display the Low icon
-	if (low_image){gbitmap_destroy(low_image);}
-	low_image = gbitmap_create_with_resource(RESOURCE_ID_LOW);
-	low_icon_layer = bitmap_layer_create(LOW_ICON_FRAME);
-	bitmap_layer_set_bitmap(low_icon_layer, low_image);
-    layer_add_child(window_get_root_layer(my_window), bitmap_layer_get_layer(low_icon_layer));
-	
-	//SUNRISE
-	Sunrise_Layer = text_layer_create(SUNRISE_FRAME);	
-	text_layer_set_text_color(Sunrise_Layer, GColorWhite);
-	text_layer_set_background_color(Sunrise_Layer, GColorClear);
-	text_layer_set_font(Sunrise_Layer, font_date);
-	text_layer_set_text_alignment(Sunrise_Layer, GTextAlignmentRight);
-	layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Sunrise_Layer));
-	
-	persist_read_string(SUNRISE_KEY, sunrise, sizeof(sunrise));
-	text_layer_set_text(Sunrise_Layer,formatSunrise(sunrise));
-	
-	//Display the sunset icon
-	if (sunrise_image){gbitmap_destroy(sunrise_image);}
-	sunrise_image = gbitmap_create_with_resource(RESOURCE_ID_SUNRISE);
-	sunrise_icon_layer = bitmap_layer_create(SUNRISE_ICON_FRAME);
-	bitmap_layer_set_bitmap(sunrise_icon_layer, sunrise_image);
-    layer_add_child(window_get_root_layer(my_window), bitmap_layer_get_layer(sunrise_icon_layer));
-	
-	//SUNSET
-	Sunset_Layer = text_layer_create(SUNSET_FRAME);	
-	text_layer_set_text_color(Sunset_Layer, GColorWhite);
-	text_layer_set_background_color(Sunset_Layer, GColorClear);
-	text_layer_set_font(Sunset_Layer, font_date);
-	text_layer_set_text_alignment(Sunset_Layer, GTextAlignmentRight);
-	layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Sunset_Layer));
-	
-	persist_read_string(SUNSET_KEY, sunset, sizeof(sunset));
-	text_layer_set_text(Sunset_Layer,formatSunset(sunset));
-	
-	//Display the sunset icon
-	if (sunset_image){gbitmap_destroy(sunset_image);}
-	sunset_image = gbitmap_create_with_resource(RESOURCE_ID_SUNSET);
-	sunset_icon_layer = bitmap_layer_create(SUNSET_ICON_FRAME);
-	bitmap_layer_set_bitmap(sunset_icon_layer, sunset_image);
-    layer_add_child(window_get_root_layer(my_window), bitmap_layer_get_layer(sunset_icon_layer));
-	
-	//WIND SPEED
-	Wind_Layer = text_layer_create(WIND_FRAME);	
-	text_layer_set_text_color(Wind_Layer, GColorWhite);
-	text_layer_set_background_color(Wind_Layer, GColorClear);
-	text_layer_set_font(Wind_Layer, font_date);
-	text_layer_set_text_alignment(Wind_Layer, GTextAlignmentRight);
-	layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Wind_Layer));
-	
-	persist_read_string(WIND_KEY, wind, sizeof(wind));
-	text_layer_set_text(Wind_Layer,wind);
-	
-	//WIND DIRECTION
-	WDirection_Layer = text_layer_create(WDIRECTION_FRAME);	
-	text_layer_set_text_color(WDirection_Layer, GColorWhite);
-	text_layer_set_background_color(WDirection_Layer, GColorClear);
-	text_layer_set_font(WDirection_Layer, font_update);
-	text_layer_set_text_alignment(WDirection_Layer, GTextAlignmentRight);
-	layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(WDirection_Layer));
-	
-	//wdirection =  persist_read_int(WDIRECTION_KEY); 
-	//decode the wind direction code to text
-	//windDirection();
-	persist_read_string(WDIRECTION_KEY, strwdirection, sizeof(strwdirection));
-	text_layer_set_text(WDirection_Layer,strwdirection);
-	
-	//Display the wind icon
-	if (wind_image){gbitmap_destroy(wind_image);}
-	wind_image = gbitmap_create_with_resource(RESOURCE_ID_WIND_ICON);
-	wind_icon_layer = bitmap_layer_create(WIND_ICON_FRAME);
-	bitmap_layer_set_bitmap(wind_icon_layer, wind_image);
-    layer_add_child(window_get_root_layer(my_window), bitmap_layer_get_layer(wind_icon_layer));
-
-//Replace the moonphase with the rain probability. Will enable back from settings later.
-/*
-	//moonphase
-	moonphase_number = moon_phase(intyear+1900,intmonth,intday);
-	if (moon_image) {gbitmap_destroy(moon_image);}
-	moon_image = gbitmap_create_with_resource(MOON_IMAGE_RESOURCE_IDS[moonphase_number]);
-	moon_icon_layer = bitmap_layer_create(MOON_ICON_FRAME);
-	bitmap_layer_set_bitmap(moon_icon_layer, moon_image);
-    layer_add_child(window_get_root_layer(my_window), bitmap_layer_get_layer(moon_icon_layer));
-*/
-	
-	//RAIN PROBABILITY
-	PoP_Layer = text_layer_create(POP_FRAME);	
-	text_layer_set_text_color(PoP_Layer, GColorWhite);
-	text_layer_set_background_color(PoP_Layer, GColorClear);
-	text_layer_set_font(PoP_Layer, font_date);
-	text_layer_set_text_alignment(PoP_Layer, GTextAlignmentRight);
-	layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(PoP_Layer));
-	
-	persist_read_string(POP_KEY, PoP, sizeof(PoP));
-	text_layer_set_text(PoP_Layer,PoP);
-	
-	//Rain ICON
-	if (rain_image){gbitmap_destroy(rain_image);}
-	rain_image = gbitmap_create_with_resource(RESOURCE_ID_ICON_RAIN_SMALL);
-	rain_icon_layer = bitmap_layer_create(RAIN_ICON_FRAME);
-	bitmap_layer_set_bitmap(rain_icon_layer, rain_image);
-    layer_add_child(window_get_root_layer(my_window), bitmap_layer_get_layer(rain_icon_layer));
-	
-	
-	//if color inverted, then create the inverted layer
-	#ifdef PBL_PLATFORM_APLITE
-		InvertColors(color_inverted);
-	#endif
-	
-	//refresh the tap counter 
-	TapCount = 0;
-	
-	//setup the timer to set back the temperature after 5sec
-	weather = app_timer_register(ESDuration_ms, forecast_callback, NULL);
-
-	
-} //LoadForecast - END
-
-
-void ExtendBackLight(){
-	
-	//Turn the lights on!
-	light_enable_interaction();
-	//Reset the time for another second
-	BackLightTimer = app_timer_register(1000, ExtendBackLight, NULL);
 }
-
-//************************************//
-//** Capture the accelerometer Taps **//
-//************************************//
-
 
 void accel_tap_handler(AccelAxisType axis, int32_t direction){
 
-    //send_cmd();
 	//Check if the Forecast is enabled 
 	if (ESDuration_ms>0){
 	//Just fire the event while displaying the primary screen
@@ -1257,315 +1134,3 @@ void accel_tap_handler(AccelAxisType axis, int32_t direction){
 		}
 	}
 }
-
-
-//****************************//
-// Initialize the application //
-//****************************//
-
-void LoadMainWindow(){
-	        //LOAD THE LAYERS
-                //Display the Weekday layer
-                Weekday_Layer = text_layer_create(WEEKDAY_FRAME);
-				text_layer_set_text_color(Weekday_Layer, GColorWhite);
-	            text_layer_set_background_color(Weekday_Layer, GColorClear);
-				if (language == 17){
-                	text_layer_set_font(Weekday_Layer, font_russian_date);
-				}
-				else{
-					text_layer_set_font(Weekday_Layer, font_date);
-				}
-                text_layer_set_text_alignment(Weekday_Layer, GTextAlignmentLeft);
-                layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Weekday_Layer));
-	
-				//Display the weekday in chinese
-				chinese_day_layer = bitmap_layer_create(CHIN_WEEKDAY_FRAME);
-				layer_add_child(window_get_root_layer(my_window), bitmap_layer_get_layer(chinese_day_layer));
-				bitmap_layer_set_alignment(chinese_day_layer, GAlignLeft);	
-       
-                //Display the Batt layer
-                Batt_icon_layer = bitmap_layer_create(BATT_FRAME);
-                bitmap_layer_set_bitmap(Batt_icon_layer, Batt_image);
-                layer_add_child(window_get_root_layer(my_window), bitmap_layer_get_layer(Batt_icon_layer));
-        
-                //Display the BT layer
-                BT_icon_layer = bitmap_layer_create(BT_FRAME);
-                bitmap_layer_set_bitmap(BT_icon_layer, BT_image);
-                layer_add_child(window_get_root_layer(my_window), bitmap_layer_get_layer(BT_icon_layer));
-        
-                //Display the Time layer
-			
-			if ((blnseconds)||(!clock_is_24h_style())){Time_Layer = text_layer_create(TIME_FRAME2);
-						   text_layer_set_text_alignment(Time_Layer, GTextAlignmentRight);}
-			else{Time_Layer = text_layer_create(TIME_FRAME);
-				text_layer_set_text_alignment(Time_Layer, GTextAlignmentCenter);}
-				
-				//Define the text color based on the Pebble model
-				#ifdef PBL_COLOR
-				  text_layer_set_text_color(Time_Layer, GColorChromeYellow);
-				#else
-				  text_layer_set_text_color(Time_Layer, GColorWhite);
-				#endif
-				
-	            text_layer_set_background_color(Time_Layer, GColorClear);
-                text_layer_set_font(Time_Layer, font_time);
-                layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(Time_Layer));
-	
-	
-	//YWeather 2.3 - REQ01. Display Seconds - START
-	            //Display the Second layer
-                seconds_layer = text_layer_create(SECONDS_FRAME);
-				text_layer_set_text_color(seconds_layer, GColorWhite);
-	            text_layer_set_background_color(seconds_layer, GColorClear);
-                text_layer_set_font(seconds_layer, font_date);
-                text_layer_set_text_alignment(seconds_layer, GTextAlignmentLeft);
-                layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(seconds_layer));
-	
-	            ampm_layer = text_layer_create(AMPM_FRAME);
-				text_layer_set_text_color(ampm_layer, GColorWhite);
-	            text_layer_set_background_color(ampm_layer, GColorClear);
-                text_layer_set_font(ampm_layer, font_update);
-                text_layer_set_text_alignment(ampm_layer, GTextAlignmentLeft);
-                layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(ampm_layer));
-	//YWeather 2.3 - REQ01. Display Seconds - END
-        
-                //Display the Date layer
-                date_layer = text_layer_create(DATE_FRAME);	
-				text_layer_set_text_color(date_layer, GColorWhite);
-	            text_layer_set_background_color(date_layer, GColorClear);
-				if (language == 17){
-                	text_layer_set_font(date_layer, font_russian_date);
-				}
-				else{
-					text_layer_set_font(date_layer, font_date);
-				}
-                text_layer_set_text_alignment(date_layer, GTextAlignmentRight);
-                layer_add_child(window_get_root_layer(my_window), text_layer_get_layer(date_layer));
-        
-        
-                //Display the Temperature layer
-				LoadTemperature();     
-
-        
- 
-	            //Drawn the normal/inverted based on saved settings
-				#ifdef PBL_PLATFORM_APLITE
-	            	InvertColors(color_inverted);
-				#endif
-}//LoadMainWindow END
-
-void SetupMessages(){
-
-
-                app_message_open(inbound_size, outbound_size);
-        
-                Tuplet initial_values[] = {
-                TupletInteger(WEATHER_ICON_KEY, ICON_CODE), //INITIALIZE TO "N/A"
-				MyTupletCString(WEATHER_TEMPERATURE_KEY, temp),
-				//MyTupletCString(WEATHER_TEMPERATURE_KEY,low), //Init to something
-                MyTupletCString(WEATHER_CITY_KEY, "YWeather 3.2"), //display app version on load
-				TupletInteger(INVERT_COLOR_KEY, color_inverted),
-				TupletInteger(language_key, language), //INITIALIZE TO LAST SAVED	
-				TupletInteger(VIBES_KEY, blnvibes),
-				MyTupletCString(WEATHER_HIGH_KEY,high),
-				MyTupletCString(WEATHER_LOW_KEY,low),
-				MyTupletCString(SUNRISE_KEY,sunrise),
-				MyTupletCString(SUNSET_KEY,sunset),
-				MyTupletCString(WIND_KEY,wind),
-				//MyTupletCString(WIND_KEY,"0"), //Init to something
-				//TupletInteger(WDIRECTION_KEY,wdirection),
-				MyTupletCString(WDIRECTION_KEY,strwdirection),
-				MyTupletCString(POP_KEY,PoP),
-				//3 days forecast
-				TupletInteger(FORECAST_CODE1_KEY,0),
-				MyTupletCString(FORECAST_HIGH1_KEY,day1H),
-				MyTupletCString(FORECAST_LOW1_KEY,day1L),
-				TupletInteger(FORECAST_CODE2_KEY,0),
-				MyTupletCString(FORECAST_HIGH2_KEY,day2H),
-				MyTupletCString(FORECAST_LOW2_KEY,day2L),
-				TupletInteger(FORECAST_CODE3_KEY,0),
-				MyTupletCString(FORECAST_HIGH3_KEY,day3H),
-				MyTupletCString(FORECAST_LOW3_KEY,day3L),
-				//Extra Features
-				TupletInteger(EXTRA_ESDURATION_KEY,init_ESDuration_ms),
-				TupletInteger(EXTRA_TIMER_KEY,init_timeout_ms),
-				TupletInteger(EXTRA_FORECAST_KEY,bln3daysForecast),
-				TupletInteger(DISPLAY_SECONDS_KEY,blnseconds),
-				TupletInteger(HOURLY_VIBE_KEY,blnhourly_vibe),
-				TupletInteger(HOURLY_VIBE_START_KEY,0),
-				TupletInteger(HOURLY_VIBE_END_KEY,9),
-				TupletInteger(HIDE_BAT_KEY,batt_status),
-				TupletInteger(BACKLIGHT_KEY, blnBacklight),
-				//TupletInteger(FONT_KEY, intUI), //INITIALIZE TO LAST SAVED
-                }; //TUPLET INITIAL VALUES
-        
-                app_sync_init(&sync, sync_buffer, sizeof(sync_buffer), initial_values,
-                ARRAY_LENGTH(initial_values), sync_tuple_changed_callback,
-                NULL, NULL);
-	
-}
-
-
-static void init_callback(void *context) {
-       
-        //Subscribe to the accelerometer event.
-        accel_tap_service_subscribe(accel_tap_handler);
-    
-}
-
-void handle_init(void)
-{
-		//Use the internationalization API to detect the user's language
-		setlocale(LC_ALL, i18n_get_system_locale());
-
-  
-		//load persistent storage options
-		color_inverted = persist_read_bool(INVERT_COLOR_KEY);
-		blnvibes = persist_read_int(VIBES_KEY);
-		language = persist_read_int(language_key);
-		ICON_CODE = persist_read_int(WEATHER_ICON_KEY);
-		persist_read_string(WEATHER_TEMPERATURE_KEY, temp, sizeof(temp));
-		persist_read_string(WEATHER_HIGH_KEY, high, sizeof(high));
-		persist_read_string(WEATHER_LOW_KEY, low, sizeof(low));
-		persist_read_string(SUNRISE_KEY, sunrise, sizeof(sunrise));
-		persist_read_string(SUNSET_KEY, sunset, sizeof(sunset));
-		persist_read_string(WIND_KEY, wind, sizeof(wind));
-		persist_read_string(POP_KEY, PoP, sizeof(PoP));
-		//wdirection =  persist_read_int(WDIRECTION_KEY); 
-		persist_read_string(WDIRECTION_KEY, strwdirection, sizeof(strwdirection));
-		persist_read_string(FORECAST_HIGH1_KEY, day1H, sizeof(day1H));
-		persist_read_string(FORECAST_LOW1_KEY, day1L, sizeof(day1L));
-		persist_read_string(FORECAST_HIGH2_KEY, day2H, sizeof(day2H));
-		persist_read_string(FORECAST_LOW2_KEY, day2L, sizeof(day2L));
-		persist_read_string(FORECAST_HIGH3_KEY, day3H, sizeof(day3H));
-		persist_read_string(FORECAST_LOW3_KEY, day3L, sizeof(day3L));
-		ESDuration_ms = persist_read_int(EXTRA_ESDURATION_KEY);
-		timeout_ms = persist_read_int(EXTRA_TIMER_KEY);
-		//ensures timeout_ms is never less than 5mins (if so, set to 30mins)
-		if (timeout_ms<35000) {timeout_ms=180000;}
-		//ensures Extended Screen duration is never less than 5secs (if so, set to 5secs)
-		//if (ESDuration_ms < 5000){ESDuration_ms = 5000;} 
-		bln3daysForecast = persist_read_int(EXTRA_FORECAST_KEY);
-	//YWeather 2.3 - REQ01. Display Seconds - START
-		blnseconds = persist_read_int(DISPLAY_SECONDS_KEY);
-	//YWeather 2.3 - REQ01. Display Seconds - END
-	//YWeather 2.3 - REQ02. Hourly Vibe - START
-		blnhourly_vibe = persist_read_int(HOURLY_VIBE_KEY);
-	//YWeather 2.3 - REQ02. Hourly Vibe - END
-		batt_status = persist_read_int(HIDE_BAT_KEY);
-		//intUI = persist_read_int(FONT_KEY);
-		blnBacklight= persist_read_int(BACKLIGHT_KEY);
-	
-		init_ESDuration_ms = ESDuration_ms/1000;
-		init_timeout_ms = timeout_ms/60000;
-	
-
-        //Create the main window
-        my_window = window_create();
-        window_stack_push(my_window, true /* Animated */);  
-	
-		window_set_background_color(my_window, GColorBlack);
-	
-		//Check the Pebble model to determine the background color
-	/*
-		#ifdef PBL_COLOR
-		  window_set_background_color(my_window, GColorDarkGray );
-		#else
-		  window_set_background_color(my_window, GColorBlack);
-		#endif
-     */
-
-		res_t = resource_get_handle(RESOURCE_ID_FUTURA_CONDENSED_53); // Time font
-		res_d_rus = resource_get_handle(RESOURCE_ID_RUSSIAN_17); // Date font for Russian language
-		res_d_rus_forecast = resource_get_handle(RESOURCE_ID_RUSSIAN_14); // Date font for Russian language
-		res_d = resource_get_handle(RESOURCE_ID_FUTURA_17); // Date font for common ASCII languages
-		res_u = resource_get_handle(RESOURCE_ID_FUTURA_10); // Last Update font
-		res_temp = resource_get_handle(RESOURCE_ID_FUTURA_43); //Temperature  
-			
-   
-
-		font_date = fonts_load_custom_font(res_d);
-		font_russian_date = fonts_load_custom_font(res_d_rus);
-		font_russian_date_forecast = fonts_load_custom_font(res_d_rus_forecast);
-        font_update = fonts_load_custom_font(res_u);
-        font_time = fonts_load_custom_font(res_t);
-        font_temperature = fonts_load_custom_font(res_temp);	
-
-
-       
-      
-		//Load the Main Window
-		LoadMainWindow();
-		//Get Current Date
-		getDate();
-	//YWeather 2.3 - REQ01. Display Seconds - START
-		getTime();
-	//YWeather 2.3 - REQ01. Display Seconds - END
-	
-        // Ensures time is displayed immediately (will break if NULL tick event accessed).
-         // (This is why it's a good idea to have a separate routine to do the update itself.)
-	
-		//Initialize the Message Service
-		SetupMessages();
-	               
-	  // Set up the update layer callback
-	
-		SubscribeTickEvent();
-		
-		//Enable the Battery check event
-		battery_state_service_subscribe(&handle_battery);
-		//Enable the Bluetooth check event
-		bluetooth_connection_service_subscribe(&handle_bluetooth);
-		
-		//setup the timer to refresh the weather info every 30min
-		timer = app_timer_register(timeout_ms, timer_callback, NULL);
-		
-		//setup a timer to wait 5 seconds before subscribe to tap events.
-		//that will avoid a crash when loading extended screen before all the
-		//componenets are properly loaded.
-		initialize = app_timer_register(5000, init_callback, NULL);
-		
-        
-} //HANDLE_INIT
-
-
-
-//**********************//
-// Kill the application //
-//**********************//
-void handle_deinit(void)
-{
-  //text_layer_destroy(text_layer);
-
-
-        //Unsuscribe services
-        tick_timer_service_unsubscribe();
-        battery_state_service_unsubscribe();
-        bluetooth_connection_service_unsubscribe();
-		accel_tap_service_unsubscribe();
-
-	
-        //Deallocate custom fonts
-        fonts_unload_custom_font(font_date);
-        fonts_unload_custom_font(font_update);
-        fonts_unload_custom_font(font_time);
-        fonts_unload_custom_font(font_temperature);
-        
-        //Deallocate the main window
-         window_destroy(my_window);
-
-} //HANDLE_DEINIT
-
-
-//*************//
-// ENTRY POINT //
-//*************//
-int main(void)
-{        
-        handle_init();
-        app_event_loop();
-        handle_deinit();
-}
-
-
-
