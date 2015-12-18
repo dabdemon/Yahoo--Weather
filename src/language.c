@@ -1,7 +1,7 @@
 #include <pebble.h>
 #include <language.h>
 
-char* translateDay(int weekday, int language){
+char* translateDay(int weekday, int language, bool pblRound){
 
 	static char translatedWeekday[12];
 	int arrayPosition;
@@ -13,7 +13,13 @@ char* translateDay(int weekday, int language){
 	
 	arrayPosition = (language*7)+weekday;
 	
-	memcpy(&translatedWeekday, WEEKDAYS[arrayPosition], strlen(WEEKDAYS[arrayPosition]));
+	if (pblRound) {
+		#ifdef PBL_ROUND
+			memcpy(&translatedWeekday, short_weekdays[arrayPosition], strlen(short_weekdays[arrayPosition]));
+		#endif
+	}
+	else {memcpy(&translatedWeekday, WEEKDAYS[arrayPosition], strlen(WEEKDAYS[arrayPosition]));}
+	
 	
 	return translatedWeekday;
 }

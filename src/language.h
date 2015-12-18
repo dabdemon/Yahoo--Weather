@@ -592,7 +592,185 @@ static const char *MONTHS[] = {
 	" Декабрь",
 	*/
 };
+
+//On Round devices, the 3 day forecast uses the 3 char short dates. If we shrink the long weekday to 3 chars special accents are failing (like Mié or Sáb).
+//Until I found a more fancy way to do this on C, I will create a PBL_ROUND specific 3 char array.
+#ifdef PBL_ROUND 
+static const char *short_weekdays[] = {
+	"NULL",
+	//ENGLISH - 0
+	"MON",
+	"TUE",
+	"WED",
+	"THU",
+	"FRI",
+	"SAT",
+	"SUN",
+	//SPANISH - 1
+	"LUN",
+	"MAR",
+	"MIE",
+	"JUE",
+	"VIE",
+	"SAB", 
+	"DOM", 
+	//ITALIAN - 2
+	"LUN",
+	"MAR",
+	"MER", 
+	"GIO", 
+	"VEN", 
+	"SAB", 
+	"DOM", 
+	//GERMAN - 3
+	"MON", 
+	"DIE", 
+	"MIT", 
+	"DON", 
+	"FRE", 
+	"SAM", 
+	"SON",
+	//CZECH - 4
+	"PON",
+	"UTE", 
+	"STR", 
+	"CTV", 
+	"PAT", 
+	"SOB", 
+	"NED", 
+	//FRENCH - 5
+	"LUN",
+	"MAR", 
+	"MER",
+	"JEU", 
+	"VEN", 
+	"SAM", 
+	"DIM", 
+	//PORTUGUESE - 6
+	"SEG", 
+	"TER", 
+	"QUA",
+	"QUI", 
+	"SEX", 
+	"SAB", 
+	"DOM", 
+	//FINNISH - 7
+	"MAA", 
+	"TII", 
+	"KES",
+	"TOR", 
+	"PER",
+	"LAU",
+	"SUN", 
+	//DUTCH - 8
+	"MAA", 
+	"DIN", 
+	"WOE", 
+	"DON",
+	"VRI", 
+	"ZAT", 
+	"ZON", 
+	//POLISH - 9
+	"PON",
+	"WTO", 
+	"SRO", 
+	"CZW",
+	"PIA", 
+	"SOB",
+	"NIE",
+	//SWEDISH - 10
+	"MAN",
+	"TIS", 
+	"ONS", 
+	"TOR", 
+	"FRE", 
+	"LOR",
+	"SON",
+	//DANISH - 11
+	"MAN",
+	"TIR",
+	"ONS",
+	"TOR",
+	"FRE", 
+	"LOR",
+	"SON",
+	//CATALAN - 12
+	"DIL", 
+	"DIM",
+	"DIM", 
+	"DIJ", 
+	"DIV",
+	"DIS",
+	"DIU ",
+	//HUNGARIAN - 13
+	"HET",
+	"KED", 
+	"SZE",
+	"CSU",
+	"PEN", 
+	"SZO",
+	"VAS", 
+	//NORWEGIAN - 14
+	"MAN",
+	"TIR",
+	"ONS",
+	"TOR",
+	"FRE", 
+	"LOR",
+	"SON",  
+	//TURKISH - 15
+	"PAZ",
+	"SAL",
+	"CAR",
+	"PER",
+	"CUM",
+	"CUM",
+	"PAZ",
+	//SLOVAK - 16
+	"PON", 
+	"UTO", 
+	"STR", 
+	"STV", 
+	"PIA", 
+	"SOB", 
+	"NED",
+	//ROMANIAN - 17
+	"LUN", 
+	"MAR", 
+	"MIE", 
+	"JOI", 
+	"VIN", 
+	"SAM", 
+	"DUM",
+	//RUSSIAN - 18
+	"Pon",//"Понедельник",
+	"Vto",//"Вторник",
+	"Sre",//"Среда",
+	"^et",//"Четверг",
+	"PÔt",//"Пятница",
+	"Sub",//"Суббота",
+	"Vos",//"Воскресенье",
+
+	//CHINESE - 19
+	"MON", //Monday
+	"TUE", //Tuesday
+	"WED", //Wednesday
+	"THU", //Thursday
+	"FRI", //Friday
+	"SAT", //Saturday
+	"SUN", //Sunday
+
+	//JAPANESE (KANJI) - 20
+	"MON", //Monday
+	"TUE", //Tuesday
+	"WED", //Wednesday
+	"THU", //Thursday
+	"FRI", //Friday
+	"SAT", //Saturday
+	"SUN", //Sunday
+};
+#endif
 	
 
-char* translateDay(int weekday, int language);
+char* translateDay(int weekday, int language, bool pblRound);
 char* translateMonth(int month, int language);

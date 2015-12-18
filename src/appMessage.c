@@ -36,6 +36,9 @@ static char initial_day2L[] = "      ";
 static char initial_day3H[] = "      ";
 static char initial_day3L[] = "      ";
 int oldLanguage;
+int initial_day1_code = 18;
+int initial_day2_code = 18;
+int initial_day3_code = 18;
 
 
 static void sync_tuple_changed_callback(const uint32_t key,
@@ -265,13 +268,13 @@ void SetupMessages(){
 			MyTupletCString(WDIRECTION_KEY,initial_strwdirection),
 			MyTupletCString(POP_KEY,initial_PoP),
 		//3 days forecast
-			TupletInteger(FORECAST_CODE1_KEY,18),
+			TupletInteger(FORECAST_CODE1_KEY,initial_day1_code),
 			MyTupletCString(FORECAST_HIGH1_KEY,initial_day1H),
 			MyTupletCString(FORECAST_LOW1_KEY,initial_day1L),
-			TupletInteger(FORECAST_CODE2_KEY,18),
+			TupletInteger(FORECAST_CODE2_KEY,initial_day2_code),
 			MyTupletCString(FORECAST_HIGH2_KEY,initial_day2H),
 			MyTupletCString(FORECAST_LOW2_KEY,initial_day2L),
-			TupletInteger(FORECAST_CODE3_KEY,18),
+			TupletInteger(FORECAST_CODE3_KEY,initial_day3_code),
 			MyTupletCString(FORECAST_HIGH3_KEY,initial_day3H),
 			MyTupletCString(FORECAST_LOW3_KEY,initial_day3L),
 		//Extra Features
@@ -329,6 +332,9 @@ void loadInitialTuples(){
 	if(persist_exists(FORECAST_LOW2_KEY)){persist_read_string(FORECAST_LOW2_KEY, initial_day2L, sizeof(initial_day2L));}
 	if(persist_exists(FORECAST_HIGH3_KEY)){persist_read_string(FORECAST_HIGH3_KEY, initial_day3H, sizeof(initial_day3H));}
 	if(persist_exists(FORECAST_LOW3_KEY)){persist_read_string(FORECAST_LOW3_KEY, initial_day3L, sizeof(initial_day3L));}
+	if(persist_exists(FORECAST_CODE1_KEY)){initial_day1_code = persist_read_int(FORECAST_CODE1_KEY);}
+	if(persist_exists(FORECAST_CODE2_KEY)){initial_day2_code = persist_read_int(FORECAST_CODE2_KEY);}
+	if(persist_exists(FORECAST_CODE3_KEY)){initial_day3_code = persist_read_int(FORECAST_CODE3_KEY);}
 	
 }
 

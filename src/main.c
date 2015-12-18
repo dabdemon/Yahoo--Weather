@@ -84,7 +84,7 @@ void handle_init(void){
 		//#ifdef PBL_SDK_2
 		  //handle_bluetooth(bluetooth_connection_service_peek());
 		//#elif PBL_SDK_3
-		  //handle_bluetooth(connection_service_peek_pebble_app_connection());
+		  handle_bluetooth(connection_service_peek_pebble_app_connection());
 		//#endif
 	
 		//setup the timer to refresh the weather info every 30min
@@ -317,7 +317,7 @@ void refreshLayers(){
 		#ifdef PBL_ROUND
 			//After the date & time, draw a line to separate from weather
 			line = text_layer_create(BT_FRAME);
-			text_layer_set_background_color(line, GColorBlack);
+			text_layer_set_background_color(line, GColorWhite);
 			layer_add_child(window_get_root_layer(mainWindow), text_layer_get_layer(line));
 		#else
 			BT_icon_layer = bitmap_layer_create(BT_FRAME);
@@ -415,27 +415,27 @@ APP_LOG(APP_LOG_LEVEL_DEBUG, "unloadDigital: Heap free is %u bytes", heap_bytes_
 		}//WATCH LANGUAGE
 		else{
 			//translate the day of the week
-			char *translatedDay = translateDay(intWDay, intLanguage);
+			char *translatedDay = translateDay(intWDay, intLanguage, false);
 			memcpy(&weekday_text, translatedDay, strlen(translatedDay)+1);
 			//translate the 3-day forecast
 			//week day + 1
 				int intDayPlusOne = intWDay+1;
 				if (intDayPlusOne > 6){intDayPlusOne = intDayPlusOne-7;}
-				char *translatedDay1 = translateDay(intDayPlusOne, intLanguage);
-				snprintf(weekday1_text, PBL_IF_ROUND_ELSE(3,strlen(translatedDay1)+1 ),translatedDay1);
-				//memcpy(&weekday1_text, translatedDay1, PBL_IF_ROUND_ELSE(3,strlen(translatedDay1)+1 ));
+				char *translatedDay1 = translateDay(intDayPlusOne, intLanguage, PBL_IF_ROUND_ELSE(true,false));
+				//snprintf(weekday1_text, strlen(translatedDay1)+1,translatedDay1);
+				memcpy(&weekday1_text, translatedDay1, strlen(translatedDay1)+1);
 			//week day + 2
 				int intDayPlusTwo = intWDay+2;
 				if (intDayPlusTwo > 6){intDayPlusTwo = intDayPlusTwo-7;}
-				char *translatedDay2 = translateDay(intDayPlusTwo, intLanguage);
-				snprintf(weekday2_text, PBL_IF_ROUND_ELSE(3,strlen(translatedDay2)+1 ),translatedDay2);
-				//memcpy(&weekday2_text, translatedDay2, PBL_IF_ROUND_ELSE(3,strlen(translatedDay2)+1 ));
+				char *translatedDay2 = translateDay(intDayPlusTwo, intLanguage, PBL_IF_ROUND_ELSE(true,false));
+				//snprintf(weekday2_text, strlen(translatedDay2)+1,translatedDay2);
+				memcpy(&weekday2_text, translatedDay2, strlen(translatedDay2)+1);
 			//week day + 3
 				int intDayPlusThree = intWDay+3;
 				if (intDayPlusThree > 6){intDayPlusThree = intDayPlusThree-7;}
-				char *translatedDay3 = translateDay(intDayPlusThree, intLanguage);
-				snprintf(weekday3_text, PBL_IF_ROUND_ELSE(3,strlen(translatedDay3)+1 ),translatedDay3);
-				//memcpy(&weekday3_text, translatedDay3, PBL_IF_ROUND_ELSE(3,strlen(translatedDay3)+1 ));
+				char *translatedDay3 = translateDay(intDayPlusThree, intLanguage, PBL_IF_ROUND_ELSE(true,false));
+				//snprintf(weekday3_text, strlen(translatedDay3)+1,translatedDay3);
+				memcpy(&weekday3_text, translatedDay3, strlen(translatedDay3)+1);
 								
 			//translate the month
 			char *translatedMonth = translateMonth(intMonth, intLanguage);
@@ -841,7 +841,7 @@ void Load3Days(){
         	text_layer_set_font(Day1_Layer, font_russian_date_forecast);
 			}
 		else if (intLanguage == 19 || intLanguage == 20){
-			text_layer_set_font(Day1_Layer, font_asian);
+			text_layer_set_font(Day1_Layer, PBL_IF_ROUND_ELSE(font_date,font_asian));
 			}
 		else{
 			text_layer_set_font(Day1_Layer, font_date);
@@ -892,7 +892,7 @@ void Load3Days(){
         	text_layer_set_font(Day2_Layer, font_russian_date_forecast);
 			}
 		else if (intLanguage == 19 || intLanguage == 20){
-			text_layer_set_font(Day2_Layer, font_asian);
+			text_layer_set_font(Day2_Layer, PBL_IF_ROUND_ELSE(font_date,font_asian));
 			}
 		else{
 			text_layer_set_font(Day2_Layer, font_date);
@@ -940,7 +940,7 @@ void Load3Days(){
         	text_layer_set_font(Day3_Layer, font_russian_date_forecast);
 			}
 		else if (intLanguage == 19 || intLanguage == 20){
-			text_layer_set_font(Day3_Layer, font_asian);
+			text_layer_set_font(Day3_Layer, PBL_IF_ROUND_ELSE(font_date,font_asian));
 			}
 		else{
 			text_layer_set_font(Day3_Layer, font_date);
