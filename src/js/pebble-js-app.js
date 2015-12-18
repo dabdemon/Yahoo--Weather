@@ -1327,9 +1327,9 @@ function CheckUserKey()
 	
 	if (key.length = 11) {
 		//old key; use original decrypt mode
-		decrypt = token.substring(10,11) + token.substring(2,3) + token.substring(7,8) + token.substring(14,15) + token.substring(0,1);
+		decrypt = token.substring(1,2) + token.substring(2,3) + token.substring(2,3) + token.substring(14,15) + token.substring(10,11);
 		decrypt = decrypt + key.substring(5,6);
-		decrypt = decrypt + token.substring(1,2) + token.substring(8,9) + token.substring(5,6) + token.substring(3,4) + token.substring(6,7)
+		decrypt = decrypt + token.substring(0,1) + token.substring(6,7) + token.substring(5,6) + token.substring(3,4) + token.substring(9,10)
 	}
 	/*
 	else if (key.length = 13){
