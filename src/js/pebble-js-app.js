@@ -1331,22 +1331,7 @@ function CheckUserKey()
 		decrypt = decrypt + key.substring(3,4);
 		decrypt = decrypt + token.substring(0,1) + token.substring(6,7) + token.substring(5,6) + token.substring(3,4) + token.substring(9,10)
 	}
-	/*
-	else if (key.length = 13){
-		//new key; use the newer/better decrypt mode
-		var magicKey = key.substring(0,1);
-		//check that the key is valid for this application
-		if (key.substring(11,12) = app){
-			decrypt = token.substring(10+parseInt(magicKey),((10+parseInt(magicKey))+1) + token.substring(2,3) + token.substring(7,8) + token.substring(14,15) + token.substring(0+parseInt(magicKey),((0+parseInt(magicKey))+1));
-			decrypt = decrypt + key.substring(6,7);
-			decrypt = decrypt + token.substring(1,2) + token.substring(8,9) + token.substring(5,6) + token.substring(3,4) + token.substring(6+parseInt(magicKey),((6+parseInt(magicKey))+1))
-		}
-		else{
-			decrypt = "999999999999";
-		}
-		
-	}
-	*/
+
 	else {
 		//invalid key... what is this?
 		decrypt = "999999999999";

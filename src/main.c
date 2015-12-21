@@ -25,9 +25,7 @@ int main(void){
 // Kill the application //
 //**********************//
 void handle_deinit(void){
-  //text_layer_destroy(text_layer);
 
-/*
         //Unsuscribe services
         tick_timer_service_unsubscribe();
 	
@@ -36,7 +34,7 @@ void handle_deinit(void){
         
         //Deallocate the main window
          window_destroy(mainWindow);
-*/
+
 
 } //HANDLE_DEINIT
 
@@ -61,8 +59,9 @@ void handle_init(void){
 		LoadDigital();
 		//Get Current Date
 		loadPersistentData(false, language_key);
+		loadPersistentData(false, WEATHER_ICON_KEY);
+		loadPersistentData(false, WEATHER_TEMPERATURE_KEY);
 		getDate();
-		//getTime();
 		
 		// Set up the update layer callback
 		SubscribeTickEvent();
@@ -73,29 +72,14 @@ void handle_init(void){
   		handle_battery(battery_state_service_peek());
 	
 		//Check the Bluetooth status
-		//#ifdef PBL_SDK_2
-		  //bluetooth_connection_service_subscribe(handle_bluetooth);
-		//#elif PBL_SDK_3
 		  connection_service_subscribe((ConnectionHandlers) {
 			.pebble_app_connection_handler = handle_bluetooth
 		  });
-		//#endif
 		//and get the current BT status to do not experience delays
-		//#ifdef PBL_SDK_2
-		  //handle_bluetooth(bluetooth_connection_service_peek());
-		//#elif PBL_SDK_3
 		  handle_bluetooth(connection_service_peek_pebble_app_connection());
-		//#endif
+
 	
 		//setup the timer to refresh the weather info every 30min
-	/*
-		static char strdebug[15];
-		memset(&strdebug[0], 0, sizeof(strdebug));
-	  	itoa(timeout_ms, strdebug);
-		APP_LOG(APP_LOG_LEVEL_INFO, "weatherTimer timeout_ms: ");
-		APP_LOG(APP_LOG_LEVEL_INFO, strdebug);
-	*/
-	
 		weatherTimer = app_timer_register(timeout_ms, weatherTimer_callback, NULL);
 	
 		//Get weather
@@ -153,6 +137,9 @@ void loadPersistentData(bool refresh, int intKEY){
 	//Weather
 	if(persist_exists(WEATHER_TEMPERATURE_KEY) && intKEY == WEATHER_TEMPERATURE_KEY){
 		persist_read_string(WEATHER_TEMPERATURE_KEY, temp, sizeof(temp));
+		if((refresh)&&(!blnForecast)){
+			text_layer_set_text(Temperature_Layer, temp);
+		}
 			/*		
 				APP_LOG(APP_LOG_LEVEL_INFO, "loadPersistentData temp: ");
 				APP_LOG(APP_LOG_LEVEL_INFO, temp);
@@ -168,15 +155,20 @@ void loadPersistentData(bool refresh, int intKEY){
 		APP_LOG(APP_LOG_LEVEL_INFO, "loadPersistentData ICON_CODE: ");
 		APP_LOG(APP_LOG_LEVEL_INFO, strICON);
 		*/// DEBUG //
-		
-	if (weather_image != NULL){gbitmap_destroy(weather_image);}
-		weather_image = gbitmap_create_with_resource(WEATHER_ICONS[ICON_CODE]);
-		#ifdef PBL_SDK_3
-			bitmap_layer_set_bitmap(weather_icon_layer, weather_image);
-		#endif
+		if((refresh)&&(!blnForecast)){
+				if (weather_image != NULL){gbitmap_destroy(weather_image);}
+				weather_image = gbitmap_create_with_resource(WEATHER_ICONS[ICON_CODE]);
+				#ifdef PBL_SDK_3
+					bitmap_layer_set_bitmap(weather_icon_layer, weather_image);
+				#endif
+			}
+
 	}
 	if(persist_exists(WEATHER_CITY_KEY) && intKEY == WEATHER_CITY_KEY){
 		persist_read_string(WEATHER_CITY_KEY, city, sizeof(city));
+		if((refresh)&&(!blnForecast)){
+			text_layer_set_text(Location_Layer, city);
+		}
 			/*
 				APP_LOG(APP_LOG_LEVEL_INFO, "loadPersistentData city: ");
 				APP_LOG(APP_LOG_LEVEL_INFO, city);
@@ -184,6 +176,9 @@ void loadPersistentData(bool refresh, int intKEY){
 	}
 	if(persist_exists(WEATHER_LAST_UPDATE) && intKEY == WEATHER_LAST_UPDATE){
 		persist_read_string(WEATHER_LAST_UPDATE, last_update, sizeof(last_update));
+		if((refresh)&&(!blnForecast)){
+			text_layer_set_text(Last_Update, last_update);
+		}
 			/*
 				APP_LOG(APP_LOG_LEVEL_INFO, "loadPersistentData last_update: ");
 				APP_LOG(APP_LOG_LEVEL_INFO, last_update);
@@ -203,6 +198,8 @@ void loadPersistentData(bool refresh, int intKEY){
 	}
 	if(persist_exists(language_key) && intKEY == language_key){
 		intLanguage = persist_read_int(language_key);
+		//if we want to refresh the on screen info, refresh the layers.
+		if(refresh){refreshLayers();}
 			/*
 				static char strLanguage[15];
 				memset(&strLanguage[0], 0, sizeof(strLanguage));
@@ -246,8 +243,6 @@ void loadPersistentData(bool refresh, int intKEY){
 	if(persist_exists(FORECAST_HIGH3_KEY) && intKEY == FORECAST_HIGH3_KEY){	persist_read_string(FORECAST_HIGH3_KEY, day3H, sizeof(day3H));}
 	if(persist_exists(FORECAST_LOW3_KEY) && intKEY == FORECAST_LOW3_KEY){	persist_read_string(FORECAST_LOW3_KEY, day3L, sizeof(day3L));}
 	
-	//if we want to refresh the on screen info, refresh the layers.
-	if(refresh){refreshLayers();}
 }
 
 void refreshLayers(){

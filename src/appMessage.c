@@ -51,7 +51,7 @@ static void sync_tuple_changed_callback(const uint32_t key,
 	  
 	  case WEATHER_ICON_KEY:
 	  	  	persist_write_int(WEATHER_ICON_KEY, new_tuple->value->uint8);
-	  		loadPersistentData(false, WEATHER_ICON_KEY);
+	  		loadPersistentData(true, WEATHER_ICON_KEY);
       		break;
 	  
 	  case WEATHER_TEMPERATURE_KEY:
@@ -61,13 +61,13 @@ static void sync_tuple_changed_callback(const uint32_t key,
 	  		clock_copy_time_string(update_text, sizeof(update_text));
 	  		persist_write_string(WEATHER_LAST_UPDATE, update_text);
 	  		//Reload data
-	  		loadPersistentData(false, WEATHER_TEMPERATURE_KEY);
+	  		loadPersistentData(true, WEATHER_TEMPERATURE_KEY);
 	  		loadPersistentData(false, WEATHER_LAST_UPDATE);
       		break;
 	  
 	  case WEATHER_CITY_KEY:
 	  		persist_write_string(WEATHER_CITY_KEY, new_tuple->value->cstring);
-	  		loadPersistentData(false, WEATHER_CITY_KEY);
+	  		loadPersistentData(true, WEATHER_CITY_KEY);
          	break;
 	  
 	  case INVERT_COLOR_KEY:
@@ -256,7 +256,7 @@ void SetupMessages(){
 			TupletInteger(WEATHER_ICON_KEY,initial_ICON_CODE),
 			MyTupletCString(WEATHER_TEMPERATURE_KEY, initial_temp),
 			//TupletInteger(THEME_KEY, 0),
-			MyTupletCString(WEATHER_CITY_KEY, initial_city), //display app version on load
+			MyTupletCString(WEATHER_CITY_KEY, "YWeather v3.3"), //display app version on load
 			//TupletInteger(INVERT_COLOR_KEY, 0),
 			TupletInteger(language_key, initial_Language), //INITIALIZE TO LAST SAVED	
 			TupletInteger(VIBES_KEY, 0),
