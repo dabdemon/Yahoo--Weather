@@ -199,7 +199,7 @@ void loadPersistentData(bool refresh, int intKEY){
 	if(persist_exists(language_key) && intKEY == language_key){
 		intLanguage = persist_read_int(language_key);
 		//if we want to refresh the on screen info, refresh the layers.
-		if(refresh){refreshLayers();}
+		if(refresh){getDate();}
 			/*
 				static char strLanguage[15];
 				memset(&strLanguage[0], 0, sizeof(strLanguage));
@@ -245,10 +245,69 @@ void loadPersistentData(bool refresh, int intKEY){
 	
 }
 
-void refreshLayers(){
+void refreshLayers(int intKEY, const Tuple* newTuple){
 	
-	//Init the date
-	getDate();
+	switch(intKEY){
+		
+		case WEATHER_ICON_KEY:
+			if (blnForecast == false) {
+				ICON_CODE = newTuple->value->uint8;
+				if (weather_image != NULL){gbitmap_destroy(weather_image);}
+				weather_image = gbitmap_create_with_resource(WEATHER_ICONS[ICON_CODE]);
+				bitmap_layer_set_bitmap(weather_icon_layer, weather_image);
+			}
+		break;
+		
+		case WEATHER_TEMPERATURE_KEY:
+		if (blnForecast == false) {
+				//Refresh the temperature
+				memset(&temp[0], 0, sizeof(temp));
+				memcpy(&temp,  newTuple->value->cstring, strlen(newTuple->value->cstring));
+				text_layer_set_text(Temperature_Layer,temp);
+				//update the last update
+				memset(&last_update[0], 0, sizeof(last_update));
+				memcpy(&last_update,  time_text, strlen(time_text));
+				text_layer_set_text(Last_Update, last_update);
+			}
+		break;
+		
+	
+		case WEATHER_CITY_KEY:
+			if (blnForecast == false) {
+				//Refresh the city
+				memset(&city[0], 0, sizeof(city));
+				memcpy(&city,  newTuple->value->cstring, strlen(newTuple->value->cstring));
+				text_layer_set_text(Location_Layer, city);
+			}
+		break;
+		
+		case language_key:
+			intLanguage = newTuple->value->uint8;
+			getDate();
+		break;
+		
+		case EXTRA_ESDURATION_KEY:
+			ESDuration_ms = newTuple->value->uint8*1000;
+			//ensure the ESDuration_ms is not over the limits (by mistake)
+			if(ESDuration_ms > 15000){ESDuration_ms = 5000;}
+		break;
+		
+		case EXTRA_TIMER_KEY:
+			timeout_ms = newTuple->value->uint8 * 60000;
+		break;
+		
+		case EXTRA_FORECAST_KEY:
+			bln3daysForecast = newTuple->value->uint8;
+		break;
+		
+		case HOURLY_VIBE_KEY:
+			blnHourlyVibe = newTuple->value->uint8;
+		break;
+		
+		case BACKLIGHT_KEY:
+			blnBacklight = newTuple->value->uint8 != 0;
+		break;
+	}
 }
 
 /*****************/

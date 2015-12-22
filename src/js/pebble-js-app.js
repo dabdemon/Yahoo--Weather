@@ -1351,6 +1351,7 @@ function CheckUserKey()
 }
 
 
+
 function getLocationName(pos){
 	
 	var url = "http://maps.googleapis.com/maps/api/geocode/json?latlng=" + pos + "";

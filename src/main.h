@@ -25,7 +25,7 @@ void unload3DaysIcons();
 void Load3Days();
 void Unload3Days();
 void loadPersistentData(bool refresh, int intKEY);
-void refreshLayers();
+void refreshLayers(int intKEY, const Tuple* newTuple);
 static void fetchWeather(void);
 static void weatherTimer_callback(void *context);
 static void forecast_callback(void *context);
