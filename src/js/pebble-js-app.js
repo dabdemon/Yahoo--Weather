@@ -421,15 +421,15 @@ function TWUFromLarLong(latitude, longitude){
 					else {low3 = response.forecast.simpleforecast.forecastday[3].low.fahrenheit + "\u00B0";}
 
 					//add a blank space between the - and the temp to better display
-				/*
-					temperature = temperature.replace("-","- "); 
-					high1 = high1.replace("-","- ");
-					low1 = low1.replace("-","- ");
-					high2 = high2.replace("-","- ");
-					low2 = low2.replace("-","- ");
-					high3 = high3.replace("-","- ");
-					low3 = low3.replace("-","- ");
-*/
+				
+					if(temperature.length <= 3){temperature = temperature.replace("-","- ");} 
+					if(high1.length <= 3){high1 = high1.replace("-","- ");}
+					if(low1.length <= 3){low1 = low1.replace("-","- ");}
+					if(high2.length <= 3){high2 = high2.replace("-","- ");}
+					if(low2.length <= 3){low2 = low2.replace("-","- ");}
+					if(high3.length <= 3){high3 = high3.replace("-","- ");}
+					if(low3.length <= 3){low3 = low3.replace("-","- ");}
+				
 				
 					//console logs
 					console.log("icon: " + icon + " temp: " + temperature + " city: " + city);
@@ -573,17 +573,14 @@ function openweatherByLatLong(latitude, longitude)
 			
 			
 			//add a blank space between the - and the temp to better display
-			/*
-		
-			temperature = temperature.replace("-","- "); 
-			high1 = high1.replace("-","- ");
-			low1 = low1.replace("-","- ");
-			high2 = high2.replace("-","- ");
-			low2 = low2.replace("-","- ");
-			high3 = high3.replace("-","- ");
-			low3 = low3.replace("-","- ");
-			*/
-			
+			if(temperature.length <= 3){temperature = temperature.replace("-","- ");} 
+			if(high1.length <= 3){high1 = high1.replace("-","- ");}
+			if(low1.length <= 3){low1 = low1.replace("-","- ");}
+			if(high2.length <= 3){high2 = high2.replace("-","- ");}
+			if(low2.length <= 3){low2 = low2.replace("-","- ");}
+			if(high3.length <= 3){high3 = high3.replace("-","- ");}
+			if(low3.length <= 3){low3 = low3.replace("-","- ");}
+				
 			city = response.name;
 			
 			//console logs
@@ -753,16 +750,14 @@ function forecastioByLatLong(latitude, longitude)
 			
 			
 			//add a blank space between the - and the temp to better display
-			/*
-		
-			temperature = temperature.replace("-","- "); 
-			high1 = high1.replace("-","- ");
-			low1 = low1.replace("-","- ");
-			high2 = high2.replace("-","- ");
-			low2 = low2.replace("-","- ");
-			high3 = high3.replace("-","- ");
-			low3 = low3.replace("-","- ");
-			*/
+			if(temperature.length <= 3){temperature = temperature.replace("-","- ");} 
+			if(high1.length <= 3){high1 = high1.replace("-","- ");}
+			if(low1.length <= 3){low1 = low1.replace("-","- ");}
+			if(high2.length <= 3){high2 = high2.replace("-","- ");}
+			if(low2.length <= 3){low2 = low2.replace("-","- ");}
+			if(high3.length <= 3){high3 = high3.replace("-","- ");}
+			if(low3.length <= 3){low3 = low3.replace("-","- ");}
+				
 			
 			location = getLocationName(latitude +","+ longitude);
 			
@@ -1024,15 +1019,14 @@ function getWeatherFromWoeid(woeid, city) {
 			low3 = channel[3].item.forecast.low + "\u00B0";
 
 			//add a blank space between the - and the temp to better display
-			/*
-			temperature = temperature.replace("-","- "); 
-			high1 = high1.replace("-","- ");
-			low1 = low1.replace("-","- ");
-			high2 = high2.replace("-","- ");
-			low2 = low2.replace("-","- ");
-			high3 = high3.replace("-","- ");
-			low3 = low3.replace("-","- ");
-			*/
+			if(temperature.length <= 3){temperature = temperature.replace("-","- ");} 
+			if(high1.length <= 3){high1 = high1.replace("-","- ");}
+			if(low1.length <= 3){low1 = low1.replace("-","- ");}
+			if(high2.length <= 3){high2 = high2.replace("-","- ");}
+			if(low2.length <= 3){low2 = low2.replace("-","- ");}
+			if(high3.length <= 3){high3 = high3.replace("-","- ");}
+			if(low3.length <= 3){low3 = low3.replace("-","- ");}
+				
 			
 			//console logs
 			console.log("icon: " + icon + " temp: " + temperature + " city: " + city);

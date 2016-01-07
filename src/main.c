@@ -979,7 +979,8 @@ void Load3Days(){
 	text_layer_set_text_color(High1_Layer, GColorWhite);
 	text_layer_set_background_color(High1_Layer, GColorClear);
 	text_layer_set_font(High1_Layer, font_update);
-  	PBL_IF_RECT_ELSE(text_layer_set_text_alignment(High1_Layer, GTextAlignmentRight),text_layer_set_text_alignment(High1_Layer, GTextAlignmentLeft)); 
+  	//PBL_IF_RECT_ELSE(text_layer_set_text_alignment(High1_Layer, GTextAlignmentRight),text_layer_set_text_alignment(High1_Layer, GTextAlignmentLeft)); 
+	text_layer_set_text_alignment(High1_Layer, GTextAlignmentRight);
 	layer_add_child(window_get_root_layer(mainWindow), text_layer_get_layer(High1_Layer));
 	
 	persist_read_string(FORECAST_HIGH1_KEY, day1H, sizeof(day1H));
@@ -991,7 +992,8 @@ void Load3Days(){
 	text_layer_set_text_color(Low1_Layer, GColorWhite);
 	text_layer_set_background_color(Low1_Layer, GColorClear);
 	text_layer_set_font(Low1_Layer, font_update);
-  	PBL_IF_RECT_ELSE(text_layer_set_text_alignment(Low1_Layer, GTextAlignmentRight),text_layer_set_text_alignment(Low1_Layer, GTextAlignmentLeft)); 
+  	//PBL_IF_RECT_ELSE(text_layer_set_text_alignment(Low1_Layer, GTextAlignmentRight),text_layer_set_text_alignment(Low1_Layer, GTextAlignmentLeft)); 
+	text_layer_set_text_alignment(Low1_Layer, GTextAlignmentRight);
 	layer_add_child(window_get_root_layer(mainWindow), text_layer_get_layer(Low1_Layer));
 	
 	persist_read_string(FORECAST_LOW1_KEY, day1L, sizeof(day1L));
@@ -1029,7 +1031,8 @@ void Load3Days(){
 	text_layer_set_text_color(High2_Layer, GColorWhite);
 	text_layer_set_background_color(High2_Layer, GColorClear);
 	text_layer_set_font(High2_Layer, font_update);
-  	PBL_IF_RECT_ELSE(text_layer_set_text_alignment(High2_Layer, GTextAlignmentRight),text_layer_set_text_alignment(High2_Layer, GTextAlignmentLeft)); 
+  	//PBL_IF_RECT_ELSE(text_layer_set_text_alignment(High2_Layer, GTextAlignmentRight),text_layer_set_text_alignment(High2_Layer, GTextAlignmentLeft)); 
+	text_layer_set_text_alignment(High2_Layer, GTextAlignmentRight);
 	layer_add_child(window_get_root_layer(mainWindow), text_layer_get_layer(High2_Layer));
 	
 	persist_read_string(FORECAST_HIGH2_KEY, day2H, sizeof(day2H));
@@ -1040,7 +1043,8 @@ void Load3Days(){
 	text_layer_set_text_color(Low2_Layer, GColorWhite);
 	text_layer_set_background_color(Low2_Layer, GColorClear);
 	text_layer_set_font(Low2_Layer, font_update);
-  	PBL_IF_RECT_ELSE(text_layer_set_text_alignment(Low2_Layer, GTextAlignmentRight),text_layer_set_text_alignment(Low2_Layer, GTextAlignmentLeft));
+  	//PBL_IF_RECT_ELSE(text_layer_set_text_alignment(Low2_Layer, GTextAlignmentRight),text_layer_set_text_alignment(Low2_Layer, GTextAlignmentLeft));
+	text_layer_set_text_alignment(Low2_Layer, GTextAlignmentRight);
 	layer_add_child(window_get_root_layer(mainWindow), text_layer_get_layer(Low2_Layer));
 	
 	persist_read_string(FORECAST_LOW2_KEY, day2L, sizeof(day2L));
@@ -1077,7 +1081,8 @@ void Load3Days(){
 	text_layer_set_text_color(High3_Layer, GColorWhite);
 	text_layer_set_background_color(High3_Layer, GColorClear);
 	text_layer_set_font(High3_Layer, font_update);
-  	PBL_IF_RECT_ELSE(text_layer_set_text_alignment(High3_Layer, GTextAlignmentRight),text_layer_set_text_alignment(High3_Layer, GTextAlignmentLeft));
+  	//PBL_IF_RECT_ELSE(text_layer_set_text_alignment(High3_Layer, GTextAlignmentRight),text_layer_set_text_alignment(High3_Layer, GTextAlignmentLeft));
+	text_layer_set_text_alignment(High3_Layer, GTextAlignmentRight);
 	layer_add_child(window_get_root_layer(mainWindow), text_layer_get_layer(High3_Layer));
 	
 	persist_read_string(FORECAST_HIGH3_KEY, day3H, sizeof(day3H));
@@ -1088,7 +1093,8 @@ void Load3Days(){
 	text_layer_set_text_color(Low3_Layer, GColorWhite);
 	text_layer_set_background_color(Low3_Layer, GColorClear);
 	text_layer_set_font(Low3_Layer, font_update);
-  	PBL_IF_RECT_ELSE(text_layer_set_text_alignment(Low3_Layer, GTextAlignmentRight),text_layer_set_text_alignment(Low3_Layer, GTextAlignmentLeft));
+  	//PBL_IF_RECT_ELSE(text_layer_set_text_alignment(Low3_Layer, GTextAlignmentRight),text_layer_set_text_alignment(Low3_Layer, GTextAlignmentLeft));
+	text_layer_set_text_alignment(Low3_Layer, GTextAlignmentRight);
 	layer_add_child(window_get_root_layer(mainWindow), text_layer_get_layer(Low3_Layer));
 	
 	persist_read_string(FORECAST_LOW3_KEY, day3L, sizeof(day3L));
