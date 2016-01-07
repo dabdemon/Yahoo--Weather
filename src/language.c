@@ -3,7 +3,7 @@
 
 char* translateDay(int weekday, int language, bool pblRound){
 
-	static char translatedWeekday[12];
+	static char translatedWeekday[13];
 	int arrayPosition;
 	
 	//correct the tm->wday position. Sunday must be changed from 0 to 7 (so we start the week on Monday)

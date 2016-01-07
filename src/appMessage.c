@@ -18,6 +18,7 @@ uint32_t initial_timeout_ms = 180000;
 bool initial_HourlyVibe = false;
 uint32_t initial_ESDuration_ms = 5000; //5sec (1min = 60000)
 int initial_Language = 100;
+bool initial_blnseconds = false;
 static char initial_high[6];
 static char initial_low[6];
 static char initial_sunrise[6];
@@ -224,6 +225,7 @@ static void sync_tuple_changed_callback(const uint32_t key,
 		  case DISPLAY_SECONDS_KEY:
 				//Saves the display seconds toggle
 				persist_write_int(DISPLAY_SECONDS_KEY, new_tuple->value->uint8);
+				refreshLayers(DISPLAY_SECONDS_KEY, new_tuple);
 				break;
 
 		  case HOURLY_VIBE_KEY:
@@ -286,7 +288,7 @@ void SetupMessages(){
 			TupletInteger(WEATHER_ICON_KEY,initial_ICON_CODE),
 			MyTupletCString(WEATHER_TEMPERATURE_KEY, initial_temp),
 			//TupletInteger(THEME_KEY, 0),
-			MyTupletCString(WEATHER_CITY_KEY, "YWeather v3.3"), //display app version on load
+			MyTupletCString(WEATHER_CITY_KEY, "YWeather v3.4"), //display app version on load
 			//TupletInteger(INVERT_COLOR_KEY, 0),
 			TupletInteger(language_key, initial_Language), //INITIALIZE TO LAST SAVED	
 			TupletInteger(VIBES_KEY, 0),
@@ -311,7 +313,7 @@ void SetupMessages(){
 			TupletInteger(EXTRA_ESDURATION_KEY,initial_ESDuration_ms),
 			TupletInteger(EXTRA_TIMER_KEY,initial_timeout_ms),
 			TupletInteger(EXTRA_FORECAST_KEY,initial_bln3daysForecast),
-			//TupletInteger(DISPLAY_SECONDS_KEY,0),
+			TupletInteger(DISPLAY_SECONDS_KEY,initial_blnseconds),
 			TupletInteger(HOURLY_VIBE_KEY,initial_HourlyVibe),
 			TupletInteger(HOURLY_VIBE_START_KEY,0),
 			TupletInteger(HOURLY_VIBE_END_KEY,0),
@@ -345,6 +347,11 @@ void loadInitialTuples(){
 	}
 	if(persist_exists(BACKLIGHT_KEY)){
 		initial_blnBacklight= persist_read_int(BACKLIGHT_KEY);
+	}
+	
+	if(persist_exists(DISPLAY_SECONDS_KEY)){
+		initial_blnseconds = persist_read_int(DISPLAY_SECONDS_KEY);
+		
 	}
 	
 	/*

@@ -230,7 +230,7 @@ var options = JSON.parse(localStorage.getItem('options'));
 if (options === null) options = { "language" : 100, //default to "Watch Language"
 								"theme" : 1, //default to Digital
 								"use_gps" : "false",
-								"location" : "madrid",
+								"location" : "mountain view",
 								"units" : "celsius",
 								"invert_color" : "false",
 								"vibes" : 1,
@@ -1351,7 +1351,6 @@ function CheckUserKey()
 }
 
 
-
 function getLocationName(pos){
 	
 	var url = "http://maps.googleapis.com/maps/api/geocode/json?latlng=" + pos + "";
@@ -1455,14 +1454,14 @@ Pebble.addEventListener('showConfiguration', function(e) {
 	if ((optTheme == null)||(optTheme=="null")){optTheme="1";}
 	
  
-	var uri = 'http://dabdemon.github.io/Yahoo--Weather/development.html?' + //Here you need to enter your configuration webservice
-    //var uri = 'http://yweather.es/ywsettings.html?' + 
+	var uri = 'http://yweather.es/ywsettings34.html?' + //PRODUCTION
+    //var uri = 'http://dabdemon.github.io/Yahoo--Weather/development.html?' + //DEVELOPMENT
 	'language=' + encodeURIComponent(optlanguage) +
 	'&theme=' + encodeURIComponent(optTheme) +
 	'&use_gps=' + encodeURIComponent(optgps) +
-  '&location=' + encodeURIComponent(optlocation) +
-  '&units=' + encodeURIComponent(optunits) +
-  '&invert_color=' + encodeURIComponent(optinvert) +
+  	'&location=' + encodeURIComponent(optlocation) +
+  	'&units=' + encodeURIComponent(optunits) +
+  	'&invert_color=' + encodeURIComponent(optinvert) +
 	'&vibes=' + encodeURIComponent(optvibes) +
 	'&accuracy=' + encodeURIComponent(optaccuracy) +
 	'&feelslike=' + encodeURIComponent(optfeelslike) +

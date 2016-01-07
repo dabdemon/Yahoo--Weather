@@ -51,16 +51,15 @@ void handle_init(void){
 	
 		window_set_background_color(mainWindow, GColorBlack);
 	
-		loadFontResources();
-	
-		//loadPersistentData(false);
-  
-		//Load the Main Window
-		LoadDigital();
-		//Get Current Date
+		//Initialize UI
 		loadPersistentData(false, language_key);
 		loadPersistentData(false, WEATHER_ICON_KEY);
 		loadPersistentData(false, WEATHER_TEMPERATURE_KEY);
+  
+		loadFontResources();
+		//Load the Main Window
+		LoadDigital();
+		//Get Current Date
 		getDate();
 		
 		// Set up the update layer callback
@@ -110,8 +109,6 @@ void loadFontResources(){
 		font_russian = fonts_load_custom_font(res_russian);
 		font_russian_date_forecast = fonts_load_custom_font(res_d_rus_forecast);
 		font_asian = fonts_load_custom_font(res_asian);
-	
-
 	}
 
 void unloadFontResource(){
@@ -225,6 +222,10 @@ void loadPersistentData(bool refresh, int intKEY){
 		blnBacklight= persist_read_int(BACKLIGHT_KEY);
 	}
 	
+	if(persist_exists(DISPLAY_SECONDS_KEY) && intKEY == DISPLAY_SECONDS_KEY){
+		blnseconds = persist_read_int(DISPLAY_SECONDS_KEY);
+	}
+	
 	//Forecast
 	if(persist_exists(WEATHER_HIGH_KEY) && intKEY == WEATHER_HIGH_KEY){persist_read_string(WEATHER_HIGH_KEY, high, sizeof(high));}
 	if(persist_exists(WEATHER_LOW_KEY) && intKEY == WEATHER_LOW_KEY){persist_read_string(WEATHER_LOW_KEY, low, sizeof(low));}
@@ -307,6 +308,25 @@ void refreshLayers(int intKEY, const Tuple* newTuple){
 		case BACKLIGHT_KEY:
 			blnBacklight = newTuple->value->uint8 != 0;
 		break;
+		
+		case DISPLAY_SECONDS_KEY:
+			blnseconds = newTuple->value->uint8 != 0;
+			
+			//subscribes to the new tick even
+			tick_timer_service_unsubscribe();
+			SubscribeTickEvent();
+		
+			//and refresh the Time text  layer position (to do not overlap minutes and seconds)		
+			 if ((blnseconds)||(!clock_is_24h_style())){
+				 layer_set_frame((Layer*) Time_Layer, TIME_FRAME_SECONDS);
+				 text_layer_set_text_alignment(Time_Layer, GTextAlignmentRight);
+			 }
+			else{
+				layer_set_frame((Layer*) Time_Layer, TIME_FRAME);
+				text_layer_set_text_alignment(Time_Layer, GTextAlignmentCenter);
+			}
+		
+		break;
 	}
 }
 
@@ -334,8 +354,15 @@ void refreshLayers(int intKEY, const Tuple* newTuple){
 			layer_add_child(window_get_root_layer(mainWindow), text_layer_get_layer(date_layer));
 
 		//Time
-			Time_Layer = text_layer_create(TIME_FRAME);
-			text_layer_set_text_alignment(Time_Layer, GTextAlignmentCenter);
+			if ((blnseconds)||(!clock_is_24h_style())){
+				Time_Layer = text_layer_create(TIME_FRAME_SECONDS);
+				text_layer_set_text_alignment(Time_Layer, GTextAlignmentRight);
+			}
+			else{
+				Time_Layer = text_layer_create(TIME_FRAME);
+				text_layer_set_text_alignment(Time_Layer, GTextAlignmentCenter);
+			}
+			
 
 			//Define the text color based on the Pebble model
 			#ifdef PBL_COLOR
@@ -347,6 +374,25 @@ void refreshLayers(int intKEY, const Tuple* newTuple){
 			text_layer_set_background_color(Time_Layer, GColorClear);
 			text_layer_set_font(Time_Layer, font_time);
 			layer_add_child(window_get_root_layer(mainWindow), text_layer_get_layer(Time_Layer));
+		
+		//Seconds
+			seconds_layer = text_layer_create(SECONDS_FRAME);
+			text_layer_set_text_color(seconds_layer, GColorWhite);
+			text_layer_set_background_color(seconds_layer, GColorClear);
+			text_layer_set_font(seconds_layer, font_date);
+			text_layer_set_text_alignment(seconds_layer, GTextAlignmentLeft);
+			layer_add_child(window_get_root_layer(mainWindow), text_layer_get_layer(seconds_layer));
+		
+		//I'm running memory leaks on APLITE. Until I figure out how to free more memory I will only show AM/PM indicator on Color devices.
+		#ifdef PBL_COLOR	
+		//AM/PM INDICATOR
+      		ampm_layer = text_layer_create(AMPM_FRAME);
+			text_layer_set_text_color(ampm_layer, GColorWhite);
+	     	text_layer_set_background_color(ampm_layer, GColorClear);
+          	text_layer_set_font(ampm_layer, font_update);
+          	text_layer_set_text_alignment(ampm_layer, GTextAlignmentLeft);
+          	layer_add_child(window_get_root_layer(mainWindow), text_layer_get_layer(ampm_layer));
+		#endif
 		
 		//Add the Battery Layer
 		//#ifdef PBL_SDK_3
@@ -388,7 +434,7 @@ void refreshLayers(int intKEY, const Tuple* newTuple){
 		text_layer_destroy(date_layer);
 		text_layer_destroy(Time_Layer);
 		
-APP_LOG(APP_LOG_LEVEL_DEBUG, "unloadDigital: Heap free is %u bytes", heap_bytes_free());
+//APP_LOG(APP_LOG_LEVEL_DEBUG, "unloadDigital: Heap free is %u bytes", heap_bytes_free());
 	}
 
 	//**************************//
@@ -545,14 +591,21 @@ APP_LOG(APP_LOG_LEVEL_DEBUG, "unloadDigital: Heap free is %u bytes", heap_bytes_
 	/* Tick Events */
 	/***************/
 	void handle_tick(struct tm *tick_time, TimeUnits units_changed){
-
+	
+		//I'm running memory leaks on APLITE. Until I figure out how to free more memory I will only show AM/PM indicator on Color devices.
+		#ifdef PBL_COLOR	
+			//Set the AM/PM indicator
+			if(!clock_is_24h_style()){strftime(ampm_text, sizeof(ampm_text), "%p", tick_time);}
+			text_layer_set_text(ampm_layer, ampm_text); //Update the AM/PM indicator layer  
+		#endif
+		
+		if (units_changed & SECOND_UNIT){
+				strftime(seconds_text, sizeof(seconds_text), "%S", tick_time);
+				if (blnseconds){text_layer_set_text(seconds_layer, seconds_text);}
+				else {text_layer_set_text(seconds_layer, "");}		
+		}
 		if (units_changed & MINUTE_UNIT){
 			getTime();
-			/*
-			if (intLanguage == 19){
-				getDate();
-			} //if chinese refresh the date every minute
-			*/
 		}
 		if (units_changed & HOUR_UNIT){
 			if (blnHourlyVibe){
@@ -570,9 +623,18 @@ APP_LOG(APP_LOG_LEVEL_DEBUG, "unloadDigital: Heap free is %u bytes", heap_bytes_
 
 		time_t now = time(NULL);
 		struct tm *current_time = localtime(&now);
-
-		handle_tick(current_time, MINUTE_UNIT);
-		tick_timer_service_subscribe(MINUTE_UNIT, &handle_tick);
+	
+		if (blnseconds) {
+			handle_tick(current_time, SECOND_UNIT);
+			tick_timer_service_subscribe(SECOND_UNIT, &handle_tick);
+		}
+		else {
+			//clear the seconds textlayer (in case it is filled)
+			text_layer_set_text(seconds_layer, "");
+			handle_tick(current_time, MINUTE_UNIT);
+			tick_timer_service_subscribe(MINUTE_UNIT, &handle_tick);
+			
+		}
 
 	}
 
@@ -686,23 +748,23 @@ void LoadForecast(){
         animation_schedule((Animation*) time_animation);
         text_layer_set_text_alignment(Time_Layer, GTextAlignmentCenter);
       
-	  /*
+	  
         //Remove the seconds and AM/PM indicator
         if (blnseconds){
             //seconds
             static PropertyAnimation* seconds_animation;
-            seconds_animation = property_animation_create_layer_frame((Layer*)seconds_layer, &SECONDS_FRAME_CHALK, &GRect(-1000,-1000,1,1));
+            seconds_animation = property_animation_create_layer_frame((Layer*)seconds_layer, &SECONDS_FRAME, &GRect(-1000,-1000,1,1));
             animation_schedule((Animation*) seconds_animation);
         }
+	
         if(!clock_is_24h_style()){
             //AM/PM indicator
             static PropertyAnimation* ampm_animation;
-            ampm_animation = property_animation_create_layer_frame((Layer*)ampm_layer, &AMPM_FRAME_CHALK, &GRect(-1000,-1000,1,1));
+            ampm_animation = property_animation_create_layer_frame((Layer*)ampm_layer, &AMPM_FRAME, &GRect(-1000,-1000,1,1));
             animation_schedule((Animation*) ampm_animation);
           
         }
-      */
-	  
+
         //scroll up the bluetooth indicator
         static PropertyAnimation* bt_animation;
         bt_animation = property_animation_create_layer_frame((Layer*)line, &GRect(20, 109, 140, 2), &GRect(20, 81, 140, 2));
@@ -1128,10 +1190,32 @@ static void forecast_callback(void *context) {
 				//scroll down the time
 				static PropertyAnimation* time_animation;
 
-				time_animation = property_animation_create_layer_frame((Layer*)Time_Layer, &TIME_FRAME_ANIMATED, &TIME_FRAME);
+				if ((blnseconds) || (!clock_is_24h_style())){
+					  time_animation = property_animation_create_layer_frame((Layer*)Time_Layer, &TIME_FRAME_ANIMATED, &TIME_FRAME_SECONDS);
+					  text_layer_set_text_alignment(Time_Layer, GTextAlignmentRight);
+				  }
+				else{
+
+					  time_animation = property_animation_create_layer_frame((Layer*)Time_Layer, &TIME_FRAME_ANIMATED, &TIME_FRAME);
+					  text_layer_set_text_alignment(Time_Layer, GTextAlignmentCenter);
+				  }
 
 				animation_schedule((Animation*) time_animation);
-
+			
+			  //Put back the seconds and AM/PM indicator
+              if (blnseconds){
+                  //seconds
+                  static PropertyAnimation* seconds_animation;
+                  seconds_animation = property_animation_create_layer_frame((Layer*)seconds_layer, &GRect(-1000,-1000,1,1), &SECONDS_FRAME);
+                  animation_schedule((Animation*) seconds_animation);
+              }
+              if(!clock_is_24h_style()){
+                  //AM/PM indicator
+                  static PropertyAnimation* ampm_animation;
+                  ampm_animation = property_animation_create_layer_frame((Layer*)ampm_layer, &GRect(-1000,-1000,1,1), &AMPM_FRAME);
+                  animation_schedule((Animation*) ampm_animation);
+              }
+			
 				//scroll down the bluetooth indicator
 				static PropertyAnimation* bt_animation;
 				bt_animation = property_animation_create_layer_frame((Layer*)line, &GRect(20, 81, 140, 2),&GRect(20, 109, 140, 2));
@@ -1157,49 +1241,48 @@ static void forecast3Days_callback(void *context) {
 
        //animate the time (easing in)
             #ifdef PBL_ROUND
-              //take the day out
+              //take the day in
               static PropertyAnimation* weekday_animation;
               weekday_animation = property_animation_create_layer_frame((Layer*)Weekday_Layer, &GRect(-1000,-1000,1,1),&WEEKDAY_FRAME);
               animation_schedule((Animation*) weekday_animation);
             
-              //take the date out
+              //take the date in
               static PropertyAnimation* date_animation;
               date_animation = property_animation_create_layer_frame((Layer*)date_layer, &GRect(-1000,-1000,1,1),&DATE_FRAME);
               animation_schedule((Animation*) date_animation);
               
-              //scroll up the time
+              //scroll down the time
               static PropertyAnimation* time_animation;
-	/*
+	
               if ((blnseconds) || (!clock_is_24h_style())){
-                  time_animation = property_animation_create_layer_frame((Layer*)Time_Layer, &TIME_FRAME_ANIMATED, &TIME_FRAME2);
+                  time_animation = property_animation_create_layer_frame((Layer*)Time_Layer, &TIME_FRAME_ANIMATED, &TIME_FRAME_SECONDS);
                   text_layer_set_text_alignment(Time_Layer, GTextAlignmentRight);
               }
               else{
-			  */
+			  
                   time_animation = property_animation_create_layer_frame((Layer*)Time_Layer, &TIME_FRAME_ANIMATED, &TIME_FRAME);
-            //  }
+				  text_layer_set_text_alignment(Time_Layer, GTextAlignmentCenter);
+              }
             animation_schedule((Animation*) time_animation);
           
-              //scroll up the bluetooth indicator
+              //scroll down the bluetooth indicator
               static PropertyAnimation* bt_animation;
               bt_animation = property_animation_create_layer_frame((Layer*)line, &GRect(20, 81, 140, 2),&GRect(20, 109, 140, 2));
               animation_schedule((Animation*) bt_animation);
-          /*
-              //Remove the seconds and AM/PM indicator
+          
+              //Put back the seconds and AM/PM indicator
               if (blnseconds){
                   //seconds
                   static PropertyAnimation* seconds_animation;
-                  seconds_animation = property_animation_create_layer_frame((Layer*)seconds_layer, &GRect(-1000,-1000,1,1), &SECONDS_FRAME_CHALK);
+                  seconds_animation = property_animation_create_layer_frame((Layer*)seconds_layer, &GRect(-1000,-1000,1,1), &SECONDS_FRAME);
                   animation_schedule((Animation*) seconds_animation);
               }
               if(!clock_is_24h_style()){
                   //AM/PM indicator
                   static PropertyAnimation* ampm_animation;
-                  ampm_animation = property_animation_create_layer_frame((Layer*)ampm_layer, &GRect(-1000,-1000,1,1), &AMPM_FRAME_CHALK);
+                  ampm_animation = property_animation_create_layer_frame((Layer*)ampm_layer, &GRect(-1000,-1000,1,1), &AMPM_FRAME);
                   animation_schedule((Animation*) ampm_animation);
-                
               }
-		*/
 			#endif
 			//If the backlight is on, turn it off and cancel the timer
 			if(blnBacklight){app_timer_cancel(BackLightTimer);}

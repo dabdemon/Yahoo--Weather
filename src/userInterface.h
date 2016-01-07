@@ -14,9 +14,12 @@
 	//#define BT_FRAME        		PBL_IF_ROUND_ELSE(GRect(20, 109, 140, 2),GRect(127, 13, 23, 168-146))
 	#define BT_FRAME        		PBL_IF_ROUND_ELSE(GRect(20, 109, 140, 2),GRect(120, 3, 23, 23))
 	#define TIME_FRAME      		PBL_IF_ROUND_ELSE(GRect(0, 48, 180, 168-16),GRect(0, 15, 144, 168-16))
+	#define TIME_FRAME_SECONDS 		PBL_IF_ROUND_ELSE(GRect(0, 48, 130, 168-16),GRect(0, 15, 116, 168-16))
 	#define TIME_FRAME_ANIMATED     GRect(0, 20, 180, 168-16)
 	#define DATE_FRAME      		PBL_IF_ROUND_ELSE(GRect(25, 35, 130, 168-62),GRect(1, 70, 139, 168-62))
 	#define BATT_FRAME      		PBL_IF_ROUND_ELSE(GRect(1000, 1, 1000, 1),GRect(119, 8, 25, 10))
+	#define SECONDS_FRAME    		PBL_IF_ROUND_ELSE(GRect(135, 83, 32, 22),GRect(117, 50, 32, 22))
+	#define AMPM_FRAME    			PBL_IF_ROUND_ELSE(GRect(135, 73, 32, 22),GRect(117, 40, 32, 22))
 
 	TextLayer *date_layer;          //Layer for the date
 	TextLayer *Time_Layer;          //Layer for the time
@@ -26,6 +29,8 @@
 	BitmapLayer *BT_icon_layer;		//Layer for the BT connection
 	TextLayer *Batt_Layer;          //Layer for the Battery Level (Rectangular watches)
 	Layer *battery_layer;			//Layer for the Battery Level (Round watches)
+	TextLayer *seconds_layer;       //Layer for the seconds
+	TextLayer *ampm_layer; 			//Layer for the AM/PM indicator (when 12h format is selected)
 
 	//Miscellaneous
 	

@@ -34,11 +34,14 @@ void battery_update_proc(Layer *layer, GContext *ctx){
 		  graphics_context_set_stroke_color(ctx, GColorDarkGray);
 		  graphics_context_set_stroke_width(ctx, lineWidth);
 		  graphics_draw_arc(ctx, rect, GOvalScaleModeFitCircle,0, TRIG_MAX_ANGLE);
+	  /*
 	  	#else
 	   	  graphics_context_set_stroke_color(ctx, GColorWhite);
 		  graphics_context_set_stroke_width(ctx, 1);
 		  graphics_draw_arc(ctx, rect, GOvalScaleModeFitCircle,0, TRIG_MAX_ANGLE);
+	 */
 	  	#endif
+
 	  #endif
 	  
      int maxAngle = intBatteryLevel * TRIG_MAX_ANGLE / 100;

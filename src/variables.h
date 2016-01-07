@@ -27,6 +27,8 @@
 	static char weekday_text[] = "XXXXXXXXXXXX";
 	static char month_text[] = "XXXXXXXXXXXXXX";
 	static char time_text[] = "00:00";
+	static char seconds_text[] = "00";
+	static char ampm_text[] = "   ";
 	int intLanguage = 100; //Defaults to English U.S.
 	int intLangCounter = 22; 
 	int intWDay = 0;
@@ -38,6 +40,7 @@
 	bool blnHourlyVibe = false;
 	int TapCount = 0;
 	bool blnBacklight = false;
+	bool blnseconds = false;
 
 	//Weather
 	static char temp[]="     ";
