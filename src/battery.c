@@ -1,4 +1,5 @@
 #include <battery.h>
+#include <bluetooth.h>
 
 //Define private variable to share the battery level to the graphic control (for PTR)
 int intBatteryLevel;
@@ -73,6 +74,10 @@ void battery_update_proc(Layer *layer, GContext *ctx){
 	  graphics_context_set_stroke_color(ctx, GColorWhite);
 	  graphics_draw_circle(ctx, GPoint(131, 14), 12);
 #endif
+	
+	//finally, on APLITE check the BT status to override the new Battery Level with the "NC" message if needed
+	  handle_bluetooth(connection_service_peek_pebble_app_connection());
+	
 	
 }
 void handle_battery(BatteryChargeState charge_state) {

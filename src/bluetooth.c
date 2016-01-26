@@ -2,7 +2,7 @@
 
 //Define variables
 int blnConnected = false;
-//const char *batt;
+const char *batt;
 
 //******************************//
 // Handle Bluetooth Connection //
@@ -16,19 +16,17 @@ void handle_bluetooth(bool connected)
         {
       
       #ifdef PBL_RECT
-          if (BT_image !=NULL) {gbitmap_destroy(BT_image);}
-          BT_image = gbitmap_create_with_resource(RESOURCE_ID_PHONE_DISCONNECTED);
-          bitmap_layer_set_bitmap(BT_icon_layer, BT_image);
-		  //remove the battery text layer
-		  //batt = text_layer_get_text(Batt_Layer);
-		  //text_layer_set_text(Batt_Layer, "");
-		  text_layer_set_text_color(Batt_Layer, GColorBlack);
-  
-          //#ifdef PBL_BW
-          //bitmap_layer_set_compositing_mode(BT_icon_layer, GCompOpAssign);
-          //#elif PBL_COLOR
-          bitmap_layer_set_compositing_mode(BT_icon_layer, GCompOpSet);
-          //#endif
+		  #ifdef PBL_BW
+		      batt = text_layer_get_text(Batt_Layer);
+		  	  text_layer_set_text(Batt_Layer, "NC");
+		  #else
+			  if (BT_image !=NULL) {gbitmap_destroy(BT_image);}
+			  BT_image = gbitmap_create_with_resource(RESOURCE_ID_PHONE_DISCONNECTED);
+			  bitmap_layer_set_bitmap(BT_icon_layer, BT_image);
+			  text_layer_set_text_color(Batt_Layer, GColorBlack);
+
+			  bitmap_layer_set_compositing_mode(BT_icon_layer, GCompOpSet);
+		  #endif
       #else
             text_layer_set_background_color(line, GColorRed);   
       #endif
@@ -39,11 +37,16 @@ void handle_bluetooth(bool connected)
         else
         {
           #ifdef PBL_RECT
-            //Kill the previous image
-            bitmap_layer_set_bitmap(BT_icon_layer, NULL);
-			//Set back the battery text layer
-			//text_layer_set_text(Batt_Layer, batt);
-			text_layer_set_text_color(Batt_Layer, GColorWhite);
+			#ifdef PBL_BW
+				//Set back the battery text layer
+				if (strcmp(text_layer_get_text(Batt_Layer), "NC") == 0){
+					text_layer_set_text(Batt_Layer, batt);
+				}	
+			#else
+				//Kill the previous image
+				bitmap_layer_set_bitmap(BT_icon_layer, NULL);
+				text_layer_set_text_color(Batt_Layer, GColorWhite);
+			#endif
           #else
             text_layer_set_background_color(line, GColorWhite);
           #endif

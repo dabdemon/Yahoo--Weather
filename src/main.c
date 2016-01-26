@@ -79,6 +79,11 @@ void handle_init(void){
 
 	
 		//setup the timer to refresh the weather info every 30min
+		if (timeout_ms < 300000){
+			//some people reported battery drain and overload from weather service.
+			//this may be raised because the timer is not properly set. If the timeout is less than
+			//5mins then something is wrong so set it back to the default 30min.
+			timeout_ms = 1800000;}
 		weatherTimer = app_timer_register(timeout_ms, weatherTimer_callback, NULL);
 	
 		//Get weather
@@ -250,6 +255,8 @@ void refreshLayers(int intKEY, const Tuple* newTuple){
 	
 	switch(intKEY){
 		
+		//WEATHER
+		
 		case WEATHER_ICON_KEY:
 			if (blnForecast == false) {
 				ICON_CODE = newTuple->value->uint8;
@@ -281,6 +288,8 @@ void refreshLayers(int intKEY, const Tuple* newTuple){
 				text_layer_set_text(Location_Layer, city);
 			}
 		break;
+		
+		//MISCELLANEOUS
 		
 		case language_key:
 			intLanguage = newTuple->value->uint8;
@@ -327,6 +336,53 @@ void refreshLayers(int intKEY, const Tuple* newTuple){
 			}
 		
 		break;
+		
+		//FORECAST
+		
+		/*
+		case WEATHER_HIGH_KEY:
+			//Refresh the high for the day
+			memset(&high[0], 0, sizeof(high));
+			memcpy(&high,  newTuple->value->cstring, strlen(newTuple->value->cstring));
+		break;
+		
+		case WEATHER_LOW_KEY:
+			//Refresh the low for the day
+			memset(&low[0], 0, sizeof(low));
+			memcpy(&low,  newTuple->value->cstring, strlen(newTuple->value->cstring));
+		break;
+		
+		case SUNRISE_KEY:
+			//Refresh the sunrise time
+			memset(&sunrise[0], 0, sizeof(sunrise));
+			memcpy(&sunrise,  newTuple->value->cstring, strlen(newTuple->value->cstring));
+		break;
+		
+		case SUNSET_KEY:
+			//Refresh the sunset time
+			memset(&sunset[0], 0, sizeof(sunset));
+			memcpy(&sunset,  newTuple->value->cstring, strlen(newTuple->value->cstring));
+		break;
+		
+		case WIND_KEY:
+			//Refresh the wind speed
+			memset(&wind[0], 0, sizeof(wind));
+			memcpy(&wind,  newTuple->value->cstring, strlen(newTuple->value->cstring));
+		break;
+		
+		case WDIRECTION_KEY:
+			//Refresh the wind direction
+			memset(&strwdirection[0], 0, sizeof(strwdirection));
+			memcpy(&strwdirection,  newTuple->value->cstring, strlen(newTuple->value->cstring));
+		break;
+		
+		case POP_KEY:
+			//Refresh the probability of precipitation
+			memset(&PoP[0], 0, sizeof(PoP));
+			memcpy(&PoP,  newTuple->value->cstring, strlen(newTuple->value->cstring));
+		break;
+		
+		*/
 	}
 }
 
@@ -870,8 +926,7 @@ void LoadForecast(){
 	bitmap_layer_set_bitmap(wind_icon_layer, wind_image);
   	layer_add_child(window_get_root_layer(mainWindow), bitmap_layer_get_layer(wind_icon_layer));
 	
-  
-	
+
 	//RAIN PROBABILITY	
 	PoP_Layer = text_layer_create(POP_FRAME);
   	text_layer_set_font(PoP_Layer, PBL_IF_ROUND_ELSE(font_update,font_date));
@@ -1164,6 +1219,12 @@ static void weatherTimer_callback(void *context) {
 		APP_LOG(APP_LOG_LEVEL_INFO, "weatherTimer timeout_ms: ");
 		APP_LOG(APP_LOG_LEVEL_INFO, strdebug);
 		*/ // DEBUG //
+	
+			if (timeout_ms < 300000){
+			//some people reported battery drain and overload from weather service.
+			//this may be raised because the timer is not properly set. If the timeout is less than
+			//5mins then something is wrong so set it back to the default 30min.
+			timeout_ms = 1800000;}
 	
         weatherTimer = app_timer_register(timeout_ms, weatherTimer_callback, NULL);
 

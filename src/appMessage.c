@@ -96,6 +96,8 @@ static void sync_tuple_changed_callback(const uint32_t key,
 				if (strcmp(new_tuple->value->cstring,"999") != 0){
 					//Save the High temperature
 					persist_write_string(WEATHER_HIGH_KEY, new_tuple->value->cstring);
+					//refresh the local variable
+					//refreshLayers(WEATHER_HIGH_KEY,new_tuple);
 				}
 				break;
 
@@ -104,6 +106,8 @@ static void sync_tuple_changed_callback(const uint32_t key,
 				if (strcmp(new_tuple->value->cstring,"999") != 0){
 					//Save the Low temperature
 					persist_write_string(WEATHER_LOW_KEY, new_tuple->value->cstring);
+					//refresh the local variable
+					//refreshLayers(WEATHER_LOW_KEY,new_tuple);
 				}
 				break;
 
@@ -112,6 +116,8 @@ static void sync_tuple_changed_callback(const uint32_t key,
 				if (strcmp(new_tuple->value->cstring,"99:99") != 0){
 					//Save the Sunrise Time
 					persist_write_string(SUNRISE_KEY, new_tuple->value->cstring);
+					//refresh the local variable
+					//refreshLayers(SUNRISE_KEY,new_tuple);
 				}
 				break;
 
@@ -120,6 +126,8 @@ static void sync_tuple_changed_callback(const uint32_t key,
 				if (strcmp(new_tuple->value->cstring,"99:99") != 0){
 					//Save the Sunset Time
 					persist_write_string(SUNSET_KEY, new_tuple->value->cstring);
+					//refresh the local variable
+					//refreshLayers(SUNSET_KEY,new_tuple);
 				}
 				break;
 
@@ -128,6 +136,8 @@ static void sync_tuple_changed_callback(const uint32_t key,
 				if (strcmp(new_tuple->value->cstring,"999") != 0){
 					 //Save the Wind Speed
 					persist_write_string(WIND_KEY, new_tuple->value->cstring);
+					//refresh the local variable
+					//refreshLayers(WIND_KEY,new_tuple);
 				}
 				break;
 
@@ -136,6 +146,8 @@ static void sync_tuple_changed_callback(const uint32_t key,
 				if (strcmp(new_tuple->value->cstring,"999") != 0){
 					//Save the Wind Direction
 					persist_write_string(WDIRECTION_KEY, new_tuple->value->cstring);
+					//refresh the local variable
+					//refreshLayers(WDIRECTION_KEY,new_tuple);
 				}
 				break;
 
@@ -255,6 +267,8 @@ static void sync_tuple_changed_callback(const uint32_t key,
 				if (strcmp(new_tuple->value->cstring,"999") != 0){
 					//Save the Rain Probability
 					persist_write_string(POP_KEY, new_tuple->value->cstring);
+					//refresh the local variable
+					//refreshLayers(POP_KEY,new_tuple);
 				}
 				break;
 
@@ -288,7 +302,7 @@ void SetupMessages(){
 			TupletInteger(WEATHER_ICON_KEY,initial_ICON_CODE),
 			MyTupletCString(WEATHER_TEMPERATURE_KEY, initial_temp),
 			//TupletInteger(THEME_KEY, 0),
-			MyTupletCString(WEATHER_CITY_KEY, "YWeather v3.4"), //display app version on load
+			MyTupletCString(WEATHER_CITY_KEY, "YWeather v3.5"), //display app version on load
 			//TupletInteger(INVERT_COLOR_KEY, 0),
 			TupletInteger(language_key, initial_Language), //INITIALIZE TO LAST SAVED	
 			TupletInteger(VIBES_KEY, 0),

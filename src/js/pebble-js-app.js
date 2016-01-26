@@ -229,7 +229,7 @@ var options = JSON.parse(localStorage.getItem('options'));
 //console.log('read options: ' + JSON.stringify(options));
 if (options === null) options = { "language" : 100, //default to "Watch Language"
 								"theme" : 1, //default to Digital
-								"use_gps" : "false",
+								"use_gps" : "true",
 								"location" : "mountain view",
 								"units" : "celsius",
 								"invert_color" : "false",
@@ -852,7 +852,7 @@ function getWeatherFromLatLong(latitude, longitude) {
       if (req.status == 200) {
         console.log(req.responseText);
         response = JSON.parse(req.responseText);
-        if (response) {
+        if (response.query.results != null) {
 			woeid = response.query.results.Result.woeid;
 			
 			if (accuracy==6){city = response.query.results.Result.county;}
@@ -862,6 +862,13 @@ function getWeatherFromLatLong(latitude, longitude) {
 			console.log("Call GetWeatherFromWoeid: woeid=" + woeid + " and city=" + city);
 			getWeatherFromWoeid(woeid, city);
         }
+		  else{
+			  	console.log('Yahoo! geo.placefinder is not retriving a shit...');
+			 	//if geo.placefinder is not working, try to get location from google and get the WOEID by city name.
+				  var location = getCityName(latitude + ','+ longitude);
+				  console.log("location name: " + location);
+			  	  getWeatherFromLocation(location);
+		  }
       } else {
         console.log("unable to get woeid from Yahoo! API");
       }
@@ -1345,7 +1352,7 @@ function CheckUserKey()
 }
 
 
-function getLocationName(pos){
+function getCityName(pos){
 	
 	var url = "http://maps.googleapis.com/maps/api/geocode/json?latlng=" + pos + "";
 	console.log("get location URL: " + url);
@@ -1361,8 +1368,8 @@ function getLocationName(pos){
 					//var position = new Array({'lat' : response.results[0].geometry.location.lat,
 					//						'long' : response.results[0].geometry.location.lng});
 
-					var location = response.results[0].formatted_address;
-					console.log("Street: " + location);
+					var location = response.results[1].formatted_address;
+					console.log("city: " + location);
 					return location;
 					}
 				}
@@ -1374,8 +1381,19 @@ function getLocationName(pos){
 ///////////////////////////////////////
 
 
+function ping(ip) {
+
+	var req = new XMLHttpRequest();
+	req.open('GET', ip, false);
+	req.send();
+	
+	console.log(ip + " status: "+ req.status);
+	return req.status;
+}
+
 //Displays the configuration page in the phone
 Pebble.addEventListener('showConfiguration', function(e) {
+	
 	
 	//Set default values
 	var optlanguage =  options['language'];
@@ -1447,9 +1465,17 @@ Pebble.addEventListener('showConfiguration', function(e) {
 	var optTheme = options['theme'];
 	if ((optTheme == null)||(optTheme=="null")){optTheme="1";}
 	
- 
-	var uri = 'http://yweather.es/ywsettings34.html?' + //PRODUCTION
+	//Check settings availability. If server is down use mirror on github.
+ 	if (ping("http://yweather.es/ywsettings34.html") == 200){
+		var uri = 'http://yweather.es/ywsettings34.html?'; //PRODUCTION
+	}
+	else {
+		var uri = 'http://dabdemon.github.io/Yahoo--Weather/ywsettings34.html?'; //DEVELOPMENT
+	}
+		
+	//var uri = 'http://yweather.es/ywsettings34.html?' + //PRODUCTION
     //var uri = 'http://dabdemon.github.io/Yahoo--Weather/development.html?' + //DEVELOPMENT
+	uri =  uri +
 	'language=' + encodeURIComponent(optlanguage) +
 	'&theme=' + encodeURIComponent(optTheme) +
 	'&use_gps=' + encodeURIComponent(optgps) +

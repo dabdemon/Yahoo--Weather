@@ -45,7 +45,7 @@
 	//Weather
 	static char temp[]="     ";
 	int ICON_CODE = 16;
-	static char city[100]= "YWeather v3.3";
+	static char city[100]= "YWeather v3.4";
 	static char last_update[]="00:00 ";
 	static AppTimer *weatherTimer;
 	static AppTimer *forecastTimer;
@@ -56,7 +56,7 @@
 
 	//Forecast
 	static char high[]="     ";
-	static char low[]="    ";
+	static char low[]="     ";
 	static char sunrise[]="     ";
 	static char sunset[]="     ";
 	static char wind[]="     ";
