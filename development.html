@@ -245,9 +245,12 @@
                                                 To get a The Weather Underground API key follow this <span><a href="http://deutsch.wunderground.com/weather/api/d/login.html">(link)</a></span>
                                                 <br>
                                                 To get a forecast.io API key follow this <span><a href="https://developer.forecast.io/register">(link)</a>
+                                                </span>
+                                                <br>
+                                                To get an OpenWeatherMap API key follow this <span><a href="http://openweathermap.org/appid#get">(link)</a>
                                                 <br>
                                                 <br>
-                                                NOTE: You own your keys and they are not related with YWeather anyhow. You are responsible of doing a good use of those provider's developer keys and align with their EULAs. YWeather only helps you by offering a free way to use your private credentials for accessing the weather data on TWU and/or forecast.io. If you don't understand what this means or you don't agree you should not change the weather provider.
+                                                NOTE: API keys are intended for developers only. You are responsible of doing a good use of those provider's developer keys and comply with their EULAs. YWeather only helps you by offering a free way to use your private credentials for accessing the weather data on TWU, OpenWeatherMap and/or forecast.io. If you don't understand what this means or you don't agree you should not change the weather provider.
                                             </span>
                                             </div>
                                         </div>
@@ -838,7 +841,23 @@
                         document.location = 'pebblejs://close#';
                     });
                     $('#b-submit').click(function() {
-                        document.location = 'pebblejs://close#' + encodeURIComponent(JSON.stringify(saveOptions()));
+                    	var stopSubmission = false;
+                    	//check that API key has a value before submitting changes (if necessary)
+                    	if ($('#weatherprovider').val() > 0 && $('#CustomAPIKey').val().length <10){
+                    		stopSubmission = true;
+                    		alert('You need a custom API Key to use this weather provider. Please read the green box on the "Common Settings >> Weather" section on this settings page to get more info about how to get your API key.');
+                    	}
+
+                    	//check that user is not using the user Key by mistake
+                    	if ($('#weatherprovider').val() > 0 && $('#CustomAPIKey').val().length >=10 && $('#CustomAPIKey').val() == $('#key').val()){
+                    		stopSubmission = true;
+                    		alert('The custom API key is NOT your user key. Your user key unblock extra features. A custom API key allows you to access to the selected weather provider. Please read the green box on the "Common Settings >> Weather" section on this settings page to get more info about how to get your API key.');
+                    	}
+
+                    	if (stopSubmission == false){
+                    		document.location = 'pebblejs://close#' + encodeURIComponent(JSON.stringify(saveOptions()));
+                    	}
+
                     });
 
                     $('#b-support').click(function() {
