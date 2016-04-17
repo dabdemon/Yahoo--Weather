@@ -9,6 +9,7 @@
 #include <bluetooth.h>
 #include <battery.h>
 #include <PDUtils.h>
+#include <health.h>
 
 
 //*************//
@@ -617,8 +618,8 @@ void refreshLayers(int intKEY, const Tuple* newTuple){
 			//DEBUG//
 		*/
 		}
-
-
+		
+			
 		text_layer_set_text(Weekday_Layer,weekday_text); //Update the weekday layer 
 		//text_layer_set_text(Weekday_Layer,translateDay(intWDay, intLanguage)); //Update the weekday layer 
 
@@ -901,7 +902,8 @@ void LoadForecast(){
 	//WIND SPEED
 	Wind_Layer = text_layer_create(WIND_FRAME);
   	text_layer_set_text_alignment(Wind_Layer, PBL_IF_ROUND_ELSE(GTextAlignmentLeft, GTextAlignmentRight));
-	text_layer_set_font(Wind_Layer, font_date);
+	text_layer_set_font(Wind_Layer, PBL_IF_ROUND_ELSE(font_update,font_date));
+	//text_layer_set_font(Wind_Layer, font_date);
 	text_layer_set_text_color(Wind_Layer, GColorWhite);
 	text_layer_set_background_color(Wind_Layer, GColorClear);
 	layer_add_child(window_get_root_layer(mainWindow), text_layer_get_layer(Wind_Layer));
@@ -1017,7 +1019,7 @@ void Load3Days(){
 		else{
 			text_layer_set_font(Day1_Layer, font_date);
 			}
-		text_layer_set_text_alignment(Day1_Layer, GTextAlignmentLeft);
+		text_layer_set_text_alignment(Day1_Layer, PBL_IF_ROUND_ELSE(GTextAlignmentCenter,GTextAlignmentLeft));
 		layer_add_child(window_get_root_layer(mainWindow), text_layer_get_layer(Day1_Layer));
 	
 		text_layer_set_text(Day1_Layer,weekday1_text);
@@ -1070,7 +1072,7 @@ void Load3Days(){
 		else{
 			text_layer_set_font(Day2_Layer, font_date);
 			}
-		text_layer_set_text_alignment(Day2_Layer, GTextAlignmentLeft);
+		text_layer_set_text_alignment(Day2_Layer, PBL_IF_ROUND_ELSE(GTextAlignmentCenter,GTextAlignmentLeft));
 		layer_add_child(window_get_root_layer(mainWindow), text_layer_get_layer(Day2_Layer));
 
 		text_layer_set_text(Day2_Layer,weekday2_text);
@@ -1120,7 +1122,7 @@ void Load3Days(){
 		else{
 			text_layer_set_font(Day3_Layer, font_date);
 			}
-		text_layer_set_text_alignment(Day3_Layer, GTextAlignmentLeft);
+		text_layer_set_text_alignment(Day3_Layer, PBL_IF_ROUND_ELSE(GTextAlignmentCenter,GTextAlignmentLeft));
 		layer_add_child(window_get_root_layer(mainWindow), text_layer_get_layer(Day3_Layer));
 
 		text_layer_set_text(Day3_Layer,weekday3_text);

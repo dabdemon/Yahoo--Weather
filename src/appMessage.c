@@ -302,7 +302,7 @@ void SetupMessages(){
 			TupletInteger(WEATHER_ICON_KEY,initial_ICON_CODE),
 			MyTupletCString(WEATHER_TEMPERATURE_KEY, initial_temp),
 			//TupletInteger(THEME_KEY, 0),
-			MyTupletCString(WEATHER_CITY_KEY, "YWeather v3.5"), //display app version on load
+			MyTupletCString(WEATHER_CITY_KEY, "YWeather v3.6"), //display app version on load
 			//TupletInteger(INVERT_COLOR_KEY, 0),
 			TupletInteger(language_key, initial_Language), //INITIALIZE TO LAST SAVED	
 			TupletInteger(VIBES_KEY, 0),

@@ -41,11 +41,12 @@
 	int TapCount = 0;
 	bool blnBacklight = false;
 	bool blnseconds = false;
+	bool blnHealth = true;
 
 	//Weather
 	static char temp[]="     ";
 	int ICON_CODE = 16;
-	static char city[100]= "YWeather v3.4";
+	static char city[100]= "YWeather v3.6";
 	static char last_update[]="00:00 ";
 	static AppTimer *weatherTimer;
 	static AppTimer *forecastTimer;

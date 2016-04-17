@@ -2,6 +2,8 @@
 //DEFINE AND INITALIZE VARIABLES//
 //////////////////////////////////
 
+//oAuth.initialize('dj0yJmk9cnZiaTVCb01DR1BWJmQ9WVdrOVFYbEZha2xxTTJVbWNHbzlNQS0tJnM9Y29uc3VtZXJzZWNyZXQmeD00Ng--');
+
 var CLEAR_DAY = 0;
 var CLEAR_NIGHT = 1;
 var WINDY = 2;
@@ -502,38 +504,65 @@ function TWUFromLarLong(latitude, longitude){
 //////////////////////
 // open weather map //
 //////////////////////
-var owmk = "14d5ef44410ddbf8687a1f51d26234bf";
+var owmk = "002bd7f918d8464df479965996afc420";
 
 function openweatherByLatLong(latitude, longitude)
 {
 	
-	var celsius = options['units'] == 'celsius';
+	var celsius = options.units == 'celsius';
 	var units = "auto";
-	var accuracy = options['accuracy']; 
+	var forecastResponse;
+	//var accuracy = options.accuracy; 
+	
+	var APIKey = options.CustomAPIKey;
+	
+	//Developer wildcard ;-)
+	if (APIKey == "qwerty1234"){APIKey = owmk;}
 	
 	if (celsius){ units = "metric";}
 	else{ units = "imperial";}
 	
-	var url = "http://api.openweathermap.org/data/2.5/weather?lat="+latitude+"&lon="+longitude+"&units="+units;
+	var url = "http://api.openweathermap.org/data/2.5/weather?lat="+latitude+"&lon="+longitude+"&units="+units+"&APPID="+APIKey;
 	console.log("openweather URL: " + url);
 	
+	var forecast = "http://api.openweathermap.org/data/2.5/forecast/daily?lat="+latitude+"&lon="+longitude+"&units="+units+"&APPID="+APIKey+"&cnt=4";
+	console.log("openweather forecast URL: " + forecast);
+	
 	var req = new XMLHttpRequest();
-	req.open('GET', url, true);
-	req.onload = function(e) {
+	req.open('GET', url, false);
+	req.send();
+	
 		if (req.readyState == 4) {
 			if (req.status == 200) {
 				console.log(req.responseText);
         		response = JSON.parse(req.responseText);
         if (response) {
 			
-			
+			//Request the forecast info
+			var forReq = new XMLHttpRequest();
+			forReq.open('GET', forecast, false);
+			forReq.send();
+			if (forReq.readyState == 4){
+				if(forReq.status == 200){
+					console.log(forReq.responseText);
+					forecastResponse = JSON.parse(forReq.responseText);
+				}
+			}
+
+
 					
 			//if user wants to display the Feels Like, override the temperature.
 			temperature = Math.round(response.main.temp) + "\u00B0";
 			
-			icon = openweather[response.weather.id];
+			icon = openweather[response.weather[0].id];
 			high = Math.round(response.main.temp_max) + "\u00B0";
-			low = Math.round(response.main.temp_min) + "\u00B0";
+			//low info comes from forecast data. Otherwise get the low info for the current hour (to avoid crashes)
+			if (forecastResponse){
+				low = Math.round(forecastResponse.list[0].temp.min) + "\u00B0";
+			}
+			else{
+				low = Math.round(response.main.temp_min) + "\u00B0";
+			}
 				
 			
 			sunrise = UNIX2Date(response.sys.sunrise);
@@ -543,33 +572,47 @@ function openweatherByLatLong(latitude, longitude)
 			wind = response.wind.speed;
 			
 			//if user wants to display the Beaufort scale, override the wind speed.
-			if (options["wspeed"] == "3"){
-				var beaufort_speed = Beaufort(wind, options['units']);
+			if (options.wspeed == "3"){
+				var beaufort_speed = Beaufort(wind, options.units);
 				wind=beaufort_speed;}
 			//if user wants to display the wind speed in m/s, override the wind speed.
-			else if(options["wspeed"] == "1"){
+			else if(options.wspeed == "1"){
 				if(celsius){wind=parseFloat(wind)/3.6;}
 				else{wind=parseFloat(wind)/2.24;}
 				//ensure the result never goes over 2 decimals
 				wind=wind.toFixed(2);
 			}
 			//if user wants to display the wind speed in knots, override the wind speed.
-			else if(options["wspeed"] == "2"){
+			else if(options.wspeed == "2"){
 				if(celsius){wind=parseFloat(wind)*0.54;}
 				else{wind=parseFloat(wind)*0.87;}
 				}
 			
 			wdirection = windDirection(response.wind.deg);
 			
-			//code1 = forecastio[response.daily.data[arrIndex+1].icon];
-			//high1 = Math.round(response.daily.data[arrIndex+1].temperatureMax) + "\u00B0"
-			//low1 = Math.round(response.daily.data[arrIndex+1].temperatureMin) + "\u00B0"
-			//code2 = forecastio[response.daily.data[arrIndex+2].icon];
-			//high2 = Math.round(response.daily.data[arrIndex+2].temperatureMax) + "\u00B0"
-			//low2 = Math.round(response.daily.data[arrIndex+2].temperatureMin) + "\u00B0"
-			//code3 = forecastio[response.daily.data[arrIndex+3].icon];
-			//high3 = Math.round(response.daily.data[arrIndex+3].temperatureMax) + "\u00B0"
-			//low3 = Math.round(response.daily.data[arrIndex+3].temperatureMin) + "\u00B0"
+			
+			if (forecastResponse) {
+				code1 = openweather[forecastResponse.list[1].weather[0].id];
+				high1 = Math.round(forecastResponse.list[1].temp.max) + "\u00B0";
+				low1 = Math.round(forecastResponse.list[1].temp.min) + "\u00B0";
+				code2 = openweather[forecastResponse.list[2].weather[0].id];
+				high2 = Math.round(forecastResponse.list[2].temp.max) + "\u00B0";
+				low2 = Math.round(forecastResponse.list[2].temp.min) + "\u00B0";
+				code3 = openweather[forecastResponse.list[3].weather[0].id];
+				high3 = Math.round(forecastResponse.list[3].temp.max) + "\u00B0";
+				low3 = Math.round(forecastResponse.list[3].temp.min) + "\u00B0";				
+			}
+			else{
+				code1 = 16;
+				high1 = "--" + "\u00B0";
+				low1 = "--" + "\u00B0";
+				code2 = 16;
+				high2 = "--" + "\u00B0";
+				low2 = "--" + "\u00B0";
+				code3 = 16;
+				high3 = "--" + "\u00B0";
+				low3 = "--" + "\u00B0";	
+			}
 			
 			
 			//add a blank space between the - and the temp to better display
@@ -589,11 +632,11 @@ function openweatherByLatLong(latitude, longitude)
 			console.log("today's high: " + high + " today's low: " + low);
 			console.log("sunrise: " + sunrise + " sunset: " + sunset);
 			console.log("wind speed: " + wind + "wind direction: " + wdirection);
-			//console.log("icon1: " + code1 + " high1: " + high1 + " low1: " + low1);
-			//console.log("icon2: " + code2 + " high2: " + high2 + " low2: " + low2);
-			//console.log("icon3: " + code3 + " high3: " + high3 + " low3: " + low3);
-			console.log("start: " + parseInt(options["start"]) + " end: " + parseInt(options["end"]));
-			console.log("display battery: " + (options["hide_bat"] == "true" ? 1 : 0));
+			console.log("icon1: " + code1 + " high1: " + high1 + " low1: " + low1);
+			console.log("icon2: " + code2 + " high2: " + high2 + " low2: " + low2);
+			console.log("icon3: " + code3 + " high3: " + high3 + " low3: " + low3);
+			console.log("start: " + parseInt(options.start) + " end: " + parseInt(options.end));
+			console.log("display battery: " + (options.hide_bat == "true" ? 1 : 0));
 			console.log("theme: " + (options.theme));
 			
 			//send the values to the Pebble!!
@@ -615,15 +658,15 @@ function openweatherByLatLong(latitude, longitude)
 				"wind":wind.toString(),
 				"wdirection" : wdirection,
 				//3 days forecast data
-				//"day1code":code1,
-				//"day1H":high1,
-				//"day1L":low1,
-				//"day2code":code2,
-				//"day2H":high2,
-				//"day2L":low2,
-				//"day3code":code3,
-				//"day3H":high3,
-				//"day3L":low3,
+				"day1code":code1,
+				"day1H":high1,
+				"day1L":low1,
+				"day2code":code2,
+				"day2H":high2,
+				"day2L":low2,
+				"day3code":code3,
+				"day3H":high3,
+				"day3L":low3,
 				//Extra Features
 				"ESDuration":parseInt(options['ESDuration']),
 				"timer":parseInt(options['timer']),
@@ -643,9 +686,6 @@ function openweatherByLatLong(latitude, longitude)
       }
     }
   }
-	}
-  req.send(null);
-
 }
 
 
@@ -906,6 +946,17 @@ function getWeatherFromLocation(location_name) {
 		forecastioByLatLong(position[0],position[1]);
 		
 	}
+	//OpenWeatherMap
+	else if (options['weatherprovider']=="3"){
+		console.log("Getting weather from OpenWeatherMap");
+		var position;
+		//get the GPS coordinates based on the location and invoke the weather service
+		position = getPosition(location_name);
+		
+		//get the weather
+		openweatherByLatLong(position[0],position[1]);
+		
+	}
 	//Yahoo! Weather	
 	else{
 		  console.log("Getting weather from Yahoo Weather");
@@ -988,7 +1039,7 @@ function getWeatherFromWoeid(woeid, city) {
 			
 			//if user wants to display the Feels Like, override the temperature.
 			if (options["feelslike"] == "true"){
-				var Feels_Like = FeelsLike(wind_chill,humidity, options['units']);
+				var Feels_Like = FeelsLike(wind_chill,humidity, options['units'],channel[0].item.condition.temp);
 				temperature=Feels_Like + "\u00B0";}
 			
 			
@@ -1186,10 +1237,12 @@ function locationError(err) {
 
 
 // Heat index computed using air temperature and RH%
-function FeelsLike(wind_chill, humidity, unit){
+function FeelsLike(wind_chill, humidity, unit, temperature){
 
 	//console.log("unit: " + unit)
-	if (unit == 'celsius'){
+	//Yahoo! Weather lately is returning the wind_chill in farenheith only, regardless of the selected unit.
+	//compare real temp with wind chill and if difference is too high assume it is always farenheit.
+	if (unit == 'celsius' && Math.abs(temperature-wind_chill) < 10){
 		//convert to Fareheith to run the calculations
 		var tempair_in_fahrenheit = 1.80 * wind_chill + 32.0;
 	}
@@ -1314,42 +1367,7 @@ NNW 326.25 - 348.75
 
 }
 
-function CheckUserKey()
-{
-	var lt = 0;
-	var key = options['key'];
-	var token = Pebble.getAccountToken();
-	var decrypt;
-	var app = 1; //1 means YWeather.
-	
-	//if there is not user key, then license is 0
-	if ((key==undefined)||(key==null)||(key=="")||(key=="undefined")||(key=="false")){key="00000000000"}
-	//check the user key
-	
-	if (key.length = 11) {
-		//old key; use original decrypt mode
-		decrypt = token.substring(1,2) + token.substring(2,3) + token.substring(2,3) + token.substring(14,15) + token.substring(10,11);
-		decrypt = decrypt + key.substring(3,4);
-		decrypt = decrypt + token.substring(0,1) + token.substring(6,7) + token.substring(5,6) + token.substring(3,4) + token.substring(9,10)
-	}
 
-	else {
-		//invalid key... what is this?
-		decrypt = "999999999999";
-	}
-	
-
-	if (decrypt == key) {lt = key.substring(5,6);}
-	else {lt = 0;}
-	
-	//confirm that the javascript code works fine
-	//options['key']=decrypt;
-
-	
-	console.log("Key: " + key + " Decrypt: " + decrypt + " LT: " + lt);
-	
-	return lt;
-}
 
 
 function getCityName(pos){
@@ -1466,15 +1484,17 @@ Pebble.addEventListener('showConfiguration', function(e) {
 	if ((optTheme == null)||(optTheme=="null")){optTheme="1";}
 	
 	//Check settings availability. If server is down use mirror on github.
- 	if (ping("http://yweather.es/ywsettings34.html") == 200){
-		var uri = 'http://yweather.es/ywsettings34.html?'; //PRODUCTION
+	
+ 	if (ping("http://yweather.es/ywsettings36.html") == 200){
+		var uri = 'http://yweather.es/ywsettings36.html?'; //PRODUCTION
 	}
 	else {
-		var uri = 'http://dabdemon.github.io/Yahoo--Weather/ywsettings34.html?'; //DEVELOPMENT
+		var uri = 'http://dabdemon.github.io/Yahoo--Weather/ywsettings36.html?'; //DEVELOPMENT
 	}
+	
 		
-	//var uri = 'http://yweather.es/ywsettings34.html?' + //PRODUCTION
-    //var uri = 'http://dabdemon.github.io/Yahoo--Weather/development.html?' + //DEVELOPMENT
+	//var uri = 'http://yweather.es/ywsettings34.html?'; //PRODUCTION
+    //var uri = 'http://dabdemon.github.io/Yahoo--Weather/development.html?'; //DEVELOPMENT
 	uri =  uri +
 	'language=' + encodeURIComponent(optlanguage) +
 	'&theme=' + encodeURIComponent(optTheme) +

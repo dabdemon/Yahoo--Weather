@@ -50,20 +50,25 @@
 
 	//FORECAST
 
-	#define LOW_FRAME			PBL_IF_ROUND_ELSE((GRect(110, 90, 47, 60)),(GRect(100, 93, 47, 60))) 
+	#define LOW_FRAME			PBL_IF_ROUND_ELSE((GRect(112, 90, 47, 60)),(GRect(100, 93, 47, 60))) 
 	#define LOW_ICON_FRAME 		PBL_IF_ROUND_ELSE((GRect(101, 86, 26, 26)),(GRect(81, 92, 26, 26)))
-	#define HIGH_FRAME 			PBL_IF_ROUND_ELSE((GRect(110, 113, 47, 168-108)),(GRect(100, 115, 47, 168-108)))
+	#define HIGH_FRAME 			PBL_IF_ROUND_ELSE((GRect(112, 113, 47, 168-108)),(GRect(100, 115, 47, 168-108)))
 	#define HIGH_ICON_FRAME 	PBL_IF_ROUND_ELSE((GRect(101, 109, 26, 26)),(GRect(81, 115, 26, 26))) 
 	#define SUNRISE_FRAME 		PBL_IF_ROUND_ELSE((GRect(50, 90, 50, 168-108)),(GRect(30, 95, 50, 168-108))) 
 	#define SUNRISE_ICON_FRAME 	PBL_IF_ROUND_ELSE((GRect(21, 92, 26, 17)),(GRect(1, 98, 26, 17))) 
 	#define SUNSET_FRAME 		PBL_IF_ROUND_ELSE((GRect(48, 113, 50, 168-108)),(GRect(28, 115, 50, 168-108))) 
 	#define SUNSET_ICON_FRAME 	PBL_IF_ROUND_ELSE((GRect(21, 112, 26, 17)),(GRect(1, 118, 26, 17))) 
-	#define WIND_FRAME 			PBL_IF_ROUND_ELSE((GRect(70, 135, 50, 168-108)),(GRect(30, 135, 50, 168-108))) 
+	//#define WIND_FRAME 			PBL_IF_ROUND_ELSE((GRect(70, 135, 50, 168-108)),(GRect(30, 135, 50, 168-108))) 
 	#define WIND_ICON_FRAME 	PBL_IF_ROUND_ELSE((GRect(40, 130, 26, 26)),(GRect(1, 138, 26, 26))) 
 	#define WDIRECTION_FRAME 	PBL_IF_ROUND_ELSE((GRect(50, 155, 50, 168-108)),(GRect(30, 155, 50, 168-108))) 
-	#define POP_FRAME 			PBL_IF_ROUND_ELSE((GRect(100, 135, 45, 168-108)),(GRect(100, 135, 45, 168-108))) 
-	#define RAIN_ICON_FRAME 	PBL_IF_ROUND_ELSE((GRect(101, 130, 26, 26)),(GRect(81, 135, 26, 26))) 	
-	
+	//#define POP_FRAME 			PBL_IF_ROUND_ELSE((GRect(100, 135, 45, 168-108)),(GRect(100, 135, 45, 168-108))) 
+	//#define RAIN_ICON_FRAME 	PBL_IF_ROUND_ELSE((GRect(102, 130, 26, 26)),(GRect(81, 135, 26, 26))) 	
+	#define RAIN_ICON_FRAME 	PBL_IF_ROUND_ELSE((GRect(118, 130, 26, 26)),(GRect(81, 135, 26, 26))) 
+	#define POP_FRAME 			PBL_IF_ROUND_ELSE((GRect(80, 138, 40, 168-108)),(GRect(100, 135, 45, 168-108))) 
+	#define WIND_FRAME 			PBL_IF_ROUND_ELSE((GRect(70, 138, 50, 168-108)),(GRect(30, 135, 50, 168-108))) 
+
+		
+
 	TextLayer *High_Layer;        	//Layer for the High Temperature
 	TextLayer *Low_Layer;        	//Layer for the Low Temperature
 	TextLayer *Sunrise_Layer;       //Layer for the High Temperature
@@ -88,9 +93,9 @@
 	//3-DAY FORECAST
 
 
-	#define FORECAST_DAY1_FRAME PBL_IF_ROUND_ELSE((GRect( 33, 90, 50, 23)),(GRect(5, 93, 92, 23))) 
-	#define FORECAST_DAY2_FRAME PBL_IF_ROUND_ELSE((GRect( 75, 90, 50, 23)),(GRect(5, 114, 92, 23))) 
-	#define FORECAST_DAY3_FRAME PBL_IF_ROUND_ELSE((GRect(115, 90, 50, 23)),(GRect(5, 135, 92, 23))) 	
+	#define FORECAST_DAY1_FRAME PBL_IF_ROUND_ELSE((GRect( 29, 90, 46, 23)),(GRect(5, 93, 92, 23))) 
+	#define FORECAST_DAY2_FRAME PBL_IF_ROUND_ELSE((GRect( 71, 90, 46, 23)),(GRect(5, 114, 92, 23))) 
+	#define FORECAST_DAY3_FRAME PBL_IF_ROUND_ELSE((GRect(113, 90, 46, 23)),(GRect(5, 135, 92, 23))) 	
 
 	#define FORECAST_CODE1_FRAME PBL_IF_ROUND_ELSE((GRect( 40, 110, 22, 22)),(GRect(97, 93, 22, 22))) 
 	#define FORECAST_CODE2_FRAME PBL_IF_ROUND_ELSE((GRect( 80, 110, 22, 22)),(GRect(97, 114, 22, 22))) 

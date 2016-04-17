@@ -39,6 +39,7 @@
         "configurable"
     ],
     "companyName": "David Rodr\u00edguez Rinc\u00f3n",
+    "enableMultiJS": false,
     "longName": "YWeather",
     "projectType": "native",
     "resources": {
@@ -434,7 +435,7 @@
         "chalk"
     ],
     "uuid": "35a28a4d-0c9f-408f-9c6d-551e65f03186",
-    "versionLabel": "3.5",
+    "versionLabel": "3.6",
     "watchapp": {
         "watchface": true
     }
